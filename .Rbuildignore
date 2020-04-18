@@ -1,0 +1,15 @@
+^renv$
+^renv\.lock$
+^.*\.Rproj$
+^\.Rproj\.user$
+^docs$
+^vignettes$
+^examples$
+.travis.yml
+.gitlab-ci.yml
+.gitignore
+.gitattributes
+.Rhistory
+^assessR\.Rcheck$
+^assessR.*\.tar\.gz$
+^assessR.*\.tgz$

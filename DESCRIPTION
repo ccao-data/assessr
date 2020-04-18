@@ -1,0 +1,22 @@
+Package: assessR
+Type: Package
+Title: Convenience Functions and Datasets for the Cook County Assessor's Office
+Version: 0.1.0
+Authors@R: c(
+    person(given = "Dan", family = "Snow", email="dsnow@cookcountyassessor.com", role=c("aut", "cre"))
+    )
+Date: 2020-04-17
+Description: A set of functions used widely through the Cook County Assessor's
+    valuation pipeline. The intention is to standardize the usage of critical
+    functions across all users and script by having them all depend on a single
+    package.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports:
+    stats
+RoxygenNote: 7.0.2
+Suggests: 
+    testthat,
+    lintr,
+    covr
