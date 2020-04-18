@@ -4,11 +4,13 @@
 \name{class_dict}
 \alias{class_dict}
 \title{Data dictionary of Cook County property classes.}
-\format{A data frame with 15 rows and 2 variables:
+\format{
+A data frame with 15 rows and 2 variables:
 \describe{
   \item{class_code}{Class code, numeric}
   \item{desc}{Human-readable description of the property class}
-}}
+}
+}
 \usage{
 class_dict
 }

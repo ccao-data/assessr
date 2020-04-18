@@ -4,13 +4,15 @@
 \name{town_dict}
 \alias{town_dict}
 \title{Data dictionary for CCAO township codes and triads.}
-\format{A data frame with 38 rows and 4 variables:
+\format{
+A data frame with 38 rows and 4 variables:
 \describe{
   \item{township_name}{Common name of the township}
   \item{township_code}{Two-digit code used to identify the township}
   \item{triad_code}{Single-digit code of the triad the township is in}
   \item{triad_name}{Common name of the triad the township is in}
-}}
+}
+}
 \usage{
 town_dict
 }

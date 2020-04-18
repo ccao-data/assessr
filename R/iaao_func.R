@@ -10,7 +10,7 @@
 #'   and 95\% confidence interval. Setting to 0 or FALSE will not use bootstrap.
 #' @param suppress Default FALSE. If TRUE, hide warning about not meeting the
 #'   minimum number of ratios to calculate COD accurately dplyr (30 by default).
-#' @param na.rm Default FALSE. If TRUE, will remove NAs from the vector before
+#' @param na_rm Default FALSE. If TRUE, will remove NAs from the vector before
 #'   proceeding.
 #'
 #' @return A named list containing COD, standard error, 95\% confidence

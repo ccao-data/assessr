@@ -9,7 +9,7 @@ cod_func(
   trim = c(0.05, 0.95),
   bootstrap_n = 100,
   suppress = FALSE,
-  na.rm = FALSE
+  na_rm = FALSE
 )
 }
 \arguments{
@@ -22,17 +22,17 @@ values are set by CCAO Data Science Department SOPs. Do not alter
 them without permission.}
 
 \item{bootstrap_n}{The number of iterations to use to estimate standard error
-and 95\% confidence interval. Setting to 0 or FALSE will not use bootstapping.}
+and 95\% confidence interval. Setting to 0 or FALSE will not use bootstrap.}
 
 \item{suppress}{Default FALSE. If TRUE, hide warning about not meeting the
 minimum number of ratios to calculate COD accurately dplyr (30 by default).}
 
-\item{na.rm}{Default FALSE. If TRUE, will remove NAs from the vector before
+\item{na_rm}{Default FALSE. If TRUE, will remove NAs from the vector before
 proceeding.}
 }
 \value{
-A named list containing COD, standard error, 95\% confidence interval,
-  and the number of ratios used in the calculation
+A named list containing COD, standard error, 95\% confidence
+  interval, and the number of ratios used in the calculation
 }
 \description{
 Calculate the COD of a given set of assessment ratios
@@ -43,5 +43,4 @@ library(assessR)
 ratios <- runif(300, 0.93, 1.08)
 
 cod_func(ratios, trim = c(0.05, 0.95), bootstrap_n = 100)
-
 }

@@ -4,13 +4,15 @@
 \name{chars_dict}
 \alias{chars_dict}
 \title{Data dictionary for CCAO characteristic values.}
-\format{A data frame with 61 rows and 4 variables:
+\format{
+A data frame with 61 rows and 4 variables:
 \describe{
   \item{char_name}{Column name of variable in CCAO SQL server}
   \item{char_code}{Value code used in CCAO SQL server and in paper forms}
   \item{char_value}{Actual meaning of char_code}
   \item{char_value_short}{Actual meaning of char_code, shortened}
-}}
+}
+}
 \source{
 This dictionary was manually created from paper forms as a
   translation of numeric variables. char_value_short is the equivalent of

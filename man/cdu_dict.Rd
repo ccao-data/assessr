@@ -4,13 +4,15 @@
 \name{cdu_dict}
 \alias{cdu_dict}
 \title{Codes used by the CCAO to identify certain distinct property situations.}
-\format{A data frame with 28 rows and 4 variables:
+\format{
+A data frame with 28 rows and 4 variables:
 \describe{
   \item{cdu_code}{Common name of the township}
   \item{cdu_type}{Two-digit code used to identify the township}
   \item{cdu_value}{Actual meaning of CDU code}
   \item{cdu_value_short}{Actual meaning of CDU code, shortened}
-}}
+}
+}
 \usage{
 cdu_dict
 }

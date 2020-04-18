@@ -2,52 +2,55 @@
 
 # This is a GitLab CI config file used to build CCAO R packages
 # Source: https://github.com/jangorecki/r.gitlab.ci/blob/master/.gitlab-ci.yml
-image: r-ver:3.6.3
+image: rocker/r-ver:3.6.3
+
+variables:
+  DOCKER_DRIVER: "overlay2"
+  GIT_SUBMODULE_STRATEGY: "recursive"
+  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev"
+  R_LIBS_USER: "$CI_PROJECT_DIR/ci/lib"
+
+cache:
+  key:
+    files:
+      - DESCRIPTION
+  paths:
+    - .apt
+    - $R_LIBS_USER
+
+before_script:
+  - rm -f /etc/apt/apt.conf.d/docker-clean
+  - mkdir -p .apt && mkdir -p /var/cache/apt/archives && mount --bind .apt /var/cache/apt/archives/
+  - apt-get update && apt-get install --no-install-recommends -y ${APT_DEPS}
+  - mkdir -p $R_LIBS_USER
+  - Rscript -e 'install.packages("remotes")'
+  - Rscript -e 'remotes::install_deps(dependencies = TRUE, lib = Sys.getenv("R_LIBS_USER"))'
 
 stages:
+  - build
   - test
 
-test-linux:
-  stage: test
+build:
+  stage: build
+  only:
+    - master
   script:
-    - R -e 'install.packages(c("covr", "lintr", "testthat"))'
     - R CMD build . --no-build-vignettes --no-manual
-    - R CMD check $(ls -1t *.tar.gz | head -n 1) --as-cran --no-manual --no-build-vignettes
-    - mkdir -p bus/src/contrib
-    - mv $(ls -1t *.tar.gz | head -n 1) bus/src/contrib
-    - Rscript -e 'tools::write_PACKAGES(contrib.url("bus"), addFiles=TRUE)'
   artifacts:
-    expire_in: 4 weeks
-    when: always
+    name: "$CI_JOB_STAGE"
+    expire_in: 2 weeks
+    when: on_success
     paths:
-      - r.gitlab.ci.Rcheck
-      - bus
-
-
-test-windows:
+      - assessR*.tar.gz
+    
+test:
   stage: test
-  tags:
-    - windows
-  before_script:
-    - curl.exe -s -o ../R-win.exe https://cloud.r-project.org/bin/windows/base/R-3.6.3-win.exe
-    - Start-Process -FilePath ..\R-win.exe -ArgumentList "/VERYSILENT /DIR=C:\R" -NoNewWindow -Wait
-    - curl.exe -s -o ../Rtools.exe https://cloud.r-project.org/bin/windows/Rtools/Rtools35.exe
-    - Start-Process -FilePath ..\Rtools.exe -ArgumentList "/VERYSILENT /DIR=C:\Rtools" -NoNewWindow -Wait
-    - $ENV:PATH = "C:\R\bin\x64;C:\Rtools\bin;C:\Rtools\mingw_64\bin;C:\Rtools\MinGW\bin;$ENV:PATH" + $ENV:PATH
+  only:
+    - master
   script:
-    - R.exe CMD build .
-    - R.exe CMD check $(ls.exe -1t *.tar.gz | head -n 1) --as-cran --no-manual
-    - R.exe CMD INSTALL $(ls.exe -1t *.tar.gz | head -n 1) --build
-    - mkdir.exe -p bus/bin/windows/contrib/3.6
-    - mv.exe $(ls.exe -1t *.zip | head -n 1) bus/bin/windows/contrib/3.6
-    - Rscript.exe -e "tools::write_PACKAGES(contrib.url('bus'), type='win.binary', addFiles=TRUE)"
+    - R CMD check $(ls -1t *.tar.gz | head -n 1) --no-manual --no-build-vignettes --no-tests
+    - Rscript -e 'devtools::test(reporter = testthat::JunitReporter$new(file = "test-out.xml"))'
+    - Rscript -e 'covr::package_coverage()' 
   artifacts:
-    expire_in: 4 weeks
-    when: always
-    paths:
-    - r.gitlab.ci.Rcheck
-    - bus
-
-
-
-
+    reports:
+      junit: test-out.xml
