@@ -1,0 +1,89 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# assessR
+
+A package to manage, distribute, and version control commonly-used
+CCAO assessment functions.
+
+## Installation
+
+You can install the released version of assessR directly from GitLab, but you'll 
+first need to generate an authorization token by following
+[these steps](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#creating-a-personal-access-token).
+
+Then run the following R command, replacing the `auth_token` argument with
+your own token:
+
+```r
+remotes::install_gitlab(
+  repo = "ccao-data-science---modeling/packages/assessR",
+  auth_token = "<your-personal-access-token>"
+)
+```
+
+Once it is installed, you can use it just like any other package. Simply
+call `library(assessR)` at the beginning of your script.
+
+## IAAO Functions
+
+This package contains functions to calculate [IAAO sales ratio study performance statistics](https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf). The settings of these functions are governed by CCAO Data Science Department SOPs. Do not change them without asking.
+
+### Example Usage
+
+These functions can be used to calculate the COD, PRD, or PRB of a set of ratios. They can also be applied by group. 
+
+```{r, warning=FALSE}
+library(assessR)
+library(dplyr)
+
+data("ratios_sample")
+
+## For a single vector of ratios
+# Calculate COD
+cod_func(ratios_sample$ratios, bootstrap_n = 1000)
+
+# Calculate PRB
+prb_func(
+  ratios_sample$ratios,
+  ratios_sample$assessed_values,
+  ratios_sample$sales,
+  bootstrap_n = 1000
+)
+
+
+## Calculate each statistic by group
+ratios_sample %>%
+  group_by(town) %>%
+  summarise(
+    COD = cod_func(ratios, bootstrap_n = 1000)$COD,
+    PRD = prd_func(ratios, sales, bootstrap_n = 1000)$PRD,
+    PRB = prb_func(ratios, sales, assessed_values, bootstrap_n = 1000)$PRB
+  )
+
+## Some witchcraft to calculate every stat at once for each group
+ratios_sample %>%
+  group_by(town) %>%
+  group_modify(~ {
+    bind_rows(
+      cod_func(.x$ratios, bootstrap_n = 1000),
+      prd_func(.x$ratios, .x$sales, bootstrap_n = 1000),
+      prb_func(.x$ratios, .x$sales, .x$assessed_values, bootstrap_n = 1000)
+    )
+  }) %>%
+  summarise_each(list(~ first(.x[!is.na(.x)]))) 
+
+```
+

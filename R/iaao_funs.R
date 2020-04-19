@@ -26,14 +26,10 @@
 #' @examples
 #' library(assessR)
 #'
-#' ratios <- runif(300, 0.93, 1.08)
+#' # Load the included dataset
+#' data("ratios_sample")
 #'
-#' cod_func(ratios, trim = c(0.05, 0.95), bootstrap_n = 100)
-#' \dontrun{
-#' # With a pre-existing vector of ratios, stored in df
-#'
-#' cod_func(df$ratio_6, trim = c(0.05, 0.95), boostrap_n = 50)
-#' }
+#' cod_func(ratios_sample$ratios, trim = c(0.05, 0.95), bootstrap_n = 100)
 #'
 #' @family iaao_functions
 #' @export
@@ -133,15 +129,15 @@ cod_func <- function(ratios,
 #' @examples
 #' library(assessR)
 #'
-#' ratios <- runif(300, 0.93, 1.08)
-#' sales <- runif(300, 100000, 1000000)
+#' # Load the included dataset
+#' data("ratios_sample")
 #'
-#' prd_func(ratios, sales, trim = c(0.05, 0.95), bootstrap_n = 100)
-#' \dontrun{
-#' # With pre-existing vectors of ratios and sales, stored in df
-#'
-#' prd_func(df$ratio_6, df$sales, trim = c(0.05, 0.95), boostrap_n = 50)
-#' }
+#' prd_func(
+#'   ratios_sample$ratios,
+#'   ratios_sample$sales,
+#'   trim = c(0.05, 0.95),
+#'   bootstrap_n = 100
+#' )
 #'
 #' @family iaao_functions
 #' @export
@@ -238,22 +234,22 @@ prd_func <- function(ratios,
 #' @examples
 #' library(assessR)
 #'
-#' ratios <- runif(300, 0.93, 1.08)
-#' assessed_values <- runif(300, 100000, 1000000)
-#' sales <- runif(300, 100000, 1000000)
+#' # Load the included dataset
+#' data("ratios_sample")
 #'
-#' prb_func(ratios, sales, assessed_values)
-#' \dontrun{
-#' # With pre-existing vectors of ratios, AVs, and sales, stored in df
-#'
-#' prb_func(df$ratio_6, df$fitted_value_6, df$sales, trim = c(0.05, 0.95))
-#' }
+#' prb_func(
+#'   ratios_sample$ratios,
+#'   ratios_sample$sales,
+#'   ratios_sample$assessed_values,
+#'   trim = c(0.05, 0.95),
+#'   bootstrap_n = 100
+#' )
 #'
 #' @family iaao_functions
 #' @export
 prb_func <- function(ratios,
-                     assessed_values,
                      sales,
+                     assessed_values,
                      trim = c(0.05, 0.95),
                      bootstrap_n = 100,
                      suppress = FALSE,

@@ -45,14 +45,10 @@ measure the uniformity of assessment models.
 \examples{
 library(assessR)
 
-ratios <- runif(300, 0.93, 1.08)
+# Load the included dataset
+data("ratios_sample")
 
-cod_func(ratios, trim = c(0.05, 0.95), bootstrap_n = 100)
-\dontrun{
-# With a pre-existing vector of ratios, stored in df
-
-cod_func(df$ratio_6, trim = c(0.05, 0.95), boostrap_n = 50)
-}
+cod_func(ratios_sample$ratios, trim = c(0.05, 0.95), bootstrap_n = 100)
 
 }
 \seealso{

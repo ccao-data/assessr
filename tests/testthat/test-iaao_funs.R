@@ -1,19 +1,23 @@
 context("test cod_func()")
 
-# Set seed for testing
-set.seed(1267)
+# Load the ratios sample dataset for testing
+data("ratios_sample")
 
-# Create a random vector of ratios
-ratios <- runif(1000, 0.87, 1.10)
-cod_out <- cod_func(ratios)
+# Extract the components of the dataframe as vectors
+ratios <- ratios_sample$ratios
+sales <- ratios_sample$sales
+assessed_values <- ratios_sample$assessed_values
+
+# Calculate COD
+cod_out <- cod_func(ratios, bootstrap_n = 1000)
 
 test_that("functions return named list", {
   expect_named(cod_out)
 })
 
 test_that("output within in expected range", {
-  expect_gt(cod_out$COD, 4.5)
-  expect_lt(cod_out$COD, 6.0)
+  expect_gt(cod_out$COD, 11)
+  expect_lt(cod_out$COD, 13)
 })
 
 test_that("bad input data stops execution", {
@@ -39,17 +43,16 @@ test_that("bootstrap iter changes output", {
 
 context("test prd_func()")
 
-# Create a vector of sales the same length as ratios
-sales <- runif(1000, 100000, 1000000)
-prd_out <- prd_func(ratios, sales)
+# Calculate PRD from sample
+prd_out <- prd_func(ratios, sales, bootstrap_n = 1000)
 
 test_that("functions return named list", {
   expect_named(prd_out)
 })
 
 test_that("output within in expected range", {
-  expect_gt(prd_out$PRD, 0.95)
-  expect_lt(prd_out$PRD, 1.05)
+  expect_gt(prd_out$PRD, 0.98)
+  expect_lt(prd_out$PRD, 1.03)
 })
 
 test_that("bad input data stops execution", {
@@ -79,7 +82,6 @@ test_that("bootstrap iter changes output", {
 context("test prb_func()")
 
 # Create a vector of sales the same length as ratios
-assessed_values <- runif(1000, 100000, 1000000)
 prb_out <- prb_func(ratios, sales, assessed_values, bootstrap_n = 1000)
 
 test_that("functions return named list", {
@@ -87,8 +89,8 @@ test_that("functions return named list", {
 })
 
 test_that("output within in expected range", {
-  expect_gt(prb_out$PRB, -0.05)
-  expect_lt(prb_out$PRB, 0.05)
+  expect_gt(prb_out$PRB, -0.03)
+  expect_lt(prb_out$PRB, 0.03)
 })
 
 test_that("bad input data stops execution", {
@@ -123,14 +125,14 @@ test_that("incomplete data stops execution unless suppressed", {
 test_that("bootstrap iter changes output", {
   expect_type(prb_func(
     ratios,
-    assessed_values,
     sales,
+    assessed_values,
     bootstrap_n = FALSE)$PRB,
   "double")
   expect_type(prb_func(
     ratios,
-    assessed_values,
     sales,
+    assessed_values,
     bootstrap_n = FALSE)$PRB_SE,
   "double")
 })

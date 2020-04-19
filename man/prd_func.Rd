@@ -49,15 +49,15 @@ models.
 \examples{
 library(assessR)
 
-ratios <- runif(300, 0.93, 1.08)
-sales <- runif(300, 100000, 1000000)
+# Load the included dataset
+data("ratios_sample")
 
-prd_func(ratios, sales, trim = c(0.05, 0.95), bootstrap_n = 100)
-\dontrun{
-# With pre-existing vectors of ratios and sales, stored in df
-
-prd_func(df$ratio_6, df$sales, trim = c(0.05, 0.95), boostrap_n = 50)
-}
+prd_func(
+  ratios_sample$ratios,
+  ratios_sample$sales,
+  trim = c(0.05, 0.95),
+  bootstrap_n = 100
+)
 
 }
 \seealso{

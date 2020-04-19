@@ -6,8 +6,8 @@
 \usage{
 prb_func(
   ratios,
-  assessed_values,
   sales,
+  assessed_values,
   trim = c(0.05, 0.95),
   bootstrap_n = 100,
   suppress = FALSE,
@@ -20,9 +20,9 @@ the ratio is the estimated fair cash value and the denominator
 is the sale price. NOTE: These values are typically lagged or leading
 to prevent sales chasing.}
 
-\item{assessed_values}{A vector AVs the same length as \code{ratios}.}
-
 \item{sales}{A vector of sales the same length as \code{ratios}.}
+
+\item{assessed_values}{A vector AVs the same length as \code{ratios}.}
 
 \item{trim}{A lower and upper quantile for trimming input vectors. These
 values are set by CCAO Data Science Department SOPs. Do not alter
@@ -52,16 +52,16 @@ vertical equity of assessment models.
 \examples{
 library(assessR)
 
-ratios <- runif(300, 0.93, 1.08)
-assessed_values <- runif(300, 100000, 1000000)
-sales <- runif(300, 100000, 1000000)
+# Load the included dataset
+data("ratios_sample")
 
-prb_func(ratios, sales, assessed_values)
-\dontrun{
-# With pre-existing vectors of ratios, AVs, and sales, stored in df
-
-prb_func(df$ratio_6, df$fitted_value_6, df$sales, trim = c(0.05, 0.95))
-}
+prb_func(
+  ratios_sample$ratios,
+  ratios_sample$sales,
+  ratios_sample$assessed_values,
+  trim = c(0.05, 0.95),
+  bootstrap_n = 100
+)
 
 }
 \seealso{

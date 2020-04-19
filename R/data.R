@@ -13,6 +13,7 @@
 #'
 "town_dict"
 
+
 #' Data dictionary for CCAO characteristic values.
 #'
 #' A dataset containing human-readable version of numeric characteristic
@@ -31,6 +32,7 @@
 #'   what is used on the AS400 property info screens
 "chars_dict"
 
+
 #' Data dictionary of Cook County property classes.
 #'
 #' A dataset containing a translation for residential class codes to
@@ -44,6 +46,7 @@
 #'
 #' @note Only includes residential classes.
 "class_dict"
+
 
 #' Codes used by the CCAO to identify certain distinct property situations.
 #'
@@ -59,3 +62,21 @@
 #' }
 #'
 "cdu_dict"
+
+
+#' Sample of ratio and sales data used by the CCAO to evaluate assessment
+#' performance.
+#'
+#' This sample was take from Evanston and New Trier in 2019. Ratios are
+#' calculated using assessor certified (post-appeal) values.
+#'
+#' @format A data frame with 2979 observation and 4 variables:
+#' \describe{
+#'   \item{ratios}{Sales ratio representing assessed value / sale price}
+#'   \item{sales}{The recorded sale price of this property}
+#'   \item{town}{Township name the property is in}
+#'   \item{assessed_values}{The value predicted by CCAO assessment models,
+#'   including any appeals have been applied}
+#' }
+#'
+"ratios_sample"
