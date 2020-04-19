@@ -90,7 +90,7 @@ cod_func <- function(ratios,
     # Create a named output vector containing COD, SE, 95% CI, and N
     cod_output <- list(
       round(mean(generated_cods, na.rm = TRUE), 4),
-      round(stats::sd(generated_cods, na.rm = TRUE), 4),
+      round(stats::sd(generated_cods, na.rm = TRUE) / sqrt(nrow(x)), 4),
       paste0(
         "(",
         round(
@@ -199,7 +199,7 @@ prd_func <- function(ratios,
 
     prd_output <- list(
       round(mean(generated_prds, na.rm = TRUE), 4),
-      round(stats::sd(generated_prds, na.rm = TRUE), 4),
+      round(stats::sd(generated_prds, na.rm = TRUE) / sqrt(nrow(x)), 4),
       paste0(
         "(",
         round(mean(generated_prds, na.rm = TRUE) - 1.96 *
