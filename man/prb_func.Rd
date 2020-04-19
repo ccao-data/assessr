@@ -56,7 +56,7 @@ ratios <- runif(300, 0.93, 1.08)
 assessed_values <- runif(300, 100000, 1000000)
 sales <- runif(300, 100000, 1000000)
 
-prd_func(ratios, sales, assessed_values)
+prb_func(ratios, sales, assessed_values)
 \dontrun{
 # With pre-existing vectors of ratios, AVs, and sales, stored in df
 

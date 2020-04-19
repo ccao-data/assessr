@@ -90,7 +90,7 @@ cod_func <- function(ratios,
     # Create a named output vector containing COD, SE, 95% CI, and N
     cod_output <- list(
       round(mean(generated_cods, na.rm = TRUE), 4),
-      round(stats::sd(generated_cods, na.rm = TRUE) / sqrt(nrow(x)), 4),
+      round(stats::sd(generated_cods, na.rm = TRUE) / sqrt(length(ratios)), 4),
       paste0(
         "(",
         round(
@@ -242,7 +242,7 @@ prd_func <- function(ratios,
 #' assessed_values <- runif(300, 100000, 1000000)
 #' sales <- runif(300, 100000, 1000000)
 #'
-#' prd_func(ratios, sales, assessed_values)
+#' prb_func(ratios, sales, assessed_values)
 #' \dontrun{
 #' # With pre-existing vectors of ratios, AVs, and sales, stored in df
 #'
