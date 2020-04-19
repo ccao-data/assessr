@@ -37,33 +37,24 @@ Department SOPs. Do not change them without asking.
 ### Example Usage
 
 These functions can be used to calculate the COD, PRD, or PRB of a set
-of ratios. They can also be applied by group.
+of ratios.
 
 ``` r
 library(assessR)
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 
 data("ratios_sample")
 
-## For a single vector of ratios
 # Calculate COD
 cod_func(ratios_sample$ratios, bootstrap_n = 1000)
 #> $COD
-#> [1] 12.1221
+#> [1] 12.1161
 #> 
 #> $COD_SE
-#> [1] 0.013
+#> [1] 0.0123
 #> 
 #> $COD_95CI
-#> [1] "(11.363, 12.8812)"
+#> [1] "(11.398, 12.8341)"
 #> 
 #> $COD_N
 #> [1] 881
@@ -76,19 +67,22 @@ prb_func(
   bootstrap_n = 1000
 )
 #> $PRB
-#> [1] -0.0165
+#> [1] -0.0168
 #> 
 #> $PRB_SE
 #> [1] 0.0051
 #> 
 #> $PRB_95CI
-#> [1] "(-0.0265, -0.0066)"
+#> [1] "(-0.0267, -0.0069)"
 #> 
 #> $PRB_N
 #> [1] 881
+```
 
+They can also by applied by group. For example, to get each statistic by
+township.
 
-## Calculate each statistic by group
+``` r
 ratios_sample %>%
   group_by(town) %>%
   summarise(
@@ -99,10 +93,14 @@ ratios_sample %>%
 #> # A tibble: 2 x 4
 #>   town        COD   PRD    PRB
 #>   <chr>     <dbl> <dbl>  <dbl>
-#> 1 Evanston   11.3  1.01 0.0193
-#> 2 New Trier  12.7  1.03 0.0101
+#> 1 Evanston   11.4  1.01 0.0198
+#> 2 New Trier  12.8  1.03 0.0104
+```
 
-## Some witchcraft to calculate every stat at once for each group
+You can even use `dplyr` witchcraft to calculate every stat for every
+group at the same time.
+
+``` r
 ratios_sample %>%
   group_by(town) %>%
   group_modify(~ {
@@ -116,7 +114,7 @@ ratios_sample %>%
 #> # A tibble: 2 x 13
 #>   town    COD COD_SE COD_95CI COD_N   PRD  PRD_SE PRD_95CI PRD_N    PRB PRB_SE
 #>   <chr> <dbl>  <dbl> <chr>    <int> <dbl>   <dbl> <chr>    <int>  <dbl>  <dbl>
-#> 1 Evan~  11.3 0.0261 (10.295~   421  1.01 3.00e-4 (1.0003~   421 0.0196 0.0077
-#> 2 New ~  12.8 0.0246 (11.718~   458  1.03 3.00e-4 (1.0189~   458 0.0108 0.0088
+#> 1 Evan~  11.3 0.0268 (10.256~   421  1.01 3.00e-4 (1.0005~   421 0.0199 0.0078
+#> 2 New ~  12.7 0.0258 (11.661~   458  1.03 2.00e-4 (1.019,~   458 0.0106 0.0088
 #> # ... with 2 more variables: PRB_95CI <chr>, PRB_N <dbl>
 ```

@@ -43,15 +43,14 @@ This package contains functions to calculate [IAAO sales ratio study performance
 
 ### Example Usage
 
-These functions can be used to calculate the COD, PRD, or PRB of a set of ratios. They can also be applied by group. 
+These functions can be used to calculate the COD, PRD, or PRB of a set of ratios. 
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(assessR)
 library(dplyr)
 
 data("ratios_sample")
 
-## For a single vector of ratios
 # Calculate COD
 cod_func(ratios_sample$ratios, bootstrap_n = 1000)
 
@@ -63,8 +62,11 @@ prb_func(
   bootstrap_n = 1000
 )
 
+```
 
-## Calculate each statistic by group
+They can also by applied by group. For example, to get each statistic by township.
+
+```{r, warning=FALSE}
 ratios_sample %>%
   group_by(town) %>%
   summarise(
@@ -73,7 +75,11 @@ ratios_sample %>%
     PRB = prb_func(ratios, sales, assessed_values, bootstrap_n = 1000)$PRB
   )
 
-## Some witchcraft to calculate every stat at once for each group
+```
+
+You can even use `dplyr` witchcraft to calculate every stat for every group at the same time.
+
+```{r}
 ratios_sample %>%
   group_by(town) %>%
   group_modify(~ {
