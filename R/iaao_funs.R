@@ -246,7 +246,7 @@ prd_func <- function(ratios,
 #' \dontrun{
 #' # With pre-existing vectors of ratios, AVs, and sales, stored in df
 #'
-#' prd_func(df$ratio_6, df$fitted_value_6, df$sales, trim = c(0.05, 0.95))
+#' prb_func(df$ratio_6, df$fitted_value_6, df$sales, trim = c(0.05, 0.95))
 #' }
 #'
 #' @family iaao_functions
