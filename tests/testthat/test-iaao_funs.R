@@ -50,7 +50,7 @@ test_that("functions return named list", {
   expect_named(prd_out)
 })
 
-test_that("output within in expected range", {
+test_that("output within expected range", {
   expect_gt(prd_out$PRD, 0.98)
   expect_lt(prd_out$PRD, 1.03)
 })
@@ -88,7 +88,7 @@ test_that("functions return named list", {
   expect_named(prb_out)
 })
 
-test_that("output within in expected range", {
+test_that("output within expected range", {
   expect_gt(prb_out$PRB, -0.03)
   expect_lt(prb_out$PRB, 0.03)
 })
