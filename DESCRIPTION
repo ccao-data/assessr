@@ -1,4 +1,4 @@
-Package: assessR
+Package: assessr
 Type: Package
 Title: Convenience Functions and Datasets for the Cook County Assessor's Office
 Version: 0.1.0

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# assessR
+# assessr
 
 A package to manage, distribute, and version control commonly-used
 CCAO assessment functions.
@@ -23,11 +23,11 @@ CCAO assessment functions.
 You can install the released version of assessR directly from GitLab by running the following R command after installing `remotes`:
 
 ```r
-remotes::install_gitlab(repo = "ccao-data-science---modeling/packages/assessR")
+remotes::install_gitlab(repo = "ccao-data-science---modeling/packages/assessr")
 ```
 
 Once it is installed, you can use it just like any other package. Simply
-call `library(assessR)` at the beginning of your script.
+call `library(assessr)` at the beginning of your script.
 
 ## IAAO Functions
 
@@ -38,7 +38,7 @@ This package contains functions to calculate [IAAO sales ratio study performance
 These functions can be used to calculate the COD, PRD, or PRB of a set of ratios. 
 
 ```{r, warning=FALSE, message=FALSE}
-library(assessR)
+library(assessr)
 library(dplyr)
 
 data("ratios_sample")

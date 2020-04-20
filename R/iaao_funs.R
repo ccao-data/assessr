@@ -24,7 +24,7 @@
 #'   in the calculation.
 #'
 #' @examples
-#' library(assessR)
+#' library(assessr)
 #'
 #' # Load the included dataset
 #' data("ratios_sample")
@@ -127,7 +127,7 @@ cod_func <- function(ratios,
 #' @param sales A vector of sales the same length as \code{ratios}.
 #'
 #' @examples
-#' library(assessR)
+#' library(assessr)
 #'
 #' # Load the included dataset
 #' data("ratios_sample")
@@ -232,7 +232,7 @@ prd_func <- function(ratios,
 #' @param assessed_values A vector AVs the same length as \code{ratios}.
 #'
 #' @examples
-#' library(assessR)
+#' library(assessr)
 #'
 #' # Load the included dataset
 #' data("ratios_sample")

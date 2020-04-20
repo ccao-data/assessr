@@ -43,7 +43,7 @@ Measure the COD of a vector of assessment ratios. Used by the CCAO to
 measure the uniformity of assessment models.
 }
 \examples{
-library(assessR)
+library(assessr)
 
 # Load the included dataset
 data("ratios_sample")

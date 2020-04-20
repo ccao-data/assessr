@@ -50,7 +50,7 @@ of assessment ratios and sales. Used by the CCAO to measure the
 vertical equity of assessment models.
 }
 \examples{
-library(assessR)
+library(assessr)
 
 # Load the included dataset
 data("ratios_sample")
