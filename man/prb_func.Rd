@@ -9,7 +9,6 @@ prb_func(
   sales,
   assessed_values,
   trim = c(0.05, 0.95),
-  bootstrap_n = 100,
   suppress = FALSE,
   na_rm = FALSE
 )
@@ -28,10 +27,6 @@ to prevent sales chasing.}
 values are set by CCAO Data Science Department SOPs. Do not alter
 them without permission.}
 
-\item{bootstrap_n}{The number of iterations to use to estimate the output
-statistic, standard error, and 95\% confidence interval.
-Setting to 0 or FALSE will not use bootstrapping.}
-
 \item{suppress}{Default FALSE. If TRUE, hide warning about not meeting the
 minimum number of observations to calculate a statistic accurately. The
 minimum value of observation for accurate statistics is 30, per CCAO SOPs.}
@@ -49,6 +44,11 @@ Measure the PRB of a vector of assessment ratios and corresponding vectors
 of assessment ratios and sales. Used by the CCAO to measure the
 vertical equity of assessment models.
 }
+\details{
+PRB is calculated using a regression method and has a closed-form solution
+for calculating standard errors. As a result, there is no need for 
+bootstrapping.
+}
 \examples{
 library(assessr)
 
@@ -59,8 +59,7 @@ prb_func(
   ratios_sample$ratios,
   ratios_sample$sales,
   ratios_sample$assessed_values,
-  trim = c(0.05, 0.95),
-  bootstrap_n = 100
+  trim = c(0.05, 0.95)
 )
 
 }

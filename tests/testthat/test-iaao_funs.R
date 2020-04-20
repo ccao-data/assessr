@@ -82,7 +82,7 @@ test_that("bootstrap iter changes output", {
 context("test prb_func()")
 
 # Create a vector of sales the same length as ratios
-prb_out <- prb_func(ratios, sales, assessed_values, bootstrap_n = 1000)
+prb_out <- prb_func(ratios, sales, assessed_values)
 
 test_that("functions return named list", {
   expect_named(prb_out)
@@ -120,19 +120,4 @@ test_that("incomplete data stops execution unless suppressed", {
     unname(prb_func(runif(29), runif(29), runif(29), suppress = TRUE)),
     c(NA, NA, NA, NA)
   )
-})
-
-test_that("bootstrap iter changes output", {
-  expect_type(prb_func(
-    ratios,
-    sales,
-    assessed_values,
-    bootstrap_n = FALSE)$PRB,
-  "double")
-  expect_type(prb_func(
-    ratios,
-    sales,
-    assessed_values,
-    bootstrap_n = FALSE)$PRB_SE,
-  "double")
 })

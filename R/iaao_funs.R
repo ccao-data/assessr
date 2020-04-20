@@ -227,6 +227,10 @@ prd_func <- function(ratios,
 #' Measure the PRB of a vector of assessment ratios and corresponding vectors
 #' of assessment ratios and sales. Used by the CCAO to measure the
 #' vertical equity of assessment models.
+#' 
+#' PRB is calculated using a regression method and has a closed-form solution
+#' for calculating standard errors. As a result, there is no need for 
+#' bootstrapping.
 #'
 #' @inherit prd_func
 #' @param assessed_values A vector AVs the same length as \code{ratios}.
@@ -241,8 +245,7 @@ prd_func <- function(ratios,
 #'   ratios_sample$ratios,
 #'   ratios_sample$sales,
 #'   ratios_sample$assessed_values,
-#'   trim = c(0.05, 0.95),
-#'   bootstrap_n = 100
+#'   trim = c(0.05, 0.95)
 #' )
 #'
 #' @family iaao_functions
@@ -251,7 +254,6 @@ prb_func <- function(ratios,
                      sales,
                      assessed_values,
                      trim = c(0.05, 0.95),
-                     bootstrap_n = 100,
                      suppress = FALSE,
                      na_rm = FALSE) {
 
@@ -291,68 +293,27 @@ prb_func <- function(ratios,
 
     x$log2 <- log(2)
 
-    # Run bootstrap interations to calulate stat, se and 95% CI
-    if (bootstrap_n == 0 | !bootstrap_n) {
+    # Generate PRB from regression model
+    generated_prbs <- stats::lm(
+      ((ratios - stats::median(ratios)) / stats::median(ratios)) ~
+      I(log(0.5 * (sales + assessed_values / stats::median(sales))) / log2),
+      data = x
+    )
 
-      # If no iterations, just run PRB formula once
-      generated_prbs <- stats::lm(
-        ((ratios - stats::median(ratios)) / stats::median(ratios)) ~
-        I(log(0.5 * (sales + assessed_values / stats::median(sales))) / log2),
-        data = x
-      )
+    # Output the coefficients of formula to a list
+    prb_output <- list(
+      round(stats::summary.lm(generated_prbs)$coefficients[2, 1], 4),
+      round(stats::summary.lm(generated_prbs)$coefficients[2, 2], 4),
+      paste0(
+        "(",
+        round(stats::confint(generated_prbs)[2, 1], 4),
+        ", ",
+        round(stats::confint(generated_prbs)[2, 2], 4),
+        ")"
+      ),
+      stats::nobs(generated_prbs)
+    )
 
-      # Output the coefficients of formula to a list
-      prb_output <- list(
-        round(stats::summary.lm(generated_prbs)$coefficients[2, 1], 4),
-        round(stats::summary.lm(generated_prbs)$coefficients[2, 2], 4),
-        paste0(
-          "(",
-          round(stats::confint(generated_prbs)[2, 1], 4),
-          ", ",
-          round(stats::confint(generated_prbs)[2, 2], 4),
-          ")"
-        ),
-        stats::nobs(generated_prbs)
-      )
-    } else {
-
-      # Generate a new model for each bootstrap subsample
-      temp_output <- vector("list", bootstrap_n)
-      for (i in seq_len(bootstrap_n)) {
-
-        # Sample dataframe of ratios, AVs, and sales with replacement
-        df <- x[sample.int(nrow(x), replace = TRUE), ]
-
-        # Generate a new model for each sample iteration
-        generated_prbs <- stats::lm(
-          ((ratios - stats::median(ratios)) / stats::median(ratios)) ~
-          I(log(0.5 * (sales + assessed_values / stats::median(sales))) /
-            log2),
-          data = df
-        )
-
-        # Create a temporary output to store values from each iteration
-        temp_output[[i]] <- list(
-          stats::summary.lm(generated_prbs)$coefficients[2, 1],
-          stats::summary.lm(generated_prbs)$coefficients[2, 2],
-          stats::confint(generated_prbs)[2, 1],
-          stats::confint(generated_prbs)[2, 2],
-          stats::nobs(generated_prbs)
-        )
-      }
-
-      # Convert the list of lists temp_output into a matrix
-      # For each column in the matrix, convert to numeric and take the mean
-      prb_output <- lapply(
-        seq_len(5),
-        function(i) round(mean(as.numeric(do.call(rbind, temp_output)[, i])), 4)
-      )
-
-      # Combine upper and lower CI into one number, shift N over
-      prb_output[3] <- paste0("(", prb_output[[3]], ", ", prb_output[[4]], ")")
-      prb_output[4] <- prb_output[[5]]
-      prb_output[5] <- NULL
-    }
   } else {
 
     # Output NA values if suppress = TRUE

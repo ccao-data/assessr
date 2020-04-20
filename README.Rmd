@@ -50,8 +50,7 @@ cod_func(ratios_sample$ratios, bootstrap_n = 1000)
 prb_func(
   ratios_sample$ratios,
   ratios_sample$assessed_values,
-  ratios_sample$sales,
-  bootstrap_n = 1000
+  ratios_sample$sales
 )
 
 ```
@@ -64,7 +63,7 @@ ratios_sample %>%
   summarise(
     COD = cod_func(ratios, bootstrap_n = 1000)$COD,
     PRD = prd_func(ratios, sales, bootstrap_n = 1000)$PRD,
-    PRB = prb_func(ratios, sales, assessed_values, bootstrap_n = 1000)$PRB
+    PRB = prb_func(ratios, sales, assessed_values)$PRB
   )
 
 ```
@@ -78,7 +77,7 @@ ratios_sample %>%
     bind_rows(
       cod_func(.x$ratios, bootstrap_n = 1000),
       prd_func(.x$ratios, .x$sales, bootstrap_n = 1000),
-      prb_func(.x$ratios, .x$sales, .x$assessed_values, bootstrap_n = 1000)
+      prb_func(.x$ratios, .x$sales, .x$assessed_values)
     )
   }) %>%
   summarise_each(list(~ first(.x[!is.na(.x)]))) 
