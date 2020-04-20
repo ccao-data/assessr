@@ -41,7 +41,7 @@ build:
     expire_in: 2 weeks
     when: on_success
     paths:
-      - assessR*.tar.gz
+      - assessr*.tar.gz
     
 test:
   stage: test

@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# assessR
+# assessr
 
 A package to manage, distribute, and version control commonly-used CCAO
 assessment functions.
@@ -12,11 +12,11 @@ You can install the released version of assessR directly from GitLab by
 running the following R command after installing `remotes`:
 
 ``` r
-remotes::install_gitlab(repo = "ccao-data-science---modeling/packages/assessR")
+remotes::install_gitlab(repo = "ccao-data-science---modeling/packages/assessr")
 ```
 
 Once it is installed, you can use it just like any other package. Simply
-call `library(assessR)` at the beginning of your script.
+call `library(assessr)` at the beginning of your script.
 
 ## IAAO Functions
 
@@ -32,7 +32,7 @@ These functions can be used to calculate the COD, PRD, or PRB of a set
 of ratios.
 
 ``` r
-library(assessR)
+library(assessr)
 library(dplyr)
 
 data("ratios_sample")
@@ -40,13 +40,13 @@ data("ratios_sample")
 # Calculate COD
 cod_func(ratios_sample$ratios, bootstrap_n = 1000)
 #> $COD
-#> [1] 12.1162
+#> [1] 12.1144
 #> 
 #> $COD_SE
-#> [1] 0.013
+#> [1] 0.0124
 #> 
 #> $COD_95CI
-#> [1] "(11.3602, 12.8721)"
+#> [1] "(11.3922, 12.8367)"
 #> 
 #> $COD_N
 #> [1] 881
@@ -59,13 +59,13 @@ prb_func(
   bootstrap_n = 1000
 )
 #> $PRB
-#> [1] 0.0166
+#> [1] 0.0164
 #> 
 #> $PRB_SE
 #> [1] 0.0051
 #> 
 #> $PRB_95CI
-#> [1] "(0.0066, 0.0265)"
+#> [1] "(0.0064, 0.0263)"
 #> 
 #> $PRB_N
 #> [1] 881
@@ -85,8 +85,8 @@ ratios_sample %>%
 #> # A tibble: 2 x 4
 #>   town        COD   PRD     PRB
 #>   <chr>     <dbl> <dbl>   <dbl>
-#> 1 Evanston   11.3  1.01 -0.019 
-#> 2 New Trier  12.7  1.03 -0.0372
+#> 1 Evanston   11.4  1.01 -0.0186
+#> 2 New Trier  12.8  1.03 -0.0369
 ```
 
 You can even use `dplyr` witchcraft to calculate every stat for every
@@ -106,7 +106,7 @@ ratios_sample %>%
 #> # A tibble: 2 x 13
 #>   town    COD COD_SE COD_95CI COD_N   PRD  PRD_SE PRD_95CI PRD_N     PRB PRB_SE
 #>   <chr> <dbl>  <dbl> <chr>    <int> <dbl>   <dbl> <chr>    <int>   <dbl>  <dbl>
-#> 1 Evan~  11.3 0.0259 (10.297~   421  1.01 3.00e-4 (1.0005~   421 -0.019  0.0078
-#> 2 New ~  12.7 0.0245 (11.693~   458  1.03 2.00e-4 (1.0189~   458 -0.0374 0.0085
+#> 1 Evan~  11.3 0.0263 (10.257~   421  1.01 3.00e-4 (1.0003~   421 -0.0188 0.0078
+#> 2 New ~  12.8 0.0253 (11.708~   458  1.03 2.00e-4 (1.0189~   458 -0.0374 0.0084
 #> # ... with 2 more variables: PRB_95CI <chr>, PRB_N <dbl>
 ```
