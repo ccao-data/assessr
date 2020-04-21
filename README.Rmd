@@ -86,11 +86,11 @@ ratios_sample %>%
 
 ```
 
-### Using Real Data
+## Using Real Data
 
 This package can easily be used with data from the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Assessments/uqb9-r7vn) to analyze assessment performance. To measure assessment performance, you will need to gather both sales and assessed values. These are stored in two separate datasets on the data portal.
 
-#### With RSocrata
+### With RSocrata
 
 [RSocrata](https://github.com/Chicago/RSocrata) is a package developed by the City of Chicago to wrap Socrata API requests. It allows you to easily pass a Socrata app token, which will remove the API limit on the number of rows returned. Example usage is shown below, replacing the login details with your own.
 
@@ -107,7 +107,7 @@ assessments <- read.socrata(
 )
 ```
 
-#### With jsonlite
+### With jsonlite
 
 Socrata can also return raw JSON if you manually construct a query URL. Follow the [API docs](https://dev.socrata.com/foundry/datacatalog.cookcountyil.gov/uqb9-r7vn) to alter your query. The raw JSON output can be read using the `read_json()` function from `jsonlite`.
 
@@ -130,7 +130,7 @@ sales <- read_json(
 
 ```
 
-#### Example Analysis
+### Example Analysis
 
 Using the collected assessment and sales data, we can perform a rudimentary analysis and measure the performance of each town ship at each stage of assessment. 
 
@@ -161,6 +161,7 @@ combined <- combined %>%
 combined %>%
   group_by(town_name, stage) %>%
   summarise(
+    N = n(),
     COD = cod_func(ratio, bootstrap_n = 1000, suppress = TRUE)$COD,
     PRD = prd_func(ratio, sale_price, bootstrap_n = 1000, suppress = TRUE)$PRD,
     PRB = prb_func(ratio, sale_price, av, suppress = TRUE)$PRB

@@ -41,13 +41,13 @@ data("ratios_sample")
 # Calculate COD
 cod_func(ratios_sample$ratios, bootstrap_n = 1000)
 #> $COD
-#> [1] 12.1038
+#> [1] 12.1146
 #> 
 #> $COD_SE
-#> [1] 0.0133
+#> [1] 0.0131
 #> 
 #> $COD_95CI
-#> [1] "(11.3286, 12.8789)"
+#> [1] "(11.3536, 12.8757)"
 #> 
 #> $COD_N
 #> [1] 881
@@ -85,8 +85,8 @@ ratios_sample %>%
 #> # A tibble: 2 x 4
 #>   town        COD   PRD     PRB
 #>   <chr>     <dbl> <dbl>   <dbl>
-#> 1 Evanston   11.3  1.01 -0.0186
-#> 2 New Trier  12.7  1.03 -0.0374
+#> 1 Evanston   11.4  1.01 -0.0186
+#> 2 New Trier  12.8  1.03 -0.0374
 ```
 
 You can even use `dplyr` witchcraft to calculate every stat for every
@@ -106,12 +106,12 @@ ratios_sample %>%
   kable(format = "markdown")
 ```
 
-| town      |     COD | COD\_SE | COD\_95CI          | COD\_N |    PRD | PRD\_SE | PRD\_95CI       | PRD\_N |      PRB | PRB\_SE | PRB\_95CI         | PRB\_N |
-| :-------- | ------: | ------: | :----------------- | -----: | -----: | ------: | :-------------- | -----: | -------: | ------: | :---------------- | -----: |
-| Evanston  | 11.3055 |  0.0266 | (10.2369, 12.374)  |    421 | 1.0110 |   3e-04 | (1, 1.0219)     |    421 | \-0.0186 |  0.0078 | (-0.034, -0.0033) |    421 |
-| New Trier | 12.7360 |  0.0245 | (11.7085, 13.7636) |    458 | 1.0292 |   2e-04 | (1.019, 1.0394) |    458 | \-0.0374 |  0.0084 | (-0.054, -0.0208) |    458 |
+| town      |     COD | COD\_SE | COD\_95CI          | COD\_N |    PRD | PRD\_SE | PRD\_95CI        | PRD\_N |      PRB | PRB\_SE | PRB\_95CI         | PRB\_N |
+| :-------- | ------: | ------: | :----------------- | -----: | -----: | ------: | :--------------- | -----: | -------: | ------: | :---------------- | -----: |
+| Evanston  | 11.3388 |  0.0277 | (10.2265, 12.4512) |    421 | 1.0108 |   3e-04 | (1.0004, 1.0212) |    421 | \-0.0186 |  0.0078 | (-0.034, -0.0033) |    421 |
+| New Trier | 12.7475 |  0.0259 | (11.6625, 13.8325) |    458 | 1.0292 |   2e-04 | (1.0187, 1.0397) |    458 | \-0.0374 |  0.0084 | (-0.054, -0.0208) |    458 |
 
-### Using Real Data
+## Using Real Data
 
 This package can easily be used with data from the [Cook County Open
 Data
@@ -120,7 +120,7 @@ to analyze assessment performance. To measure assessment performance,
 you will need to gather both sales and assessed values. These are stored
 in two separate datasets on the data portal.
 
-#### With RSocrata
+### With RSocrata
 
 [RSocrata](https://github.com/Chicago/RSocrata) is a package developed
 by the City of Chicago to wrap Socrata API requests. It allows you to
@@ -141,7 +141,7 @@ assessments <- read.socrata(
 )
 ```
 
-#### With jsonlite
+### With jsonlite
 
 Socrata can also return raw JSON if you manually construct a query URL.
 Follow the [API
@@ -166,7 +166,7 @@ sales <- read_json(
 )
 ```
 
-#### Example Analysis
+### Example Analysis
 
 Using the collected assessment and sales data, we can perform a
 rudimentary analysis and measure the performance of each town ship at
@@ -199,6 +199,7 @@ combined <- combined %>%
 combined %>%
   group_by(town_name, stage) %>%
   summarise(
+    N = n(),
     COD = cod_func(ratio, bootstrap_n = 1000, suppress = TRUE)$COD,
     PRD = prd_func(ratio, sale_price, bootstrap_n = 1000, suppress = TRUE)$PRD,
     PRB = prb_func(ratio, sale_price, av, suppress = TRUE)$PRB
@@ -212,32 +213,32 @@ combined %>%
   kable(format = "markdown")
 ```
 
-| town\_name  | stage       |     COD |    PRD |      PRB |
-| :---------- | :---------- | ------: | -----: | -------: |
-| BERWYN      | first\_pass | 22.8070 | 1.0940 | \-0.3380 |
-| BERWYN      | certified   | 22.5258 | 1.0915 | \-0.3385 |
-| BERWYN      | bor\_result | 22.6606 | 1.0942 | \-0.3385 |
-| CICERO      | first\_pass | 21.4922 | 1.0488 | \-0.8193 |
-| CICERO      | certified   | 21.5302 | 1.0492 | \-0.8213 |
-| CICERO      | bor\_result | 21.8677 | 1.0495 | \-0.8366 |
-| ELK GROVE   | first\_pass | 17.8553 | 1.0264 | \-0.0596 |
-| ELK GROVE   | certified   | 14.7336 | 1.0001 |   0.0099 |
-| ELK GROVE   | bor\_result | 14.1119 | 0.9986 |   0.0126 |
-| EVANSTON    | first\_pass | 14.3720 | 1.0015 | \-0.0212 |
-| EVANSTON    | certified   | 14.3465 | 1.0025 | \-0.0253 |
-| EVANSTON    | bor\_result | 14.1411 | 1.0094 | \-0.0381 |
-| LAKE VIEW   | first\_pass | 11.3017 | 1.0067 |   0.0024 |
-| LAKE VIEW   | certified   | 11.2818 | 1.0067 |   0.0022 |
-| LAKE VIEW   | bor\_result | 11.0640 | 1.0109 | \-0.0033 |
-| NEW TRIER   | first\_pass | 15.1357 | 0.9926 |   0.0129 |
-| NEW TRIER   | certified   | 16.4223 | 1.0064 | \-0.0062 |
-| NEW TRIER   | bor\_result | 11.2846 | 1.0092 | \-0.0181 |
-| OAK PARK    | first\_pass | 20.2481 | 1.0093 |   0.0216 |
-| OAK PARK    | certified   | 20.4585 | 1.0026 |   0.0486 |
-| OAK PARK    | bor\_result | 21.0742 | 1.0070 |   0.0348 |
-| PALOS       | first\_pass | 16.9004 | 0.9965 |   0.0289 |
-| PALOS       | certified   | 16.9131 | 0.9934 |   0.0489 |
-| PALOS       | bor\_result | 15.7549 | 0.9925 |   0.0482 |
-| ROGERS PARK | first\_pass | 16.1381 | 1.0503 | \-0.0644 |
-| ROGERS PARK | certified   | 16.1510 | 1.0534 | \-0.0663 |
-| ROGERS PARK | bor\_result | 16.2625 | 1.0549 | \-0.0682 |
+| town\_name  | stage       |   N |     COD |    PRD |      PRB |
+| :---------- | :---------- | --: | ------: | -----: | -------: |
+| BERWYN      | first\_pass |  41 | 22.7956 | 1.0921 | \-0.3380 |
+| BERWYN      | certified   |  41 | 22.3938 | 1.0944 | \-0.3385 |
+| BERWYN      | bor\_result |  41 | 22.4396 | 1.0944 | \-0.3385 |
+| CICERO      | first\_pass |  31 | 21.7809 | 1.0491 | \-0.8193 |
+| CICERO      | certified   |  31 | 21.6244 | 1.0494 | \-0.8213 |
+| CICERO      | bor\_result |  31 | 21.7351 | 1.0504 | \-0.8366 |
+| ELK GROVE   | first\_pass |  71 | 17.7603 | 1.0251 | \-0.0596 |
+| ELK GROVE   | certified   |  71 | 14.7332 | 1.0004 |   0.0099 |
+| ELK GROVE   | bor\_result |  71 | 14.0924 | 0.9982 |   0.0126 |
+| EVANSTON    | first\_pass |  53 | 14.3180 | 1.0009 | \-0.0212 |
+| EVANSTON    | certified   |  53 | 14.2568 | 1.0014 | \-0.0253 |
+| EVANSTON    | bor\_result |  53 | 14.2365 | 1.0119 | \-0.0381 |
+| LAKE VIEW   | first\_pass | 291 | 11.2755 | 1.0057 |   0.0024 |
+| LAKE VIEW   | certified   | 291 | 11.2303 | 1.0068 |   0.0022 |
+| LAKE VIEW   | bor\_result | 291 | 11.1028 | 1.0105 | \-0.0033 |
+| NEW TRIER   | first\_pass |  62 | 15.1146 | 0.9929 |   0.0129 |
+| NEW TRIER   | certified   |  62 | 16.3387 | 1.0049 | \-0.0062 |
+| NEW TRIER   | bor\_result |  62 | 11.3103 | 1.0089 | \-0.0181 |
+| OAK PARK    | first\_pass |  53 | 20.1580 | 1.0096 |   0.0216 |
+| OAK PARK    | certified   |  53 | 20.3975 | 1.0036 |   0.0486 |
+| OAK PARK    | bor\_result |  53 | 20.9096 | 1.0083 |   0.0348 |
+| PALOS       | first\_pass |  57 | 16.9389 | 0.9966 |   0.0289 |
+| PALOS       | certified   |  57 | 17.0662 | 0.9936 |   0.0489 |
+| PALOS       | bor\_result |  57 | 15.7626 | 0.9920 |   0.0482 |
+| ROGERS PARK | first\_pass |  59 | 16.1974 | 1.0502 | \-0.0644 |
+| ROGERS PARK | certified   |  59 | 16.2160 | 1.0532 | \-0.0663 |
+| ROGERS PARK | bor\_result |  59 | 16.2741 | 1.0550 | \-0.0682 |
