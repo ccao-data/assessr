@@ -24,9 +24,6 @@ test_that("bad input data stops execution", {
   expect_condition(cod_func(c(ratios, NA)))
   expect_condition(cod_func(c(ratios, NaN)))
   expect_condition(cod_func(c(ratios, "2")))
-  expect_condition(prd_func(c(ratios, NA), c(sales, 10e5)))
-  expect_condition(prd_func(c(ratios, NaN), c(sales, 10e5)))
-  expect_condition(prd_func(c(ratios, "2")))
 })
 
 test_that("incomplete data stops execution unless suppressed", {
