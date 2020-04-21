@@ -2,29 +2,27 @@
 % Please edit documentation in R/pin_funs.R
 \name{pin_clean}
 \alias{pin_clean}
-\title{Clean input parameter values}
+\title{Clean Property Index Numbers (PINs)}
 \usage{
-pin_clean(x)
+pin_clean(pin)
 }
 \arguments{
-\item{x}{A Property Index Number (PIN) containing unnecessary whitespace
-or separator characters}
+\item{pin}{A Property Index Number (PIN) or multiple PINs containing 
+unnecessary whitespace or separator characters}
 }
 \value{
-A clean PIN character vector with no whitespace or separators.
+A vector of clean PINs with no whitespace or separators.
 }
 \description{
-This function removes common separators, whitespace, and trailing characters
-from Property Index Numbers (PINs). It is specifically formatted for PINs,
-which are expected to be 10 or 14 digit numbers saved as characters (to 
-allow for leading zeros).
+Remove common separators, whitespace, and trailing characters
+from Property Index Numbers (PINs). This function is pecifically formatted
+for PINs, which are expected to be 10 or 14 digit numbers saved as 
+characters (PINs often have leading zeros).
 }
 \examples{
 
 pins <- c("04-34-106-008-0000", " 14172 27008 0000")
 
 pin_clean(pins)
-
-print(pins)
 
 }

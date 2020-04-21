@@ -49,7 +49,6 @@ library(assessr)
 data("ratios_sample")
 
 cod_func(ratios_sample$ratios, trim = c(0.05, 0.95), bootstrap_n = 100)
-
 }
 \seealso{
 Other assmnt_functions: 

@@ -43,7 +43,7 @@ cod_func <- function(ratios,
     # Check for ratios input
     is.vector(ratios), # Input is vector
     is.numeric(ratios), # Input is numeric
-    !(anyNA(ratios) && !na_rm), # No NAs when na_rm is FALSE
+    !(anyNA(ratios) & !na_rm), # No NAs when na_rm is FALSE
     !is.nan(ratios) # No NaNs in inputs
   )
 
@@ -148,13 +148,13 @@ prd_func <- function(ratios,
     # Check for ratios input
     is.vector(ratios), # Input is vector
     is.numeric(ratios), # Input is numeric
-    !(anyNA(ratios) && !na_rm), # No NAs when na_rm is FALSE
+    !(anyNA(ratios) & !na_rm), # No NAs when na_rm is FALSE
     !is.nan(ratios), # No NaNs in inputs
 
     # Checking for sales input
     is.vector(sales), # Input is vector
     is.numeric(sales), # Input is numeric
-    !(anyNA(sales) && !na_rm), # No NAs when na_rm is FALSE
+    !(anyNA(sales) & !na_rm), # No NAs when na_rm is FALSE
     !is.nan(sales), # No NaNs in inputs
 
     # All input checks
@@ -260,19 +260,19 @@ prb_func <- function(ratios,
     # Check for ratios input
     is.vector(ratios), # Input is vector
     is.numeric(ratios), # Input is numeric
-    !(anyNA(ratios) && !na_rm), # No NAs when na_rm is FALSE
+    !(anyNA(ratios) & !na_rm), # No NAs when na_rm is FALSE
     !is.nan(ratios), # No NaNs in inputs
 
     # Checking for sales input
     is.vector(sales), # Input is vector
     is.numeric(sales), # Input is numeric
-    !(anyNA(sales) && !na_rm), # No NAs when na_rm is FALSE
+    !(anyNA(sales) & !na_rm), # No NAs when na_rm is FALSE
     !is.nan(sales), # No NaNs in inputs
 
     # Checking for assessed_values input
     is.vector(assessed_values), # Input is vector
     is.numeric(assessed_values), # Input is numeric
-    !(anyNA(assessed_values) && !na_rm), # No NAs when na_rm is FALSE
+    !(anyNA(assessed_values) & !na_rm), # No NAs when na_rm is FALSE
     !is.nan(assessed_values), # No NaNs in inputs
 
     # All input checks

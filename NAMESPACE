@@ -2,5 +2,6 @@
 
 export(cod_func)
 export(pin_clean)
+export(pin_format_pretty)
 export(prb_func)
 export(prd_func)

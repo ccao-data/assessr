@@ -61,7 +61,6 @@ prb_func(
   ratios_sample$assessed_values,
   trim = c(0.05, 0.95)
 )
-
 }
 \seealso{
 Other assmnt_functions: 
