@@ -31,7 +31,7 @@
 #'
 #' cod_func(ratios_sample$ratios, trim = c(0.05, 0.95), bootstrap_n = 100)
 #'
-#' @family iaao_functions
+#' @family assmnt_functions
 #' @export
 cod_func <- function(ratios,
                      trim = c(0.05, 0.95),
@@ -139,7 +139,7 @@ cod_func <- function(ratios,
 #'   bootstrap_n = 100
 #' )
 #'
-#' @family iaao_functions
+#' @family assmnt_functions
 #' @export
 prd_func <- function(ratios,
                      sales,
@@ -227,9 +227,9 @@ prd_func <- function(ratios,
 #' Measure the PRB of a vector of assessment ratios and corresponding vectors
 #' of assessment ratios and sales. Used by the CCAO to measure the
 #' vertical equity of assessment models.
-#' 
+#'
 #' PRB is calculated using a regression method and has a closed-form solution
-#' for calculating standard errors. As a result, there is no need for 
+#' for calculating standard errors. As a result, there is no need for
 #' bootstrapping.
 #'
 #' @inherit prd_func
@@ -248,7 +248,7 @@ prd_func <- function(ratios,
 #'   trim = c(0.05, 0.95)
 #' )
 #'
-#' @family iaao_functions
+#' @family assmnt_functions
 #' @export
 prb_func <- function(ratios,
                      sales,

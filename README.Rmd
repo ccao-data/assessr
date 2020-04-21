@@ -23,15 +23,15 @@ CCAO assessment functions.
 You can install the released version of assessR directly from GitLab by running the following R command after installing `remotes`:
 
 ```r
-remotes::install_gitlab(repo = "ccao-data-science---modeling/packages/assessr")
+remotes::install_git("https://gitlab.com/ccao-data-science---modeling/packages/assessr")
 ```
 
 Once it is installed, you can use it just like any other package. Simply
 call `library(assessr)` at the beginning of your script.
 
-## IAAO Functions
+## Assessment Functions
 
-This package contains functions to calculate [IAAO sales ratio study performance statistics](https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf). The settings of these functions are governed by CCAO Data Science Department SOPs. Do not change them without asking.
+This package contains functions to calculate [sales ratio study performance statistics](https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf). The settings of these functions are governed by CCAO Data Science Department SOPs. Do not change them without asking.
 
 ### Example Usage
 
