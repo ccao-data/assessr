@@ -30,7 +30,6 @@
 #' data("ratios_sample")
 #'
 #' cod_func(ratios_sample$ratios, trim = c(0.05, 0.95), bootstrap_n = 100)
-#'
 #' @family assmnt_functions
 #' @export
 cod_func <- function(ratios,
@@ -39,22 +38,17 @@ cod_func <- function(ratios,
                      suppress = FALSE,
                      na_rm = FALSE) {
 
-  # Throw an error if missing or malformed ratio values
-  if (!is.vector(ratios)) {
-    stop("The ratios input is not a vector")
-  } else if (anyNA(ratios) && !na_rm) {
-    stop(
-      "The ratios vector contains missing values.
-      Remove them manually or set na_rm = TRUE."
-    )
-  } else if (any(is.nan(ratios))) {
-    stop("The ratios vector contains NaN values.")
-  } else if (any(!is.numeric(ratios))) {
-    stop("The ratios vector contains non-numeric values.")
-  } else {
-    # Remove missing values
-    ratios <- subset(ratios, !is.na(ratios))
-  }
+  # Input checking and error handling
+  stopifnot(
+    # Check for ratios input
+    is.vector(ratios), # Input is vector
+    is.numeric(ratios), # Input is numeric
+    !(anyNA(ratios) && !na_rm), # No NAs when na_rm is FALSE
+    !is.nan(ratios) # No NaNs in inputs
+  )
+
+  # Subset ratios by removing NAs (assumes na_rm = TRUE, otherwise will fail)
+  ratios <- subset(ratios, !is.na(ratios))
 
   # Create the 5th and 95th percentile trimming boundaries. All values outside
   # of these will be dropped, per CCAO SOPs
@@ -140,7 +134,6 @@ cod_func <- function(ratios,
 #'   trim = c(0.05, 0.95),
 #'   bootstrap_n = 100
 #' )
-#'
 #' @family assmnt_functions
 #' @export
 prd_func <- function(ratios,
@@ -150,24 +143,26 @@ prd_func <- function(ratios,
                      suppress = FALSE,
                      na_rm = FALSE) {
 
-  # Throw an error if missing or malformed ratio or sales values
-  if (!is.vector(ratios) | !is.vector(sales)) {
-    stop("One of the inputs is not a vector")
-  } else if ((anyNA(ratios) | anyNA(sales)) && !na_rm) {
-    stop(
-      "The ratios or sales vector contains missing values.
-      Remove them manually or set na_rm = TRUE."
-    )
-  } else if (any(is.nan(ratios)) | any(is.nan(sales))) {
-    stop("The ratios or sales vector contains NaN values.")
-  } else if (any(!is.numeric(ratios)) | any(!is.numeric(sales))) {
-    stop("The ratios or sales vector contains non-numeric values.")
-  } else if (length(ratios) != length(sales)) {
-    stop("The ratios and sales vectors are not the same length.")
-  } else {
-    # Bind vectors and remove missing values
-    x <- stats::na.omit(data.frame(cbind(ratios, sales)))
-  }
+  # Input checking and error handling
+  stopifnot(
+    # Check for ratios input
+    is.vector(ratios), # Input is vector
+    is.numeric(ratios), # Input is numeric
+    !(anyNA(ratios) && !na_rm), # No NAs when na_rm is FALSE
+    !is.nan(ratios), # No NaNs in inputs
+
+    # Checking for sales input
+    is.vector(sales), # Input is vector
+    is.numeric(sales), # Input is numeric
+    !(anyNA(sales) && !na_rm), # No NAs when na_rm is FALSE
+    !is.nan(sales), # No NaNs in inputs
+
+    # All input checks
+    length(ratios) == length(sales) # Input vectors equal length
+  )
+
+  # Subset inputs by removing NAs (assumes na_rm = TRUE, otherwise will fail)
+  x <- stats::na.omit(data.frame(cbind(ratios, sales)))
 
   # Create the 5th and 95th percentile trimming boundaries. All values outside
   # of these will be dropped, per CCAO SOPs
@@ -251,7 +246,6 @@ prd_func <- function(ratios,
 #'   ratios_sample$assessed_values,
 #'   trim = c(0.05, 0.95)
 #' )
-#'
 #' @family assmnt_functions
 #' @export
 prb_func <- function(ratios,
@@ -261,29 +255,33 @@ prb_func <- function(ratios,
                      suppress = FALSE,
                      na_rm = FALSE) {
 
-  # Throw an error if missing or malformed inputs
-  if (!is.vector(ratios) | !is.vector(sales)) {
-    stop("One of the inputs is not a vector")
-  } else if ((anyNA(ratios) |
-    anyNA(assessed_values) |
-    anyNA(sales)) && !na_rm) {
-    stop(
-      "At least one input vector contains missing values.
-      Remove them manually or set na_rm = TRUE."
-    )
-  } else if (any(is.nan(ratios)) |
-    any(is.nan(assessed_values)) |
-    any(is.nan(sales))) {
-    stop("At least one input vector contains NaN values.")
-  } else if (any(!is.numeric(ratios)) | any(!is.numeric(sales))) {
-    stop("At least one input vector contains contains non-numeric values.")
-  } else if ((length(ratios) != length(sales)) |
-    (length(ratios) != length(assessed_values))) {
-    stop("The input vectors are not the same length.")
-  } else {
-    # Bind vectors and remove missing values
-    x <- stats::na.omit(data.frame(cbind(ratios, assessed_values, sales)))
-  }
+  # Input checking and error handling
+  stopifnot(
+    # Check for ratios input
+    is.vector(ratios), # Input is vector
+    is.numeric(ratios), # Input is numeric
+    !(anyNA(ratios) && !na_rm), # No NAs when na_rm is FALSE
+    !is.nan(ratios), # No NaNs in inputs
+
+    # Checking for sales input
+    is.vector(sales), # Input is vector
+    is.numeric(sales), # Input is numeric
+    !(anyNA(sales) && !na_rm), # No NAs when na_rm is FALSE
+    !is.nan(sales), # No NaNs in inputs
+
+    # Checking for assessed_values input
+    is.vector(assessed_values), # Input is vector
+    is.numeric(assessed_values), # Input is numeric
+    !(anyNA(assessed_values) && !na_rm), # No NAs when na_rm is FALSE
+    !is.nan(assessed_values), # No NaNs in inputs
+
+    # All input checks
+    length(ratios) == length(sales), # Input vectors equal length
+    length(ratios) == length(assessed_values) # Input vectors equal length
+  )
+
+  # Subset inputs by removing NAs (assumes na_rm = TRUE, otherwise will fail)
+  x <- stats::na.omit(data.frame(cbind(ratios, assessed_values, sales)))
 
   # Create the 5th and 95th percentile trimming boundaries. All values outside
   # of these will be dropped, per CCAO SOPs
@@ -321,7 +319,6 @@ prb_func <- function(ratios,
       ),
       stats::nobs(generated_prbs)
     )
-
   } else {
 
     # Output NA values if suppress = TRUE

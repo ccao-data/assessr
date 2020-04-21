@@ -112,18 +112,18 @@ test_that("bad input data stops execution", {
   expect_condition(prb_func(
     c(ratios, NA),
     c(sales, 10e5),
-    c(assessed_values, 10e5))
-  )
+    c(assessed_values, 10e5)
+  ))
   expect_condition(prb_func(
     c(ratios, NA),
     c(sales, 10e5),
-    c(assessed_values, 10e5))
-  )
+    c(assessed_values, 10e5)
+  ))
   expect_condition(prb_func(
     c(ratios, NA),
     c(sales, 10e5),
-    c(assessed_values, 10e5))
-  )
+    c(assessed_values, 10e5)
+  ))
   expect_condition(prb_func(ratios))
   expect_condition(prb_func(ratios, c(sales, NA), assessed_values))
   expect_condition(prb_func(ratios, c(sales, 10000), assessed_values))
