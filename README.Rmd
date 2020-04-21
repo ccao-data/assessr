@@ -22,7 +22,7 @@ CCAO assessment functions.
 
 You can install the released version of assessR directly from GitLab by running the following R command after installing `remotes`:
 
-```r
+```{r, eval=FALSE}
 remotes::install_git("https://gitlab.com/ccao-data-science---modeling/packages/assessr")
 ```
 

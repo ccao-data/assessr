@@ -12,15 +12,15 @@ You can install the released version of assessR directly from GitLab by
 running the following R command after installing `remotes`:
 
 ``` r
-remotes::install_gitlab(repo = "ccao-data-science---modeling/packages/assessr")
+remotes::install_git("https://gitlab.com/ccao-data-science---modeling/packages/assessr")
 ```
 
 Once it is installed, you can use it just like any other package. Simply
 call `library(assessr)` at the beginning of your script.
 
-## IAAO Functions
+## Assessment Functions
 
-This package contains functions to calculate [IAAO sales ratio study
+This package contains functions to calculate [sales ratio study
 performance
 statistics](https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf).
 The settings of these functions are governed by CCAO Data Science
@@ -40,13 +40,13 @@ data("ratios_sample")
 # Calculate COD
 cod_func(ratios_sample$ratios, bootstrap_n = 1000)
 #> $COD
-#> [1] 12.1172
+#> [1] 12.0857
 #> 
 #> $COD_SE
-#> [1] 0.0131
+#> [1] 0.0134
 #> 
 #> $COD_95CI
-#> [1] "(11.3555, 12.8788)"
+#> [1] "(11.3072, 12.8643)"
 #> 
 #> $COD_N
 #> [1] 881
@@ -105,7 +105,7 @@ ratios_sample %>%
 #> # A tibble: 2 x 13
 #>   town    COD COD_SE COD_95CI COD_N   PRD  PRD_SE PRD_95CI PRD_N     PRB PRB_SE
 #>   <chr> <dbl>  <dbl> <chr>    <int> <dbl>   <dbl> <chr>    <int>   <dbl>  <dbl>
-#> 1 Evan~  11.4 0.027  (10.283~   421  1.01 3.00e-4 (1.0002~   421 -0.0186 0.0078
-#> 2 New ~  12.8 0.0262 (11.679~   458  1.03 2.00e-4 (1.0183~   458 -0.0374 0.0084
+#> 1 Evan~  11.4 0.0266 (10.284~   421  1.01 3.00e-4 (1.0004~   421 -0.0186 0.0078
+#> 2 New ~  12.8 0.0243 (11.743~   458  1.03 2.00e-4 (1.0191~   458 -0.0374 0.0084
 #> # ... with 2 more variables: PRB_95CI <chr>, PRB_N <int>
 ```
