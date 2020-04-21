@@ -11,7 +11,7 @@ pin_format_pretty(pin, full_length = FALSE)
 10 or 14 digits long.}
 
 \item{full_length}{Default FALSE. When TRUE, 14-digit PINs remain 14 digits
-and 10-digit PINs remain 10 digits. When FALSE, all PINs are coerced to 
+and 10-digit PINs remain 10 digits. When FALSE, all PINs are coerced to
 10 digits.}
 }
 \value{
@@ -28,5 +28,4 @@ Preserve input PIN length.
 pins <- c("04341060080000", "01222040030000")
 
 pin_format_pretty(pins)
-
 }

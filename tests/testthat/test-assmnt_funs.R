@@ -9,7 +9,7 @@ sales <- ratios_sample$sales
 assessed_values <- ratios_sample$assessed_values
 
 
-##### TEST COD #####
+##### TEST cod_func() #####
 
 context("test cod_func()")
 
@@ -48,7 +48,7 @@ test_that("bootstrap iter changes output", {
 })
 
 
-##### TEST PRD #####
+##### TEST prd_func() #####
 
 context("test prd_func()")
 
@@ -90,7 +90,7 @@ test_that("bootstrap iter changes output", {
 })
 
 
-##### TEST PRB #####
+##### TEST prb_func() #####
 
 context("test prb_func()")
 

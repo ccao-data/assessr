@@ -1,5 +1,7 @@
 context("test pin_clean()")
 
+##### TEST pin_clean() #####
+
 # Create vector of sample pins
 pins <- c("04-34-106-008-0000", " 14172 27008 0000", "433334-- 4232")
 
@@ -18,12 +20,14 @@ test_that("incorrect inputs throw warning", {
 })
 
 
+##### TEST pin_format_pretty() #####
+
 context("test pin_format_pretty()")
 
 # Create a vector of clean PINs with no dashes
 pins <- c("04341060080001", "01222040030030", "1417227008")
 
-test_that("pretty printed output is corret", {
+test_that("pretty printed output is correct", {
   expect_equal(
     pin_format_pretty(pins, full_length = TRUE),
     c("04-34-106-008-0001", "01-22-204-003-0030", "14-17-227-008")
