@@ -46,7 +46,7 @@ vertical equity of assessment models.
 }
 \details{
 PRB is calculated using a regression method and has a closed-form solution
-for calculating standard errors. As a result, there is no need for 
+for calculating standard errors. As a result, there is no need for
 bootstrapping.
 }
 \examples{

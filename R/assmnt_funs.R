@@ -40,7 +40,9 @@ cod_func <- function(ratios,
                      na_rm = FALSE) {
 
   # Throw an error if missing or malformed ratio values
-  if (anyNA(ratios) && !na_rm) {
+  if (!is.vector(ratios)) {
+    stop("The ratios input is not a vector")
+  } else if (anyNA(ratios) && !na_rm) {
     stop(
       "The ratios vector contains missing values.
       Remove them manually or set na_rm = TRUE."
@@ -105,7 +107,7 @@ cod_func <- function(ratios,
   } else {
 
     # Output NA values if suppress = TRUE
-    cod_output <- c(NA, NA, NA, NA)
+    cod_output <- list(NA, NA, NA, NA)
 
     if (!suppress) {
       stop("Less than 30 observations, too few for reliable sale ratio stats")
@@ -149,7 +151,9 @@ prd_func <- function(ratios,
                      na_rm = FALSE) {
 
   # Throw an error if missing or malformed ratio or sales values
-  if ((anyNA(ratios) | anyNA(sales)) && !na_rm) {
+  if (!is.vector(ratios) | !is.vector(sales)) {
+    stop("One of the inputs is not a vector")
+  } else if ((anyNA(ratios) | anyNA(sales)) && !na_rm) {
     stop(
       "The ratios or sales vector contains missing values.
       Remove them manually or set na_rm = TRUE."
@@ -210,7 +214,7 @@ prd_func <- function(ratios,
   } else {
 
     # Output NA values if suppress = TRUE
-    prd_output <- c(NA, NA, NA, NA)
+    prd_output <- list(NA, NA, NA, NA)
 
     if (!suppress) {
       stop("Less than 30 observations, too few for sale reliable ratio stats")
@@ -258,7 +262,11 @@ prb_func <- function(ratios,
                      na_rm = FALSE) {
 
   # Throw an error if missing or malformed inputs
-  if ((anyNA(ratios) | anyNA(assessed_values) | anyNA(sales)) && !na_rm) {
+  if (!is.vector(ratios) | !is.vector(sales)) {
+    stop("One of the inputs is not a vector")
+  } else if ((anyNA(ratios) |
+    anyNA(assessed_values) |
+    anyNA(sales)) && !na_rm) {
     stop(
       "At least one input vector contains missing values.
       Remove them manually or set na_rm = TRUE."
@@ -317,7 +325,7 @@ prb_func <- function(ratios,
   } else {
 
     # Output NA values if suppress = TRUE
-    prb_output <- c(NA, NA, NA, NA)
+    prb_output <- list(NA, NA, NA, NA)
 
     if (!suppress) {
       stop("Less than 30 observations, too few for sale reliable ratio stats")
