@@ -71,33 +71,22 @@ build:
     when: on_success
     paths:
       - ${CI_PROJECT_NAME}*.tar.gz
- 
-# Run R's built in package checking function on the tarball generated in build
+      
+# Test stage composed of 3 steps: 
+# 1) Run R's built in package checking function on the tarball generated in build
 # This test for completion of documentation, code errors, and many other things
-test_check:
+# 2) Run the unit tests defined in the tests/ folder. Outputs a report in the Junit
+# format that can be read by GitLab CI to display test results
+# 3) Test coverage report that is output to the build logs of each pipeline
+# This output gets scraped by GitLab and turned into a coverage badge
+test:
   stage: test
   only:
     - master
   script:
     - R CMD check $(ls -1t *.tar.gz | head -n 1) --no-manual --no-build-vignettes --no-tests
- 
-# Run the unit tests defined in the tests/ folder. Outputs a report in the Junit
-# format that can be read by GitLab CI to display test results
-test_units:
-  stage: test
-  only:
-    - master
-  script:
     - Rscript -e 'devtools::test(reporter = testthat::JunitReporter$new(file = "test-out.xml"))'
+    - Rscript -e 'covr::package_coverage()' 
   artifacts:
     reports:
       junit: test-out.xml
-
-# Test coverage report that is output to the build logs of each pipeline
-# This output gets scraped by GitLab and turned into a coverage badge
-test_coverage:
-  stage: test
-  only:
-    - master
-  script:
-    - Rscript -e 'covr::package_coverage()' 
