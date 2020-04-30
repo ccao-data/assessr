@@ -1,15 +1,14 @@
 Package: assessr
 Type: Package
-Title: Convenience Functions and Datasets for the Cook County Assessor's Office
+Title: Measure Property Assessment Performance
 Version: 0.1.0
 Authors@R: c(
     person(given = "Dan", family = "Snow", email="dsnow@cookcountyassessor.com", role=c("aut", "cre"))
     )
-Date: 2020-04-17
-Description: A set of functions used widely through the Cook County Assessor's
-    valuation pipeline. The intention is to standardize the usage of critical
-    functions across all users and script by having them all depend on a single
-    package.
+Date: 2020-04-29
+Description: An R package to measure the performance of property assessments
+    using IAAO standard statistics. Also includes a host of utility functions
+    to make common assessment and evaluation tasks easier and more consistent.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

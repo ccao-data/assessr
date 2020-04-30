@@ -3,16 +3,15 @@
 \docType{data}
 \name{ratios_sample}
 \alias{ratios_sample}
-\title{Sample of ratio and sales data used by the CCAO to evaluate assessment
-performance.}
+\title{Sample of ratio and sales data pulled from CCAO records.}
 \format{
-A data frame with 2979 observation and 4 variables:
+A data frame with 979 observation and 4 variables:
 \describe{
-  \item{ratios}{Sales ratio representing assessed value / sale price}
-  \item{sales}{The recorded sale price of this property}
+  \item{fmv}{The fair market assessed value predicted by CCAO assessment
+    models, including any successful appeals}
+  \item{sale_price}{The recorded sale price of this property}
+  \item{ratio}{Sales ratio representing fair market value / sale price}
   \item{town}{Township name the property is in}
-  \item{assessed_values}{The value predicted by CCAO assessment models,
-  including any appeals have been applied}
 }
 }
 \usage{
@@ -20,6 +19,6 @@ ratios_sample
 }
 \description{
 This sample was take from Evanston and New Trier in 2019. Ratios are
-calculated using assessor certified (post-appeal) values.
+calculated using assessor certified (post-appeal) fair market values.
 }
 \keyword{datasets}
