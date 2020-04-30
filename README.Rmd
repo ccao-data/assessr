@@ -47,17 +47,11 @@ ratios_sample %>%
   summarize(
     cod = cod(ratio),
     prd = prd(assessed, sale_price),
-    prb = prb(assessed, sale_price)
+    prb = prb(assessed, sale_price),
+    prb_ci = paste(round(prb_ci(assessed, sale_price), 3), collapse = ", ")
   ) %>%
   kable(format = "markdown")
 
 ```
 
-To add:
-- Coefficient of variation
-- Outlier detection
-- Bootstrap confidence intervals
-- sales chasing detection
-- trimming functions
-- sample size verification
-- sales chasing prevention
+

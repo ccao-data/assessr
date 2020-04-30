@@ -8,8 +8,9 @@ ratios <- ratios_sample$ratio
 sale_prices <- ratios_sample$sale_price
 assessed_vals <- ratios_sample$assessed
 
-##### TEST cod() #####
 
+
+##### TEST COD #####
 context("test cod function")
 
 # Calculate COD
@@ -40,8 +41,8 @@ test_that("incomplete data returns NAs unless removed", {
 })
 
 
-##### TEST prd() #####
 
+##### TEST PRD #####
 context("test prd function")
 
 # Calculate PRD
@@ -80,8 +81,8 @@ test_that("incomplete data returns NAs unless removed", {
 })
 
 
-##### TEST prb() #####
 
+##### TEST PRB #####
 context("test prb function")
 
 # Calculate PRB
@@ -117,4 +118,30 @@ test_that("incomplete data returns NAs unless removed", {
     0.0024757,
     tolerance = 0.02
   )
+})
+
+context("test prb_ci function")
+
+# Calculate PRB CI
+prb_ci_out <- prb_ci(assessed_vals, sale_prices)
+
+test_that("returns expected type", {
+  expect_type(prb_ci_out, "double")
+  expect_vector(prb_ci_out)
+  expect_named(prb_ci_out)
+})
+
+test_that("output equal to expected", {
+  expect_equivalent(prb_ci_out, c(-0.01404379, 0.01899536), tolerance = 0.02)
+})
+
+test_that("bad input data stops execution", {
+  expect_error(prb_ci(numeric(0)))
+  expect_error(prb_ci(numeric(10), numeric(10)))
+  expect_error(prb_ci(c(prb_out, Inf), c(prb_out, 0)))
+  expect_error(prb_ci(assessed_vals, c(sale_prices, 10e5)))
+  expect_error(prb_ci(data.frame(assessed_vals), sale_prices))
+  expect_error(prb_ci(c(assessed_vals, NaN), c(sale_prices, 1)))
+  expect_error(prb_ci(c(assessed_vals, "2"), c(sale_prices, 1)))
+  expect_error(prb_ci(assessed_vals, sale_prices, na.rm = "yes"))
 })

@@ -38,16 +38,13 @@ ratios_sample %>%
   summarize(
     cod = cod(ratio),
     prd = prd(assessed, sale_price),
-    prb = prb(assessed, sale_price)
+    prb = prb(assessed, sale_price),
+    prb_ci = paste(round(prb_ci(assessed, sale_price), 3), collapse = ", ")
   ) %>%
   kable(format = "markdown")
 ```
 
-| town      |      cod |      prd |         prb |
-| :-------- | -------: | -------: | ----------: |
-| Evanston  | 16.39764 | 1.032886 |   0.0109755 |
-| New Trier | 19.14975 | 1.066341 | \-0.0328672 |
-
-To add: - Coefficient of variation - Outlier detection - Bootstrap
-confidence intervals - sales chasing detection - trimming functions -
-sample size verification - sales chasing prevention
+| town      |      cod |      prd |         prb | prb\_ci         |
+| :-------- | -------: | -------: | ----------: | :-------------- |
+| Evanston  | 16.39764 | 1.032886 |   0.0109755 | \-0.012, 0.034  |
+| New Trier | 19.14975 | 1.066341 | \-0.0328672 | \-0.063, -0.003 |
