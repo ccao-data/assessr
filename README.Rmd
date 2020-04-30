@@ -20,7 +20,7 @@ Also includes a host of utility functions to make common assessment and evaluati
 
 ## Installation
 
-You can install the released version of assessR directly from GitLab by running the following R command after installing `remotes`:
+You can install the released version of assessR directly from GitLab by running the following R command after installing the `remotes` package:
 
 ```{r, eval=FALSE}
 remotes::install_git("https://gitlab.com/ccao-data-science---modeling/packages/assessr")
@@ -29,3 +29,35 @@ remotes::install_git("https://gitlab.com/ccao-data-science---modeling/packages/a
 Once it is installed, you can use it just like any other package. Simply
 call `library(assessr)` at the beginning of your script.
 
+## Example Calculations
+
+Using the included `ratios_sample` dataset, `cod()`, `prd()`, and `prb()` can be used to measure the performance of an assessment.
+
+```{r, message=FALSE}
+library(dplyr)
+library(assessr)
+library(knitr)
+
+# Load the sample dataset
+data("ratios_sample")
+
+# Calculate peformance statistics by township
+ratios_sample %>%
+  group_by(town) %>%
+  summarize(
+    cod = cod(ratio),
+    prd = prd(assessed, sale_price),
+    prb = prb(assessed, sale_price)
+  ) %>%
+  kable(format = "markdown")
+
+```
+
+To add:
+- Coefficient of variation
+- Outlier detection
+- Bootstrap confidence intervals
+- sales chasing detection
+- trimming functions
+- sample size verification
+- sales chasing prevention

@@ -1,24 +1,63 @@
+# Input checking and error handling
+# Checks the listed conditions for all inputs
+check_inputs <- function(...) {
+  err <- lapply(list(...), function(x) {
+    stopifnot(
+      is.vector(x),
+      is.numeric(x),
+      !is.nan(x),
+      length(x) > 1,
+      all(is.finite(x) | is.na(x)), # All values are finite OR are NA
+      all(x != 0 | is.na(x)) # All values are not zero OR are NA
+    )
+  })
+}
+
+
+# Calculate PRB and return model object
+calc_prd <- function(assessed, sale_price) {
+
+  # Calculate ratio of assessed values to sale price
+  ratio <- assessed / sale_price
+
+  # Calculate median ratio
+  med_ratio <- stats::median(ratio)
+
+  # Generate left-hand side of PRB regression
+  lhs <- (ratio - med_ratio) / med_ratio # nolint
+
+  # Generate right-hand side of PRB regression
+  rhs <- log(((assessed / med_ratio) + sale_price) * 0.5) / log(2) # nolint
+
+  # Calculate PRB and create model object
+  prb_model <- stats::lm(formula = lhs ~ rhs)
+
+  return(prb_model)
+}
+
+
 # nolint start
 
 #' Calculate Coefficient of Dispersion (COD)
 #'
 #' @description COD is the average absolute percent deviation from the
-#'   median ratio. It is a measure of horizontal equity, meaning that
-#'   properties with a similar fair market value should be similarly assessed.
+#'   median ratio. It is a measure of horizontal equity in assessment.
+#'   Horizontal equity means properties with a similar fair market value
+#'   should be similarly assessed.
 #'
 #'   Lower COD indicates higher uniformity/horizontal equity in assessment.
 #'   The IAAO sets uniformity standards that define generally accepted ranges
 #'   for COD depending on property class. See
 #'   \href{https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf}{IAAO Standard on Ratio Studies}
-#'   Page 17, Table 1.3 for a full list of standard COD ranges.
+#'   Section 9.1, Table 1.3 for a full list of standard COD ranges.
 #'
-#'   NOTE: The IAAO recommends trimming the input vector before calculating COD,
+#'   NOTE: The IAAO recommends trimming outlier ratios before calculating COD,
 #'   as it is extremely sensitive to large outliers. The typical method used is
 #'   dropping values beyond 3 * IQR (inner-quartile range). See
 #'   \href{https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf}{IAAO Standard on Ratio Studies}
 #'   Appendix B.1.
 #'
-#' @param ratios A numeric vector of ratios centered around 1, where the
+#' @param ratio A numeric vector of ratios centered around 1, where the
 #'   numerator of the ratio is the estimated fair market value and the
 #'   denominator is the actual sale price.
 #' @param na.rm Default FALSE. A boolean value indicating whether or not to
@@ -31,29 +70,150 @@
 #'
 #' # Load the included dataset
 #' data("ratios_sample")
+#'
+#' # Calculate COD
 #' cod(ratios_sample$ratio)
 #' @family formulas
 #' @export
-cod <- function(ratios, na.rm = FALSE) {
+cod <- function(ratio, na.rm = FALSE) {
   # nolint end
 
   # Input checking and error handling
-  stopifnot(
-    length(ratios) > 1, # length of input gt 1
-    is.vector(ratios), # Input is vector
-    is.numeric(ratios), # Input is numeric
-    !is.nan(ratios), # No NaNs in input
-    is.logical(na.rm) # Must be logical
-  )
+  check_inputs(ratio)
+  stopifnot(is.logical(na.rm))
 
   # Remove NAs if na.rm = TRUE
-  if (na.rm) ratios <- stats::na.omit(ratios)
+  if (na.rm) ratio <- stats::na.omit(ratio)
 
   # Calculate median ratio
-  med <- stats::median(ratios)
+  med_ratio <- stats::median(ratio)
 
   # Calculate COD
-  cod <- (mean(abs(ratios - med)) / med) * 100
+  cod <- (mean(abs(ratio - med_ratio)) / med_ratio) * 100
 
   return(cod)
+}
+
+
+# nolint start
+
+#' Calculate Price-Related Differential (PRD)
+#'
+#' @description PRD is the mean ratio divided by the mean ratio weighted by sale
+#'   price. It is a measure of vertical equity in assessment. Vertical equity
+#'   means that properties at different levels of the income distribution
+#'   should be similarly assessed.
+#'
+#'   PRD centers slightly above 1 and has a generally accepted value of between
+#'   0.98 and 1.03, as defined in the
+#'   \href{https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf}{IAAO Standard on Ratio Studies}
+#'   Section 9.2.7. Higher PRD values indicate regressivity in assessment.
+#'
+#'   NOTE: The IAAO recommends trimming outlier ratios before calculating PRD,
+#'   as it is extremely sensitive to large outliers. PRD is being deprecated in
+#'   favor of PRB, which is less sensitive to outliers and easier to interpret.
+#'
+#' @param assessed A numeric vector of assessed values. Must be the same
+#'   length as \code{sale_price}.
+#' @param sale_price A numeric vector of sale prices. Must be the same length
+#'   as \code{assessed}.
+#' @param na.rm Default FALSE. A boolean value indicating whether or not to
+#'   remove NA values. If missing values are present but not removed the
+#'   function will output NA.
+#'
+#' @return A numeric vector containing the PRD of the input vectors.
+#'
+#' @examples
+#'
+#' # Load the included dataset
+#' data("ratios_sample")
+#'
+#' # Calculate PRD
+#' prd(ratios_sample$assessed, ratios_sample$sale_price)
+#' @family formulas
+#' @export
+prd <- function(assessed, sale_price, na.rm = FALSE) {
+  # nolint end
+
+  # Input checking and error handling
+  check_inputs(assessed, sale_price)
+  stopifnot(
+    length(assessed) == length(sale_price),
+    is.logical(na.rm)
+  )
+
+  # Remove NAs from input vectors
+  if (na.rm) {
+    idx <- sign(is.na(assessed) + is.na(sale_price))
+    assessed <- assessed[!idx]
+    sale_price <- sale_price[!idx]
+  }
+
+  # Calculate ratio of assessed values to sale price
+  ratio <- assessed / sale_price
+
+  # Calculate PRD
+  prd <- mean(ratio) / stats::weighted.mean(ratio, sale_price)
+
+  return(prd)
+}
+
+
+# nolint start
+
+#' Calculate Coefficient of Price-Related Bias (PRB)
+#'
+#' @description PRB is an index of vertical equity that quantifies the
+#'   relationship betweem ratios and assessed values as a percentage. In
+#'   concrete terms, a PRB of 0.02 indicates that, on average, ratios increase
+#'   by 2% whenever assessed values increase by 100 percent.
+#'
+#'   PRB is centered around 0 and has a generally accepted value of between
+#'   -0.05 and 0.05, as defined in the
+#'   \href{https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf}{IAAO Standard on Ratio Studies}
+#'   Section 9.2.7. Higher PRB values indicate progressivity in assessment,
+#'   while negative values indicate regressivity.
+#'
+#'   NOTE: PRB is significantly less sensitive to outliers than PRD or COD.
+#'
+#' @inheritParams prd
+#'
+#' @return A numeric vector containing the PRB of the input vectors.
+#'
+#' @examples
+#'
+#' # Load the included dataset
+#' data("ratios_sample")
+#'
+#' # Calculate PRD
+#' prb(ratios_sample$assessed, ratios_sample$sale_price)
+#' @family formulas
+#' @export
+prb <- function(assessed, sale_price, na.rm = FALSE) {
+  # nolint end
+
+  # Input checking and error handling
+  check_inputs(assessed, sale_price)
+  stopifnot(
+    length(assessed) == length(sale_price),
+    is.logical(na.rm)
+  )
+
+  # Remove NAs from input vectors. Otherwise, return NA if the input vectors
+  # contain NA values
+  if (na.rm) {
+    idx <- sign(is.na(assessed) + is.na(sale_price))
+    assessed <- assessed[!idx]
+    sale_price <- sale_price[!idx]
+  } else if ((anyNA(assessed) | anyNA(sale_price)) & !na.rm) {
+    return(NA_real_)
+  }
+
+  # Calculate PRB
+  prb_model <- calc_prd(assessed, sale_price)
+
+  # Extract PRB from model
+  prb <- unname(stats::coef(prb_model)[2])
+
+  return(prb)
 }
