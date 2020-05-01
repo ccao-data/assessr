@@ -39,25 +39,40 @@ boot_ci <- function(FUN = NULL, nboot = 100, alpha = 0.05, na.rm = FALSE, ...) {
     is.numeric(est)
   )
 
-  # Get the length of the inputs to FUN
-  n <- length(list(...)[[1]])
+  # Create an index of missing values, where TRUE when missing.
+  # If na.rm is FALSE and index contains TRUE, return NA
+  missing_idx <- index_na(...)
+  if (any(missing_idx) & !na.rm) {
+    return(NA_real_)
+  }
+
+  # Get the length of the inputs by summing opposite of the missing index
+  # NA values in the index are TRUE, so by negating the index and summing, we
+  # can get the total number of non-missing values
+  n <- sum(!missing_idx)
   ests <- numeric(nboot)
 
   # Bootstrapping
   for (i in seq_len(nboot)) {
 
-    # For each iteration, get a random sample of indices with replacement
-    # Apply this index to the arguments passed via ..., for instance, sample
-    # assessed value and sales
-    idx <- sample(1:n, replace = T)
-    sampled <- lapply(list(...), function(x) x[idx])
+    # For each iteration, sample indices between 1 and the number of
+    # non-missing values
+    idx <- sample(1:n, replace = TRUE)
+
+    # For each of the input vectors to FUN, subset by first removing any
+    # index positions that have a missing value, then take a random sample of
+    # each vector using the sample index
+    sampled <- lapply(list(...), function(x) x[!missing_idx][idx])
 
     # For each bootstrap sample, apply the function and output an estimate for
     # that sample
-    ests[i] <- do.call(FUN, c(sampled, na.rm = na.rm))
+    ests[i] <- do.call(FUN, sampled)
   }
 
-  ci <- c(quantile(ests, alpha / 2), quantile(ests, 1 - alpha / 2))
+  ci <- c(
+    stats::quantile(ests, alpha / 2),
+    stats::quantile(ests, 1 - alpha / 2)
+  )
 
   return(ci)
 }
@@ -77,8 +92,9 @@ cod_ci <- function(ratio, nboot = 100, alpha = 0.05, na.rm = FALSE) { # nolint
   cod_ci <- boot_ci(
     cod,
     nboot = nboot,
-    ratio = ratio,
-    na.rm = na.rm
+    alpha = alpha,
+    na.rm = na.rm,
+    ratio = ratio
   )
 
   return(cod_ci)
@@ -99,9 +115,10 @@ prd_ci <- function(assessed, sale_price, nboot = 100, alpha = 0.05, na.rm = FALS
   prd_ci <- boot_ci(
     prd,
     nboot = nboot,
+    alpha = alpha,
+    na.rm = na.rm,
     assessed = assessed,
-    sale_price = sale_price,
-    na.rm = na.rm
+    sale_price = sale_price
   )
 
   return(prd_ci)
@@ -136,7 +153,7 @@ prb_ci <- function(assessed, sale_price, alpha = 0.05, na.rm = FALSE) { # nolint
   prb_model <- calc_prd(assessed, sale_price)
 
   # Extract PRB from model
-  prb_ci <- confint(prb_model, level = (1 - alpha))[2, ]
+  prb_ci <- stats::confint(prb_model, level = (1 - alpha))[2, ]
 
   return(prb_ci)
 }
