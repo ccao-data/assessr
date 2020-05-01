@@ -23,7 +23,10 @@ Also includes a host of utility functions to make common assessment and evaluati
 You can install the released version of assessR directly from GitLab by running the following R command after installing the `remotes` package:
 
 ```{r, eval=FALSE}
-remotes::install_git("https://gitlab.com/ccao-data-science---modeling/packages/assessr")
+install_gitlab("ccao-data-science---modeling/packages/assessr")
+
+# Or, to install a specific version
+install_gitlab("ccao-data-science---modeling/packages/assessr@0.2.0")
 ```
 
 Once it is installed, you can use it just like any other package. Simply
