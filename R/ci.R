@@ -149,10 +149,10 @@ prb_ci <- function(assessed, sale_price, alpha = 0.05, na.rm = FALSE) { # nolint
     return(NA_real_)
   }
 
-  # Calculate PRB
+  # Calculate PRB model
   prb_model <- calc_prd(assessed, sale_price)
 
-  # Extract PRB from model
+  # Extract PRB CI from model
   prb_ci <- stats::confint(prb_model, level = (1 - alpha))[2, ]
 
   return(prb_ci)
