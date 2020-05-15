@@ -13,10 +13,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-# AssessR Package
+# AssessR Package <a href="https://gitlab.com/ccao-data-science---modeling/packages/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
 
-An R package to measure the performance of property assessment using standard statistics.
-Also includes a host of utility functions to make common assessment and evaluation tasks easier and more consistent.
+An R package to measure the performance of property assessments using standard statistics. Also includes a host of utility functions to make common assessment and evaluation tasks easier and more consistent.
 
 ## Installation
 
