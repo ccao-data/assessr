@@ -31,14 +31,47 @@ remotes::install_gitlab("ccao-data-science---modeling/packages/assessr@0.2.0")
 Once it is installed, you can use it just like any other package. Simply
 call `library(assessr)` at the beginning of your script.
 
-## Example Calculations
+## Example Usage
 
-Using the included `ratios_sample` dataset, `cod()`, `prd()`, and `prb()` can be used to measure the performance of an assessment.
+### Sales Chasing Detection 
 
-```{r, message=FALSE, results='asis'}
+Sales chasing is when a property is selectively reappraised to shift its assessed value toward its actual sale price. The included function `detect_chasing()` uses novel methods to detect potential sales chasing. It is *not* a statistical test and is not absolute; visual inspection of ratios is still recommended.
+
+```{r, message=FALSE, warning=FALSE, results='asis'}
+library(ggplot2)
 library(dplyr)
 library(assessr)
 library(knitr)
+
+# Generate distributions of fake ratios, including one with "sales chasing"
+normal_ratios <- c(rnorm(1000, 1, 0.15))
+chased_ratios <- c(rnorm(900, 1, 0.15), rep(1, 100)) 
+
+# Plot the CDFs of each vector. Notice the flat spot on the red CDF
+ggplot() +
+  stat_ecdf(data = data.frame(x = normal_ratios), aes(x), color = "blue") +
+  stat_ecdf(data = data.frame(x = chased_ratios), aes(x), color = "red") +
+  geom_vline(xintercept = 0.98) +
+  geom_vline(xintercept = 1.02) +
+  xlim(0.7, 1.3) +
+  labs(x = "Ratio", y = "F(x)") +
+  theme_minimal()
+
+# Detect chasing for each vector
+tibble(
+  "Blue Chased?" = detect_chasing(normal_ratios),
+  "Red Chased?" = detect_chasing(chased_ratios)
+) %>%
+ kable(format = "markdown", digits = 3)
+
+```
+
+
+### Sales Ratio Study Using Sample Data
+
+Using the included `ratios_sample` dataset, `cod()`, `prd()`, and `prb()` can be used to measure the performance of an assessment.
+
+```{r, message=FALSE, warning=FALSE, results='asis'}
 
 # Load the sample dataset
 data("ratios_sample")
@@ -47,6 +80,7 @@ data("ratios_sample")
 ratios_sample %>%
   group_by(town) %>%
   summarize(
+    chased = detect_chasing(ratio),
     cod = cod(ratio),
     cod_ci = paste(round(cod_ci(ratio, nboot = 1000), 3), collapse = ", "),
     prd = prd(assessed, sale_price),
@@ -57,13 +91,24 @@ ratios_sample %>%
   rename_all(toupper) %>%
   kable(format = "markdown", digits = 3)
 
+# Create a plot of the CDF of Evanston only
+ratios_sample %>%
+  filter(town == "Evanston") %>%
+ggplot() +
+  stat_ecdf(aes(x = ratio)) +
+  geom_vline(xintercept = 0.98) +
+  geom_vline(xintercept = 1.02) +
+  xlim(0.7, 1.3) +
+  labs(x = "Ratio", y = "F(x)") +
+  theme_minimal()
+
 ```
 
-## Using Real Data
+### Sales Ratio Study Using Real Data
 
 This package can easily be used with data from the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Assessments/uqb9-r7vn) to analyze assessment performance. To measure assessment performance, you will need to gather both sales and assessed values. These are stored in two separate datasets on the data portal.
 
-### With RSocrata
+#### With RSocrata
 
 [RSocrata](https://github.com/Chicago/RSocrata) is a package developed by the City of Chicago to wrap Socrata API requests. It allows you to easily pass a Socrata app token, which will remove the API limit on the number of rows returned. Example usage is shown below, replacing the login details with your own.
 
@@ -79,7 +124,7 @@ assessments <- read.socrata(
 )
 ```
 
-### With jsonlite
+#### With jsonlite
 
 Socrata can also return raw JSON if you manually construct a query URL. Follow the [API docs](https://dev.socrata.com/foundry/datacatalog.cookcountyil.gov/uqb9-r7vn) to alter your query. The raw JSON output can be read using the `read_json()` function from `jsonlite`.
 
@@ -101,7 +146,7 @@ sales <- read_json(
 
 ```
 
-### Example Analysis
+#### Example Analysis
 
 Using the collected assessment and sales data, we can perform a rudimentary analysis and measure the performance of each town ship at each stage of assessment. 
 

@@ -14,8 +14,8 @@
 #'
 #' @param x A numeric vector. Must be longer than 2 and not contain
 #'   \code{Inf} or \code{NaN}.
-#' @param method String indicating outlier detection method. Options are
-#'   \code{iqr} or \code{quantile}.
+#' @param method Default "iqr". String indicating outlier detection method.
+#'   Options are \code{iqr} or \code{quantile}.
 #' @param na.rm Default FALSE. A boolean value indicating whether or not to
 #'   remove NA values. If missing values are present but not removed the
 #'   function will output NA for those values.

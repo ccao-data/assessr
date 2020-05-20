@@ -16,8 +16,8 @@ iqr_outlier(x, mult = 3, na.rm = FALSE)
 \item{x}{A numeric vector. Must be longer than 2 and not contain
 \code{Inf} or \code{NaN}.}
 
-\item{method}{String indicating outlier detection method. Options are
-\code{iqr} or \code{quantile}.}
+\item{method}{Default "iqr". String indicating outlier detection method.
+Options are \code{iqr} or \code{quantile}.}
 
 \item{na.rm}{Default FALSE. A boolean value indicating whether or not to
 remove NA values. If missing values are present but not removed the

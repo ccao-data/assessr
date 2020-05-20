@@ -22,15 +22,59 @@ remotes::install_gitlab("ccao-data-science---modeling/packages/assessr@0.2.0")
 Once it is installed, you can use it just like any other package. Simply
 call `library(assessr)` at the beginning of your script.
 
-## Example Calculations
+## Example Usage
+
+### Sales Chasing Detection
+
+Sales chasing is when a property is selectively reappraised to shift its
+assessed value toward its actual sale price. The included function
+`detect_chasing()` uses novel methods to detect potential sales chasing.
+It is *not* a statistical test and is not absolute; visual inspection of
+ratios is still recommended.
+
+``` r
+library(ggplot2)
+library(dplyr)
+library(assessr)
+library(knitr)
+
+# Generate distributions of fake ratios, including one with "sales chasing"
+normal_ratios <- c(rnorm(1000, 1, 0.15))
+chased_ratios <- c(rnorm(900, 1, 0.15), rep(1, 100)) 
+
+# Plot the CDFs of each vector. Notice the flat spot on the red CDF
+ggplot() +
+  stat_ecdf(data = data.frame(x = normal_ratios), aes(x), color = "blue") +
+  stat_ecdf(data = data.frame(x = chased_ratios), aes(x), color = "red") +
+  geom_vline(xintercept = 0.98) +
+  geom_vline(xintercept = 1.02) +
+  xlim(0.7, 1.3) +
+  labs(x = "Ratio", y = "F(x)") +
+  theme_minimal()
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+``` r
+
+# Detect chasing for each vector
+tibble(
+  "Blue Chased?" = detect_chasing(normal_ratios),
+  "Red Chased?" = detect_chasing(chased_ratios)
+) %>%
+ kable(format = "markdown", digits = 3)
+```
+
+| Blue Chased? | Red Chased? |
+| :----------- | :---------- |
+| FALSE        | TRUE        |
+
+### Sales Ratio Study Using Sample Data
 
 Using the included `ratios_sample` dataset, `cod()`, `prd()`, and
 `prb()` can be used to measure the performance of an assessment.
 
 ``` r
-library(dplyr)
-library(assessr)
-library(knitr)
 
 # Load the sample dataset
 data("ratios_sample")
@@ -39,6 +83,7 @@ data("ratios_sample")
 ratios_sample %>%
   group_by(town) %>%
   summarize(
+    chased = detect_chasing(ratio),
     cod = cod(ratio),
     cod_ci = paste(round(cod_ci(ratio, nboot = 1000), 3), collapse = ", "),
     prd = prd(assessed, sale_price),
@@ -50,12 +95,28 @@ ratios_sample %>%
   kable(format = "markdown", digits = 3)
 ```
 
-| TOWN      |    COD | COD\_CI        |   PRD | PRD\_CI      |     PRB | PRB\_CI         |
-| :-------- | -----: | :------------- | ----: | :----------- | ------: | :-------------- |
-| Evanston  | 16.398 | 14.497, 18.198 | 1.033 | 1.015, 1.057 |   0.011 | \-0.012, 0.034  |
-| New Trier | 19.150 | 17.136, 21.454 | 1.066 | 1.048, 1.083 | \-0.033 | \-0.063, -0.003 |
+| TOWN      | CHASED |    COD | COD\_CI        |   PRD | PRD\_CI     |     PRB | PRB\_CI         |
+| :-------- | :----- | -----: | :------------- | ----: | :---------- | ------: | :-------------- |
+| Evanston  | FALSE  | 16.398 | 14.582, 18.265 | 1.033 | 1.01, 1.063 |   0.011 | \-0.012, 0.034  |
+| New Trier | FALSE  | 19.150 | 17.102, 21.548 | 1.066 | 1.05, 1.083 | \-0.033 | \-0.063, -0.003 |
 
-## Using Real Data
+``` r
+
+# Create a plot of the CDF of Evanston only
+ratios_sample %>%
+  filter(town == "Evanston") %>%
+ggplot() +
+  stat_ecdf(aes(x = ratio)) +
+  geom_vline(xintercept = 0.98) +
+  geom_vline(xintercept = 1.02) +
+  xlim(0.7, 1.3) +
+  labs(x = "Ratio", y = "F(x)") +
+  theme_minimal()
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+
+### Sales Ratio Study Using Real Data
 
 This package can easily be used with data from the [Cook County Open
 Data
@@ -64,7 +125,7 @@ to analyze assessment performance. To measure assessment performance,
 you will need to gather both sales and assessed values. These are stored
 in two separate datasets on the data portal.
 
-### With RSocrata
+#### With RSocrata
 
 [RSocrata](https://github.com/Chicago/RSocrata) is a package developed
 by the City of Chicago to wrap Socrata API requests. It allows you to
@@ -84,7 +145,7 @@ assessments <- read.socrata(
 )
 ```
 
-### With jsonlite
+#### With jsonlite
 
 Socrata can also return raw JSON if you manually construct a query URL.
 Follow the [API
@@ -108,7 +169,7 @@ sales <- read_json(
 )
 ```
 
-### Example Analysis
+#### Example Analysis
 
 Using the collected assessment and sales data, we can perform a
 rudimentary analysis and measure the performance of each town ship at
@@ -165,24 +226,24 @@ combined %>%
 
 | TOWN\_NAME  | STAGE       |   N |      COD | COD\_CI        |       PRD | PRD\_CI      |         PRB | PRB\_CI         |
 | :---------- | :---------- | --: | -------: | :------------- | --------: | :----------- | ----------: | :-------------- |
-| ELK GROVE   | first\_pass |  71 | 27.78232 | 19.031, 38.623 | 1.0941351 | 1.017, 1.181 | \-0.1188841 | \-0.263, 0.026  |
-| ELK GROVE   | certified   |  71 | 24.46860 | 16.04, 35.168  | 1.0564095 | 0.995, 1.149 | \-0.0169422 | \-0.154, 0.12   |
-| ELK GROVE   | bor\_result |  71 | 23.49757 | 14.991, 35.709 | 1.0552963 | 0.994, 1.182 | \-0.0174319 | \-0.152, 0.118  |
-| EVANSTON    | first\_pass |  53 | 26.50670 | 14.872, 44.35  | 1.0327191 | 0.974, 1.085 |   0.1394950 | \-0.049, 0.328  |
-| EVANSTON    | certified   |  53 | 26.38652 | 14.623, 42.933 | 1.0347494 | 0.978, 1.117 |   0.1386032 | \-0.052, 0.329  |
-| EVANSTON    | bor\_result |  53 | 26.34999 | 14.31, 43.74   | 1.0426307 | 0.971, 1.092 |   0.1311480 | \-0.062, 0.325  |
-| LAKE VIEW   | first\_pass | 291 | 20.05137 | 15.515, 25.749 | 1.0598831 | 1.016, 1.1   | \-0.0163193 | \-0.069, 0.037  |
-| LAKE VIEW   | certified   | 291 | 18.49785 | 14.943, 22.404 | 1.0520983 | 1.017, 1.096 | \-0.0384815 | \-0.078, 0.001  |
-| LAKE VIEW   | bor\_result | 291 | 18.44955 | 15.044, 22.31  | 1.0570311 | 1.022, 1.097 | \-0.0425709 | \-0.082, -0.003 |
-| NEW TRIER   | first\_pass |  62 | 19.86714 | 15.544, 23.914 | 1.0348770 | 0.996, 1.074 |   0.0065982 | \-0.07, 0.083   |
-| NEW TRIER   | certified   |  62 | 21.08162 | 16.788, 25.106 | 1.0400469 | 0.997, 1.077 | \-0.0007468 | \-0.08, 0.079   |
-| NEW TRIER   | bor\_result |  62 | 15.68523 | 11.95, 19.814  | 1.0504330 | 1.019, 1.082 | \-0.0420508 | \-0.108, 0.024  |
-| OAK PARK    | first\_pass |  53 | 28.73249 | 19.33, 38.87   | 1.0831255 | 0.997, 1.157 | \-0.0808581 | \-0.234, 0.072  |
-| OAK PARK    | certified   |  53 | 28.90091 | 20.772, 38.906 | 1.0771021 | 0.998, 1.158 | \-0.0576492 | \-0.211, 0.096  |
-| OAK PARK    | bor\_result |  53 | 29.96451 | 19.945, 39.72  | 1.0792164 | 1.006, 1.158 | \-0.0595960 | \-0.219, 0.1    |
-| PALOS       | first\_pass |  57 | 22.94833 | 16.892, 29.28  | 0.9961811 | 0.957, 1.037 |   0.1270371 | 0.005, 0.249    |
-| PALOS       | certified   |  57 | 23.20667 | 16.687, 29.726 | 0.9934735 | 0.951, 1.051 |   0.1398959 | 0.018, 0.262    |
-| PALOS       | bor\_result |  57 | 21.78137 | 15.766, 28.159 | 0.9935965 | 0.958, 1.039 |   0.1260804 | 0.008, 0.244    |
-| ROGERS PARK | first\_pass |  59 | 25.75073 | 16.786, 38.058 | 1.1394432 | 1.029, 1.257 | \-0.0235310 | \-0.159, 0.112  |
-| ROGERS PARK | certified   |  59 | 25.79628 | 16.319, 37.607 | 1.1421130 | 1.017, 1.277 | \-0.0254053 | \-0.161, 0.11   |
-| ROGERS PARK | bor\_result |  59 | 25.87248 | 16.319, 38.054 | 1.1439641 | 1.021, 1.297 | \-0.0266601 | \-0.162, 0.109  |
+| ELK GROVE   | first\_pass |  71 | 27.78232 | 19.442, 39.715 | 1.0941351 | 1.021, 1.183 | \-0.1188841 | \-0.263, 0.026  |
+| ELK GROVE   | certified   |  71 | 24.46860 | 16.012, 36.607 | 1.0564095 | 0.999, 1.141 | \-0.0169422 | \-0.154, 0.12   |
+| ELK GROVE   | bor\_result |  71 | 23.49757 | 15.643, 35.183 | 1.0552963 | 1, 1.142     | \-0.0174319 | \-0.152, 0.118  |
+| EVANSTON    | first\_pass |  53 | 26.50670 | 14.436, 42.669 | 1.0327191 | 0.974, 1.098 |   0.1394950 | \-0.049, 0.328  |
+| EVANSTON    | certified   |  53 | 26.38652 | 14.09, 43.582  | 1.0347494 | 0.975, 1.098 |   0.1386032 | \-0.052, 0.329  |
+| EVANSTON    | bor\_result |  53 | 26.34999 | 14.166, 45.543 | 1.0426307 | 0.981, 1.122 |   0.1311480 | \-0.062, 0.325  |
+| LAKE VIEW   | first\_pass | 291 | 20.05137 | 15.222, 25.855 | 1.0598831 | 1.019, 1.1   | \-0.0163193 | \-0.069, 0.037  |
+| LAKE VIEW   | certified   | 291 | 18.49785 | 15.148, 22.531 | 1.0520983 | 1.024, 1.079 | \-0.0384815 | \-0.078, 0.001  |
+| LAKE VIEW   | bor\_result | 291 | 18.44955 | 15.28, 22.39   | 1.0570311 | 1.026, 1.092 | \-0.0425709 | \-0.082, -0.003 |
+| NEW TRIER   | first\_pass |  62 | 19.86714 | 15.596, 23.714 | 1.0348770 | 0.995, 1.082 |   0.0065982 | \-0.07, 0.083   |
+| NEW TRIER   | certified   |  62 | 21.08162 | 16.662, 24.646 | 1.0400469 | 1.005, 1.08  | \-0.0007468 | \-0.08, 0.079   |
+| NEW TRIER   | bor\_result |  62 | 15.68523 | 12.024, 20.188 | 1.0504330 | 1.023, 1.085 | \-0.0420508 | \-0.108, 0.024  |
+| OAK PARK    | first\_pass |  53 | 28.73249 | 20.117, 38.798 | 1.0831255 | 1.007, 1.176 | \-0.0808581 | \-0.234, 0.072  |
+| OAK PARK    | certified   |  53 | 28.90091 | 19.823, 39.523 | 1.0771021 | 0.986, 1.154 | \-0.0576492 | \-0.211, 0.096  |
+| OAK PARK    | bor\_result |  53 | 29.96451 | 20.498, 39.394 | 1.0792164 | 1.007, 1.179 | \-0.0595960 | \-0.219, 0.1    |
+| PALOS       | first\_pass |  57 | 22.94833 | 16.828, 29.756 | 0.9961811 | 0.963, 1.052 |   0.1270371 | 0.005, 0.249    |
+| PALOS       | certified   |  57 | 23.20667 | 16.687, 29.751 | 0.9934735 | 0.951, 1.054 |   0.1398959 | 0.018, 0.262    |
+| PALOS       | bor\_result |  57 | 21.78137 | 15.39, 28.783  | 0.9935965 | 0.956, 1.047 |   0.1260804 | 0.008, 0.244    |
+| ROGERS PARK | first\_pass |  59 | 25.75073 | 16.148, 38.801 | 1.1394432 | 1.031, 1.259 | \-0.0235310 | \-0.159, 0.112  |
+| ROGERS PARK | certified   |  59 | 25.79628 | 16.868, 37.893 | 1.1421130 | 1.044, 1.264 | \-0.0254053 | \-0.161, 0.11   |
+| ROGERS PARK | bor\_result |  59 | 25.87248 | 16.819, 38.082 | 1.1439641 | 1.014, 1.274 | \-0.0266601 | \-0.162, 0.109  |
