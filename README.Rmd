@@ -80,24 +80,15 @@ data("ratios_sample")
 ratios_sample %>%
   group_by(town) %>%
   summarize(
-    chased = detect_chasing(ratio),
     cod = cod(ratio),
     cod_ci = paste(round(cod_ci(ratio, nboot = 1000), 3), collapse = ", "),
-    cod_met = cod_met(cod)
+    cod_met = cod_met(cod),
+    prd = prd(assessed, sale_price),
+    prd_ci = paste(round(prd_ci(assessed, sale_price), 3), collapse = ", "),
+    prd_met = prd_met(prd)
   ) %>%
   rename_all(toupper) %>%
   kable(format = "markdown", digits = 3)
-
-# Create a plot of the CDF of Evanston only
-ratios_sample %>%
-  filter(town == "Evanston") %>%
-ggplot() +
-  stat_ecdf(aes(x = ratio)) +
-  geom_vline(xintercept = 0.98) +
-  geom_vline(xintercept = 1.02) +
-  xlim(0.7, 1.3) +
-  labs(x = "Ratio", y = "F(x)") +
-  theme_minimal()
 
 ```
 

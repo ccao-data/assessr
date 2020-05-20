@@ -83,35 +83,21 @@ data("ratios_sample")
 ratios_sample %>%
   group_by(town) %>%
   summarize(
-    chased = detect_chasing(ratio),
     cod = cod(ratio),
     cod_ci = paste(round(cod_ci(ratio, nboot = 1000), 3), collapse = ", "),
-    cod_met = cod_met(cod)
+    cod_met = cod_met(cod),
+    prd = prd(assessed, sale_price),
+    prd_ci = paste(round(prd_ci(assessed, sale_price), 3), collapse = ", "),
+    prd_met = prd_met(prd)
   ) %>%
   rename_all(toupper) %>%
   kable(format = "markdown", digits = 3)
 ```
 
-| TOWN      | CHASED |    COD | COD\_CI        | COD\_MET |
-| :-------- | :----- | -----: | :------------- | :------- |
-| Evanston  | TRUE   | 16.398 | 14.615, 18.207 | FALSE    |
-| New Trier | FALSE  | 19.150 | 16.964, 21.222 | FALSE    |
-
-``` r
-
-# Create a plot of the CDF of Evanston only
-ratios_sample %>%
-  filter(town == "Evanston") %>%
-ggplot() +
-  stat_ecdf(aes(x = ratio)) +
-  geom_vline(xintercept = 0.98) +
-  geom_vline(xintercept = 1.02) +
-  xlim(0.7, 1.3) +
-  labs(x = "Ratio", y = "F(x)") +
-  theme_minimal()
-```
-
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+| TOWN      |    COD | COD\_CI        | COD\_MET |   PRD | PRD\_CI      | PRD\_MET |
+| :-------- | -----: | :------------- | :------- | ----: | :----------- | :------- |
+| Evanston  | 16.398 | 14.642, 18.016 | FALSE    | 1.033 | 1.008, 1.058 | FALSE    |
+| New Trier | 19.150 | 17.022, 21.226 | FALSE    | 1.066 | 1.048, 1.085 | FALSE    |
 
 ### Sales Ratio Study Using Real Data
 
@@ -223,24 +209,24 @@ combined %>%
 
 | TOWN\_NAME  | STAGE       |   N |      COD | COD\_CI        | COD\_MET |         PRB | PRB\_CI         | PRB\_MET |
 | :---------- | :---------- | --: | -------: | :------------- | :------- | ----------: | :-------------- | :------- |
-| ELK GROVE   | first\_pass |  71 | 27.78232 | 19.086, 39.762 | FALSE    | \-0.1188841 | \-0.263, 0.026  | FALSE    |
-| ELK GROVE   | certified   |  71 | 24.46860 | 15.859, 36.515 | FALSE    | \-0.0169422 | \-0.154, 0.12   | TRUE     |
-| ELK GROVE   | bor\_result |  71 | 23.49757 | 15.371, 36.107 | FALSE    | \-0.0174319 | \-0.152, 0.118  | TRUE     |
-| EVANSTON    | first\_pass |  53 | 26.50670 | 14.329, 43.221 | FALSE    |   0.1394950 | \-0.049, 0.328  | FALSE    |
-| EVANSTON    | certified   |  53 | 26.38652 | 14.409, 43.781 | FALSE    |   0.1386032 | \-0.052, 0.329  | FALSE    |
-| EVANSTON    | bor\_result |  53 | 26.34999 | 14.545, 45.359 | FALSE    |   0.1311480 | \-0.062, 0.325  | FALSE    |
-| LAKE VIEW   | first\_pass | 291 | 20.05137 | 15.279, 25.827 | FALSE    | \-0.0163193 | \-0.069, 0.037  | TRUE     |
-| LAKE VIEW   | certified   | 291 | 18.49785 | 15.197, 22.416 | FALSE    | \-0.0384815 | \-0.078, 0.001  | TRUE     |
-| LAKE VIEW   | bor\_result | 291 | 18.44955 | 15.103, 22.611 | FALSE    | \-0.0425709 | \-0.082, -0.003 | TRUE     |
-| NEW TRIER   | first\_pass |  62 | 19.86714 | 15.599, 23.96  | FALSE    |   0.0065982 | \-0.07, 0.083   | TRUE     |
-| NEW TRIER   | certified   |  62 | 21.08162 | 16.896, 24.637 | FALSE    | \-0.0007468 | \-0.08, 0.079   | TRUE     |
-| NEW TRIER   | bor\_result |  62 | 15.68523 | 11.994, 19.838 | FALSE    | \-0.0420508 | \-0.108, 0.024  | TRUE     |
-| OAK PARK    | first\_pass |  53 | 28.73249 | 20.226, 38.683 | FALSE    | \-0.0808581 | \-0.234, 0.072  | FALSE    |
-| OAK PARK    | certified   |  53 | 28.90091 | 20.161, 39.619 | FALSE    | \-0.0576492 | \-0.211, 0.096  | FALSE    |
-| OAK PARK    | bor\_result |  53 | 29.96451 | 20.958, 41.126 | FALSE    | \-0.0595960 | \-0.219, 0.1    | FALSE    |
-| PALOS       | first\_pass |  57 | 22.94833 | 17, 29.862     | FALSE    |   0.1270371 | 0.005, 0.249    | FALSE    |
-| PALOS       | certified   |  57 | 23.20667 | 16.638, 29.509 | FALSE    |   0.1398959 | 0.018, 0.262    | FALSE    |
-| PALOS       | bor\_result |  57 | 21.78137 | 15.36, 28.031  | FALSE    |   0.1260804 | 0.008, 0.244    | FALSE    |
-| ROGERS PARK | first\_pass |  59 | 25.75073 | 16.522, 37.546 | FALSE    | \-0.0235310 | \-0.159, 0.112  | TRUE     |
-| ROGERS PARK | certified   |  59 | 25.79628 | 16.551, 37.011 | FALSE    | \-0.0254053 | \-0.161, 0.11   | TRUE     |
-| ROGERS PARK | bor\_result |  59 | 25.87248 | 16.38, 37.382  | FALSE    | \-0.0266601 | \-0.162, 0.109  | TRUE     |
+| ELK GROVE   | first\_pass |  71 | 27.78232 | 19.208, 38.377 | FALSE    | \-0.1188841 | \-0.263, 0.026  | FALSE    |
+| ELK GROVE   | certified   |  71 | 24.46860 | 16.076, 36.655 | FALSE    | \-0.0169422 | \-0.154, 0.12   | TRUE     |
+| ELK GROVE   | bor\_result |  71 | 23.49757 | 15.327, 34.225 | FALSE    | \-0.0174319 | \-0.152, 0.118  | TRUE     |
+| EVANSTON    | first\_pass |  53 | 26.50670 | 14.543, 44.027 | FALSE    |   0.1394950 | \-0.049, 0.328  | FALSE    |
+| EVANSTON    | certified   |  53 | 26.38652 | 14.683, 43.154 | FALSE    |   0.1386032 | \-0.052, 0.329  | FALSE    |
+| EVANSTON    | bor\_result |  53 | 26.34999 | 14.48, 46.144  | FALSE    |   0.1311480 | \-0.062, 0.325  | FALSE    |
+| LAKE VIEW   | first\_pass | 291 | 20.05137 | 15.363, 26.014 | FALSE    | \-0.0163193 | \-0.069, 0.037  | TRUE     |
+| LAKE VIEW   | certified   | 291 | 18.49785 | 14.939, 22.201 | FALSE    | \-0.0384815 | \-0.078, 0.001  | TRUE     |
+| LAKE VIEW   | bor\_result | 291 | 18.44955 | 14.835, 22.042 | FALSE    | \-0.0425709 | \-0.082, -0.003 | TRUE     |
+| NEW TRIER   | first\_pass |  62 | 19.86714 | 15.572, 23.932 | FALSE    |   0.0065982 | \-0.07, 0.083   | TRUE     |
+| NEW TRIER   | certified   |  62 | 21.08162 | 16.96, 25.21   | FALSE    | \-0.0007468 | \-0.08, 0.079   | TRUE     |
+| NEW TRIER   | bor\_result |  62 | 15.68523 | 12.241, 19.748 | FALSE    | \-0.0420508 | \-0.108, 0.024  | TRUE     |
+| OAK PARK    | first\_pass |  53 | 28.73249 | 19.651, 38.553 | FALSE    | \-0.0808581 | \-0.234, 0.072  | FALSE    |
+| OAK PARK    | certified   |  53 | 28.90091 | 20.416, 39.773 | FALSE    | \-0.0576492 | \-0.211, 0.096  | FALSE    |
+| OAK PARK    | bor\_result |  53 | 29.96451 | 20.557, 39.702 | FALSE    | \-0.0595960 | \-0.219, 0.1    | FALSE    |
+| PALOS       | first\_pass |  57 | 22.94833 | 16.346, 29.43  | FALSE    |   0.1270371 | 0.005, 0.249    | FALSE    |
+| PALOS       | certified   |  57 | 23.20667 | 16.53, 30.204  | FALSE    |   0.1398959 | 0.018, 0.262    | FALSE    |
+| PALOS       | bor\_result |  57 | 21.78137 | 16.059, 28.145 | FALSE    |   0.1260804 | 0.008, 0.244    | FALSE    |
+| ROGERS PARK | first\_pass |  59 | 25.75073 | 16.346, 38.672 | FALSE    | \-0.0235310 | \-0.159, 0.112  | TRUE     |
+| ROGERS PARK | certified   |  59 | 25.79628 | 16.609, 38.612 | FALSE    | \-0.0254053 | \-0.161, 0.11   | TRUE     |
+| ROGERS PARK | bor\_result |  59 | 25.87248 | 16.633, 36.41  | FALSE    | \-0.0266601 | \-0.162, 0.109  | TRUE     |
