@@ -83,10 +83,7 @@ ratios_sample %>%
     chased = detect_chasing(ratio),
     cod = cod(ratio),
     cod_ci = paste(round(cod_ci(ratio, nboot = 1000), 3), collapse = ", "),
-    prd = prd(assessed, sale_price),
-    prd_ci = paste(round(prd_ci(assessed, sale_price), 3), collapse = ", "),
-    prb = prb(assessed, sale_price),
-    prb_ci = paste(round(prb_ci(assessed, sale_price), 3), collapse = ", ")
+    cod_met = cod_met(cod)
   ) %>%
   rename_all(toupper) %>%
   kable(format = "markdown", digits = 3)
@@ -184,10 +181,10 @@ combined %>%
     n = n(),
     cod = cod(ratio),
     cod_ci = paste(round(cod_ci(ratio, nboot = 1000), 3), collapse = ", "),
-    prd = prd(assessed, sale_price),
-    prd_ci = paste(round(prd_ci(assessed, sale_price), 3), collapse = ", "),
+    cod_met = cod_met(cod),
     prb = prb(assessed, sale_price),
-    prb_ci = paste(round(prb_ci(assessed, sale_price), 3), collapse = ", ")
+    prb_ci = paste(round(prb_ci(assessed, sale_price), 3), collapse = ", "),
+    prb_met = prb_met(prb)
   ) %>%
   filter(n >= 50) %>%
   mutate(stage = factor(
