@@ -198,7 +198,7 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 
 ##### STANDARDS #####
 
-# Mini functions to test if IAAO standards are met 
+# Mini functions to test if IAAO standards are met
 
 #' @describeIn cod Returns TRUE when input COD meets IAAO standards
 #'   (between 5 and 15).

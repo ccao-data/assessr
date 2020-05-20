@@ -50,6 +50,16 @@
 detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {
   # nolint end
 
+  # Check that inputs are well-formed numeric vector
+  stopifnot(exprs = {
+    method %in% c("cdf", "dist", "both")
+    is.vector(ratio)
+    is.numeric(ratio)
+    !is.nan(ratio)
+    length(ratio) > 2
+    all(is.finite(ratio) | is.na(ratio)) # All values are finite OR are NA
+  })
+
   # Warn about small sample sizes
   if (length(ratio) < 30) {
     warning(paste(
@@ -62,16 +72,6 @@ detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {
   if (any(is.na(ratio)) & !na.rm) {
     return(NA)
   }
-
-  # Check that inputs are well-formed numeric vector
-  stopifnot(exprs = {
-    method %in% c("cdf", "dist", "both")
-    is.vector(ratio)
-    is.numeric(ratio)
-    !is.nan(ratio)
-    length(ratio) > 2
-    all(is.finite(ratio) | is.na(ratio)) # All values are finite OR are NA
-  })
 
   out <- switch(
     method,

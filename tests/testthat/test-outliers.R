@@ -59,7 +59,7 @@ test_that("incomplete data returns NAs unless removed", {
   )
 })
 
-test_that("warnings thrown when appropriate", {
+test_that("warnings thrown when expected", {
   expect_warning(is_outlier(test_dist3, method = "iqr"))
   expect_warning(is_outlier(rnorm(20), method = "quantile"))
 })

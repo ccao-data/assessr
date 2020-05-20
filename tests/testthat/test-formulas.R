@@ -40,6 +40,10 @@ test_that("incomplete data returns NAs unless removed", {
   expect_equal(cod(c(ratio, NA), na.rm = T), 17.81457, tolerance = 0.02)
 })
 
+test_that("standard met function", {
+  expect_false(cod_met(cod_out))
+})
+
 
 
 ##### TEST PRD #####
@@ -80,6 +84,10 @@ test_that("incomplete data returns NAs unless removed", {
   )
 })
 
+test_that("standard met function", {
+  expect_false(prd_met(prd_out))
+})
+
 
 
 ##### TEST PRB #####
@@ -118,4 +126,8 @@ test_that("incomplete data returns NAs unless removed", {
     0.0024757,
     tolerance = 0.02
   )
+})
+
+test_that("standard met function", {
+  expect_true(prb_met(prb_out))
 })
