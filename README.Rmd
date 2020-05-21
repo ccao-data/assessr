@@ -19,7 +19,7 @@ An R package to measure the performance of property assessments using standard s
 
 ## Installation
 
-You can install the released version of assessR directly from GitLab by running the following R command after installing the `remotes` package:
+You can install the released version of `assessr` directly from GitLab by running the following R command after installing the `remotes` package:
 
 ```{r, eval=FALSE}
 remotes::install_gitlab("ccao-data-science---modeling/packages/assessr")

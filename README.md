@@ -9,8 +9,9 @@ common assessment and evaluation tasks easier and more consistent.
 
 ## Installation
 
-You can install the released version of assessR directly from GitLab by
-running the following R command after installing the `remotes` package:
+You can install the released version of `assessr` directly from GitLab
+by running the following R command after installing the `remotes`
+package:
 
 ``` r
 remotes::install_gitlab("ccao-data-science---modeling/packages/assessr")
@@ -96,8 +97,8 @@ ratios_sample %>%
 
 | TOWN      |    COD | COD\_CI        | COD\_MET |   PRD | PRD\_CI      | PRD\_MET |
 | :-------- | -----: | :------------- | :------- | ----: | :----------- | :------- |
-| Evanston  | 16.398 | 14.642, 18.016 | FALSE    | 1.033 | 1.008, 1.058 | FALSE    |
-| New Trier | 19.150 | 17.022, 21.226 | FALSE    | 1.066 | 1.048, 1.085 | FALSE    |
+| Evanston  | 16.398 | 14.681, 18.198 | FALSE    | 1.033 | 1.009, 1.053 | FALSE    |
+| New Trier | 19.150 | 16.957, 21.326 | FALSE    | 1.066 | 1.049, 1.085 | FALSE    |
 
 ### Sales Ratio Study Using Real Data
 
@@ -209,24 +210,24 @@ combined %>%
 
 | TOWN\_NAME  | STAGE       |   N |      COD | COD\_CI        | COD\_MET |         PRB | PRB\_CI         | PRB\_MET |
 | :---------- | :---------- | --: | -------: | :------------- | :------- | ----------: | :-------------- | :------- |
-| ELK GROVE   | first\_pass |  71 | 27.78232 | 19.208, 38.377 | FALSE    | \-0.1188841 | \-0.263, 0.026  | FALSE    |
-| ELK GROVE   | certified   |  71 | 24.46860 | 16.076, 36.655 | FALSE    | \-0.0169422 | \-0.154, 0.12   | TRUE     |
-| ELK GROVE   | bor\_result |  71 | 23.49757 | 15.327, 34.225 | FALSE    | \-0.0174319 | \-0.152, 0.118  | TRUE     |
-| EVANSTON    | first\_pass |  53 | 26.50670 | 14.543, 44.027 | FALSE    |   0.1394950 | \-0.049, 0.328  | FALSE    |
-| EVANSTON    | certified   |  53 | 26.38652 | 14.683, 43.154 | FALSE    |   0.1386032 | \-0.052, 0.329  | FALSE    |
-| EVANSTON    | bor\_result |  53 | 26.34999 | 14.48, 46.144  | FALSE    |   0.1311480 | \-0.062, 0.325  | FALSE    |
-| LAKE VIEW   | first\_pass | 291 | 20.05137 | 15.363, 26.014 | FALSE    | \-0.0163193 | \-0.069, 0.037  | TRUE     |
-| LAKE VIEW   | certified   | 291 | 18.49785 | 14.939, 22.201 | FALSE    | \-0.0384815 | \-0.078, 0.001  | TRUE     |
-| LAKE VIEW   | bor\_result | 291 | 18.44955 | 14.835, 22.042 | FALSE    | \-0.0425709 | \-0.082, -0.003 | TRUE     |
-| NEW TRIER   | first\_pass |  62 | 19.86714 | 15.572, 23.932 | FALSE    |   0.0065982 | \-0.07, 0.083   | TRUE     |
-| NEW TRIER   | certified   |  62 | 21.08162 | 16.96, 25.21   | FALSE    | \-0.0007468 | \-0.08, 0.079   | TRUE     |
-| NEW TRIER   | bor\_result |  62 | 15.68523 | 12.241, 19.748 | FALSE    | \-0.0420508 | \-0.108, 0.024  | TRUE     |
-| OAK PARK    | first\_pass |  53 | 28.73249 | 19.651, 38.553 | FALSE    | \-0.0808581 | \-0.234, 0.072  | FALSE    |
-| OAK PARK    | certified   |  53 | 28.90091 | 20.416, 39.773 | FALSE    | \-0.0576492 | \-0.211, 0.096  | FALSE    |
-| OAK PARK    | bor\_result |  53 | 29.96451 | 20.557, 39.702 | FALSE    | \-0.0595960 | \-0.219, 0.1    | FALSE    |
-| PALOS       | first\_pass |  57 | 22.94833 | 16.346, 29.43  | FALSE    |   0.1270371 | 0.005, 0.249    | FALSE    |
-| PALOS       | certified   |  57 | 23.20667 | 16.53, 30.204  | FALSE    |   0.1398959 | 0.018, 0.262    | FALSE    |
-| PALOS       | bor\_result |  57 | 21.78137 | 16.059, 28.145 | FALSE    |   0.1260804 | 0.008, 0.244    | FALSE    |
-| ROGERS PARK | first\_pass |  59 | 25.75073 | 16.346, 38.672 | FALSE    | \-0.0235310 | \-0.159, 0.112  | TRUE     |
-| ROGERS PARK | certified   |  59 | 25.79628 | 16.609, 38.612 | FALSE    | \-0.0254053 | \-0.161, 0.11   | TRUE     |
-| ROGERS PARK | bor\_result |  59 | 25.87248 | 16.633, 36.41  | FALSE    | \-0.0266601 | \-0.162, 0.109  | TRUE     |
+| ELK GROVE   | first\_pass |  71 | 27.78232 | 18.887, 38.567 | FALSE    | \-0.1188841 | \-0.263, 0.026  | FALSE    |
+| ELK GROVE   | certified   |  71 | 24.46860 | 15.929, 35.72  | FALSE    | \-0.0169422 | \-0.154, 0.12   | TRUE     |
+| ELK GROVE   | bor\_result |  71 | 23.49757 | 15.294, 35.598 | FALSE    | \-0.0174319 | \-0.152, 0.118  | TRUE     |
+| EVANSTON    | first\_pass |  53 | 26.50670 | 14.858, 44.18  | FALSE    |   0.1394950 | \-0.049, 0.328  | FALSE    |
+| EVANSTON    | certified   |  53 | 26.38652 | 13.766, 45.306 | FALSE    |   0.1386032 | \-0.052, 0.329  | FALSE    |
+| EVANSTON    | bor\_result |  53 | 26.34999 | 14.505, 43.79  | FALSE    |   0.1311480 | \-0.062, 0.325  | FALSE    |
+| LAKE VIEW   | first\_pass | 291 | 20.05137 | 15.244, 25.637 | FALSE    | \-0.0163193 | \-0.069, 0.037  | TRUE     |
+| LAKE VIEW   | certified   | 291 | 18.49785 | 15.124, 22.169 | FALSE    | \-0.0384815 | \-0.078, 0.001  | TRUE     |
+| LAKE VIEW   | bor\_result | 291 | 18.44955 | 14.986, 22.113 | FALSE    | \-0.0425709 | \-0.082, -0.003 | TRUE     |
+| NEW TRIER   | first\_pass |  62 | 19.86714 | 15.743, 23.937 | FALSE    |   0.0065982 | \-0.07, 0.083   | TRUE     |
+| NEW TRIER   | certified   |  62 | 21.08162 | 16.646, 24.996 | FALSE    | \-0.0007468 | \-0.08, 0.079   | TRUE     |
+| NEW TRIER   | bor\_result |  62 | 15.68523 | 12.044, 19.896 | FALSE    | \-0.0420508 | \-0.108, 0.024  | TRUE     |
+| OAK PARK    | first\_pass |  53 | 28.73249 | 19.859, 38.431 | FALSE    | \-0.0808581 | \-0.234, 0.072  | FALSE    |
+| OAK PARK    | certified   |  53 | 28.90091 | 20.783, 38.821 | FALSE    | \-0.0576492 | \-0.211, 0.096  | FALSE    |
+| OAK PARK    | bor\_result |  53 | 29.96451 | 20.501, 40.891 | FALSE    | \-0.0595960 | \-0.219, 0.1    | FALSE    |
+| PALOS       | first\_pass |  57 | 22.94833 | 16.551, 29.305 | FALSE    |   0.1270371 | 0.005, 0.249    | FALSE    |
+| PALOS       | certified   |  57 | 23.20667 | 16.881, 29.572 | FALSE    |   0.1398959 | 0.018, 0.262    | FALSE    |
+| PALOS       | bor\_result |  57 | 21.78137 | 15.435, 28.44  | FALSE    |   0.1260804 | 0.008, 0.244    | FALSE    |
+| ROGERS PARK | first\_pass |  59 | 25.75073 | 15.966, 37.88  | FALSE    | \-0.0235310 | \-0.159, 0.112  | TRUE     |
+| ROGERS PARK | certified   |  59 | 25.79628 | 16.247, 37.176 | FALSE    | \-0.0254053 | \-0.161, 0.11   | TRUE     |
+| ROGERS PARK | bor\_result |  59 | 25.87248 | 16.362, 37.702 | FALSE    | \-0.0266601 | \-0.162, 0.109  | TRUE     |
