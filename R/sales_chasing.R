@@ -97,7 +97,7 @@ detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {
 #'   length of that flat spot and can be thought of as the proportion of ratios
 #'   that have the same value. For example, 0.03 means that 3% of ratios share
 #'   the same value.
-detect_chasing_cdf <- function(ratio, bounds = c(0.98, 1.02), cdf_gap = 0.03) {
+detect_chasing_cdf <- function(ratio, bounds = c(0.98, 1.02), cdf_gap = 0.03, ...) { # nolint
 
   # Check that inputs are well-formed numeric vector
   stopifnot(
@@ -126,7 +126,7 @@ detect_chasing_cdf <- function(ratio, bounds = c(0.98, 1.02), cdf_gap = 0.03) {
 
 #' @describeIn detect_chasing Distribution comparison method
 #'   for detecting sales chasing.
-detect_chasing_dist <- function(ratio, bounds = c(0.98, 1.02), na.rm = FALSE) { # nolint
+detect_chasing_dist <- function(ratio, bounds = c(0.98, 1.02), na.rm = FALSE, ...) { # nolint
 
   # Check that inputs are well-formed numeric vector
   stopifnot(length(bounds) == 2, is.numeric(bounds))

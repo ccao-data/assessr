@@ -8,9 +8,9 @@
 \usage{
 detect_chasing(ratio, method = "both", na.rm = FALSE, ...)
 
-detect_chasing_cdf(ratio, bounds = c(0.98, 1.02), cdf_gap = 0.03)
+detect_chasing_cdf(ratio, bounds = c(0.98, 1.02), cdf_gap = 0.03, ...)
 
-detect_chasing_dist(ratio, bounds = c(0.98, 1.02), na.rm = FALSE)
+detect_chasing_dist(ratio, bounds = c(0.98, 1.02), na.rm = FALSE, ...)
 }
 \arguments{
 \item{ratio}{A numeric vector of ratios centered around 1, where the

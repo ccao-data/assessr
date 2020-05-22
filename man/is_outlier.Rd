@@ -8,9 +8,9 @@
 \usage{
 is_outlier(x, method = "iqr", na.rm = FALSE, ...)
 
-quantile_outlier(x, probs = c(0.05, 0.95), na.rm = FALSE)
+quantile_outlier(x, probs = c(0.05, 0.95), na.rm = FALSE, ...)
 
-iqr_outlier(x, mult = 3, na.rm = FALSE)
+iqr_outlier(x, mult = 3, na.rm = FALSE, ...)
 }
 \arguments{
 \item{x}{A numeric vector. Must be longer than 2 and not contain

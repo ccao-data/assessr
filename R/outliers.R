@@ -64,7 +64,7 @@ is_outlier <- function(x, method = "iqr", na.rm = FALSE, ...) {
 
 #' @describeIn is_outlier Quantile method for identifying outliers.
 #' @param probs Upper and lower percentiles denoting outlier boundaries.
-quantile_outlier <- function(x, probs = c(0.05, 0.95), na.rm = FALSE) { # nolint
+quantile_outlier <- function(x, probs = c(0.05, 0.95), na.rm = FALSE, ...) { # nolint
 
   # Determine valid range of the data
   range <- stats::quantile(x, probs = probs, na.rm = na.rm)
@@ -78,7 +78,7 @@ quantile_outlier <- function(x, probs = c(0.05, 0.95), na.rm = FALSE) { # nolint
 
 #' @describeIn is_outlier IQR method for identifying outliers.
 #' @param mult Multiplier for IQR to determine outlier boundaries.
-iqr_outlier <- function(x, mult = 3, na.rm = FALSE) { # nolint
+iqr_outlier <- function(x, mult = 3, na.rm = FALSE, ...) { # nolint
 
   # Check that inputs are well-formed numeric vector
   stopifnot(is.numeric(mult), sign(mult) == 1)
