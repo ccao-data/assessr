@@ -1,11 +1,11 @@
 Package: assessr
 Type: Package
 Title: Measure Property Assessment Performance
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: c(
     person(given = "Dan", family = "Snow", email="dsnow@cookcountyassessor.com", role=c("aut", "cre"))
     )
-Date: 2020-04-29
+Date: 2020-05-22
 Description: An R package to measure the performance of property assessments
     using IAAO standard statistics. Also includes a host of utility functions
     to make common assessment and evaluation tasks easier and more consistent.
