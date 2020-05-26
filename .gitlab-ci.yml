@@ -5,7 +5,7 @@
 # 1. BUILD. Builds the actual R package in the same way one would in RStudio
 # 2. TEST. Runs unit tests and checks on the package code
 
-# This setup uses dependency caching to speed up build times, see below for 
+# This setup uses dependency caching to speed up build times, see below for
 # more details.
 
 # Base R image to build the package with
@@ -17,7 +17,7 @@ variables:
   DOCKER_DRIVER: "overlay2" # Docker FS driver, don't change this
   GIT_SUBMODULE_STRATEGY: "recursive"  # Set how GitLab handles submodules
   # If a package has a dependency that isn't already listed, add it here
-  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev"  
+  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev"
   # Arbitrary location to install R libraries to. It must be in the project path
   # This folder is what gets cached in order to speed up build times
   R_LIBS_USER: "$CI_PROJECT_DIR/ci/lib"
@@ -41,11 +41,11 @@ before_script:
   # overall build times but aren't strictly necessary
   - rm -f /etc/apt/apt.conf.d/docker-clean
   - mkdir -p .apt && mkdir -p /var/cache/apt/archives && mount --bind .apt /var/cache/apt/archives/
-  
+
   # Install apt dependencies listed in APT_DEPS variable
   - apt-get update && apt-get install --no-install-recommends -y ${APT_DEPS}
   - mkdir -p $R_LIBS_USER
-  
+
   # Install R dependencies listed in DESCRIPTION using the install_deps function
   # Libraries are installed to R_LIBS_USER which is cached between builds
   # If libraries already exist in R_LIBS_USER, install will be skipped
@@ -56,13 +56,11 @@ stages:
   - build
   - test
 
-# Run the actual build command to generate the package. The resulting 
+# Run the actual build command to generate the package. The resulting
 # tarball (.tar.gz) is saved for 2 weeks for debugging purposes and to be used
 # in the test stage. Only runs on master branch commit
 build:
   stage: build
-  only:
-    - master
   script:
     - R CMD build . --no-build-vignettes --no-manual
   artifacts:
@@ -71,8 +69,8 @@ build:
     when: on_success
     paths:
       - ${CI_PROJECT_NAME}*.tar.gz
-      
-# Test stage composed of 3 steps: 
+
+# Test stage composed of 3 steps:
 # 1) Run R's built in package checking function on the tarball generated in build
 # This test for completion of documentation, code errors, and many other things
 # 2) Run the unit tests defined in the tests/ folder. Outputs a report in the Junit
@@ -81,12 +79,10 @@ build:
 # This output gets scraped by GitLab and turned into a coverage badge
 test:
   stage: test
-  only:
-    - master
   script:
     - R CMD check $(ls -1t *.tar.gz | head -n 1) --no-manual --no-build-vignettes --no-tests
     - Rscript -e 'devtools::test(reporter = testthat::JunitReporter$new(file = "test-out.xml"))'
-    - Rscript -e 'covr::package_coverage()' 
+    - Rscript -e 'covr::package_coverage()'
   artifacts:
     reports:
       junit: test-out.xml
