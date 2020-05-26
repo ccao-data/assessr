@@ -12,7 +12,7 @@
 # Should be version locked to the highest version most CCAO employees are using
 image: rocker/r-ver:3.6.3
 
-
+# Defining static variables used throughout the CI pipeline
 variables:
   DOCKER_DRIVER: "overlay2" # Docker FS driver, don't change this
   GIT_SUBMODULE_STRATEGY: "recursive"  # Set how GitLab handles submodules
@@ -48,9 +48,12 @@ before_script:
 
   # Install R dependencies listed in DESCRIPTION using the install_deps function
   # Libraries are installed to R_LIBS_USER which is cached between builds
-  # If libraries already exist in R_LIBS_USER, install will be skipped
+  # If libraries already exist in R_LIBS_USER, install will be
+  # The incredibly weird strsplit line here is a fix for a bug in which
+  # R_LIBS_USER sometime has additional paths appended to it
   - Rscript -e 'install.packages("remotes")'
-  - Rscript -e 'remotes::install_deps(dependencies = TRUE, lib = Sys.getenv("R_LIBS_USER"))'
+  - echo $R_LIBS_USER
+  - Rscript -e 'x <- strsplit(Sys.getenv("R_LIBS_USER"), ":")[[1]]; remotes::install_deps(dependencies = T, lib = x[grepl("\\<ci\\/lib\\>", x)])'
 
 stages:
   - build
