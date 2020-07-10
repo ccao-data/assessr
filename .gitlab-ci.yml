@@ -53,7 +53,7 @@ before_script:
   # R_LIBS_USER sometime has additional paths appended to it
   - Rscript -e 'install.packages("remotes")'
   - echo $R_LIBS_USER
-  - Rscript -e 'x <- strsplit(Sys.getenv("R_LIBS_USER"), ":")[[1]]; remotes::install_deps(dependencies = T, lib = x[grepl("\\<ci\\/lib\\>", x)])'
+  - Rscript -e 'x <- strsplit(Sys.getenv("R_LIBS_USER"), ":")[[1]]; remotes::install_deps(dependencies = T, upgrade = "always", repos = "https://cloud.r-project.org/", lib = x[grepl("\\<ci\\/lib\\>", x)])'
 
 stages:
   - build
