@@ -52,9 +52,9 @@ before_script:
   # If libraries already exist in R_LIBS_USER, install will be
   # The incredibly weird strsplit line here is a fix for a bug in which
   # R_LIBS_USER sometime has additional paths appended to it
-  - R -e 'install.packages("remotes", repos = "https://cloud.r-project.org/")'
+  - Rscript -e 'install.packages("remotes", repos = "https://cloud.r-project.org/")'
   - echo $R_LIBS_USER
-  - R -e 'x <- strsplit(Sys.getenv("R_LIBS_USER"), ":")[[1]]; remotes::install_deps(dependencies = T, upgrade = "always", repos = "https://cloud.r-project.org/", lib = x[grepl("\\<ci\\/lib\\>", x)])'
+  - Rscript -e 'x <- strsplit(Sys.getenv("R_LIBS_USER"), ":")[[1]]; remotes::install_deps(dependencies = T, upgrade = "always", repos = "https://cloud.r-project.org/", lib = x[grepl("\\<ci\\/lib\\>", x)])'
 
 stages:
   - build
@@ -86,8 +86,8 @@ test:
   stage: test
   script:
     - R CMD check $(ls -1t *.tar.gz | head -n 1) --no-manual --no-build-vignettes --no-tests
-    - R -e 'devtools::test(reporter = testthat::JunitReporter$new(file = "test-out.xml"))'
-    - R -e 'covr::package_coverage()'
+    - Rscript -e 'devtools::test(reporter = testthat::JunitReporter$new(file = "test-out.xml"))'
+    - Rscript -e 'covr::package_coverage()'
   artifacts:
     reports:
       junit: test-out.xml
@@ -97,8 +97,8 @@ test:
 pages:
   stage: pages
   script:
-    - R -e 'install.packages("pkgdown", repos = "https://cloud.r-project.org/")'
-    - R -e 'pkgdown::build_site()'
+    - Rscript -e 'install.packages("pkgdown", repos = "https://cloud.r-project.org/")'
+    - Rscript -e 'pkgdown::build_site()'
   artifacts:
     paths:
       - public
