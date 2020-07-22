@@ -9,6 +9,7 @@ Date: 2020-05-22
 Description: An R package to measure the performance of property assessments
     using IAAO standard statistics. Also includes a host of utility functions
     to make common assessment and evaluation tasks easier and more consistent.
+URL: https://ccao-data-science---modeling.gitlab.io/packages/assessr/, https://gitlab.com/ccao-data-science---modeling/packages/assessr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -16,9 +17,10 @@ Imports:
     stats
 RoxygenNote: 7.1.0
 Suggests: 
+    covr,
     devtools,
-    testthat,
     lintr,
-    covr
+    pkgdown,
+    testthat
 Depends: 
     R (>= 2.10)

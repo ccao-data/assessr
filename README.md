@@ -7,6 +7,9 @@ An R package to measure the performance of property assessments using
 standard statistics. Also includes a host of utility functions to make
 common assessment and evaluation tasks easier and more consistent.
 
+See the full reference website at:
+<https://ccao-data-science---modeling.gitlab.io/packages/assessr/>
+
 ## Installation
 
 You can install the released version of `assessr` directly from GitLab
@@ -99,8 +102,8 @@ ratios_sample %>%
 
 | TOWN      |    COD | COD\_CI        | COD\_MET |   PRD | PRD\_CI      | PRD\_MET |
 | :-------- | -----: | :------------- | :------- | ----: | :----------- | :------- |
-| Evanston  | 16.398 | 14.548, 18.325 | FALSE    | 1.033 | 1.015, 1.062 | FALSE    |
-| New Trier | 19.150 | 17.048, 21.283 | FALSE    | 1.066 | 1.046, 1.082 | FALSE    |
+| Evanston  | 16.398 | 14.534, 18.175 | FALSE    | 1.033 | 1.012, 1.056 | FALSE    |
+| New Trier | 19.150 | 16.964, 21.37  | FALSE    | 1.066 | 1.047, 1.085 | FALSE    |
 
 ### Sales Chasing Detection
 
@@ -249,13 +252,14 @@ combined %>%
   arrange(town_name, stage) %>%
   rename_all(toupper) %>%
   kable(format = "markdown")
+#> `summarise()` regrouping output by 'town_name' (override with `.groups` argument)
 ```
 
 | TOWN\_NAME | STAGE       |   N |      COD | COD\_CI        | COD\_MET |         PRB | PRB\_CI         | PRB\_MET |
 | :--------- | :---------- | --: | -------: | :------------- | :------- | ----------: | :-------------- | :------- |
-| ELK GROVE  | first\_pass |  71 | 27.78232 | 19.144, 38.06  | FALSE    | \-0.1188841 | \-0.263, 0.026  | FALSE    |
-| ELK GROVE  | certified   |  71 | 24.46860 | 15.915, 36.155 | FALSE    | \-0.0169422 | \-0.154, 0.12   | TRUE     |
-| ELK GROVE  | bor\_result |  71 | 23.49757 | 15.304, 35.537 | FALSE    | \-0.0174319 | \-0.152, 0.118  | TRUE     |
-| LAKE VIEW  | first\_pass | 291 | 20.05137 | 15.376, 26.288 | FALSE    | \-0.0163193 | \-0.069, 0.037  | TRUE     |
-| LAKE VIEW  | certified   | 291 | 18.49785 | 15.126, 22.263 | FALSE    | \-0.0384815 | \-0.078, 0.001  | TRUE     |
-| LAKE VIEW  | bor\_result | 291 | 18.44955 | 15.055, 22.444 | FALSE    | \-0.0425709 | \-0.082, -0.003 | TRUE     |
+| ELK GROVE  | first\_pass |  71 | 27.78232 | 19.51, 39.445  | FALSE    | \-0.1188841 | \-0.263, 0.026  | FALSE    |
+| ELK GROVE  | certified   |  71 | 24.46860 | 16.022, 36.146 | FALSE    | \-0.0169422 | \-0.154, 0.12   | TRUE     |
+| ELK GROVE  | bor\_result |  71 | 23.49757 | 15.829, 34.922 | FALSE    | \-0.0174319 | \-0.152, 0.118  | TRUE     |
+| LAKE VIEW  | first\_pass | 291 | 20.05137 | 15.147, 25.773 | FALSE    | \-0.0163193 | \-0.069, 0.037  | TRUE     |
+| LAKE VIEW  | certified   | 291 | 18.49785 | 15.258, 22.404 | FALSE    | \-0.0384815 | \-0.078, 0.001  | TRUE     |
+| LAKE VIEW  | bor\_result | 291 | 18.44955 | 14.92, 22.222  | FALSE    | \-0.0425709 | \-0.082, -0.003 | TRUE     |

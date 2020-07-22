@@ -17,6 +17,8 @@ knitr::opts_chunk$set(
 
 An R package to measure the performance of property assessments using standard statistics. Also includes a host of utility functions to make common assessment and evaluation tasks easier and more consistent.
 
+See the full reference website at: https://ccao-data-science---modeling.gitlab.io/packages/assessr/
+
 ## Installation
 
 You can install the released version of `assessr` directly from GitLab by running the following R command after installing the `remotes` package:

@@ -19,3 +19,4 @@
 ^man-roxygen$
 ^_pkgdown\.yml$
 ^pkgdown$
+^public$
