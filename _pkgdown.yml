@@ -1,1 +1,5 @@
-destination: docs
+destination: public
+url: https://ccao-data-science---modeling.gitlab.io/packages/assessr/
+links:
+- text: View source code at 
+  href: https://gitlab.com/ccao-data-science---modeling/packages/assessr/

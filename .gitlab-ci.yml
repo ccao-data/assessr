@@ -4,6 +4,7 @@
 # It is broken down into two overall stages:
 # 1. BUILD. Builds the actual R package in the same way one would in RStudio
 # 2. TEST. Runs unit tests and checks on the package code
+# 3. PAGES. Builds documentation into GitLab Pages using pkgdown
 
 # This setup uses dependency caching to speed up build times, see below for
 # more details.
@@ -17,7 +18,7 @@ variables:
   DOCKER_DRIVER: "overlay2" # Docker FS driver, don't change this
   GIT_SUBMODULE_STRATEGY: "recursive"  # Set how GitLab handles submodules
   # If a package has a dependency that isn't already listed, add it here
-  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev"
+  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev pandoc git"
   # Arbitrary location to install R libraries to. It must be in the project path
   # This folder is what gets cached in order to speed up build times
   R_LIBS_USER: "$CI_PROJECT_DIR/ci/lib"
@@ -51,13 +52,14 @@ before_script:
   # If libraries already exist in R_LIBS_USER, install will be
   # The incredibly weird strsplit line here is a fix for a bug in which
   # R_LIBS_USER sometime has additional paths appended to it
-  - Rscript -e 'install.packages("remotes")'
+  - Rscript -e 'install.packages("remotes", repos = "https://cloud.r-project.org/")'
   - echo $R_LIBS_USER
   - Rscript -e 'x <- strsplit(Sys.getenv("R_LIBS_USER"), ":")[[1]]; remotes::install_deps(dependencies = T, upgrade = "always", repos = "https://cloud.r-project.org/", lib = x[grepl("\\<ci\\/lib\\>", x)])'
 
 stages:
   - build
   - test
+  - pages
 
 # Run the actual build command to generate the package. The resulting
 # tarball (.tar.gz) is saved for 2 weeks for debugging purposes and to be used
@@ -89,3 +91,17 @@ test:
   artifacts:
     reports:
       junit: test-out.xml
+     
+# The pages stage will build package documentation using pkgdown, saving the static
+# site content to public/ and creating an artifact that is deployed to GL Pages
+pages:
+  stage: pages
+  script:
+    - Rscript -e 'remotes::install_github("r-lib/pkgdown")'
+    - Rscript -e 'pkgdown::build_site()'
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+

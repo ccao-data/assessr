@@ -28,3 +28,8 @@
 *.knit.md
 .Rproj.user
 *.xml
+
+# pkgdown files
+public
+pkgdown
+
