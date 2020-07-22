@@ -17,3 +17,5 @@
 ^README\.Rmd$
 ^LICENSE$
 ^man-roxygen$
+^_pkgdown\.yml$
+^pkgdown$
