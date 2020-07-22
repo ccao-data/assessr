@@ -97,7 +97,7 @@ test:
 pages:
   stage: pages
   script:
-    - Rscript -e 'install.packages("pkgdown", repos = "https://cloud.r-project.org/")'
+    - Rscript -e 'remotes::install_github("r-lib/pkgdown")'
     - Rscript -e 'pkgdown::build_site()'
   artifacts:
     paths:
