@@ -51,7 +51,7 @@ before_script:
   # If libraries already exist in R_LIBS_USER, install will be
   # The incredibly weird strsplit line here is a fix for a bug in which
   # R_LIBS_USER sometime has additional paths appended to it
-  - Rscript -e 'install.packages("remotes")'
+  - Rscript -e 'install.packages("remotes", repos = "https://cloud.r-project.org/")'
   - echo $R_LIBS_USER
   - Rscript -e 'x <- strsplit(Sys.getenv("R_LIBS_USER"), ":")[[1]]; remotes::install_deps(dependencies = T, upgrade = "always", repos = "https://cloud.r-project.org/", lib = x[grepl("\\<ci\\/lib\\>", x)])'
 
