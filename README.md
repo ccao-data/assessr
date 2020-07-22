@@ -3,9 +3,19 @@
 
 # AssessR Package <a href="https://gitlab.com/ccao-data-science---modeling/packages/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
 
-An R package to measure the performance of property assessments using
-standard statistics. Also includes a host of utility functions to make
-common assessment and evaluation tasks easier and more consistent.
+AssessR is a software package for R developed by the Cook County
+Assessor’s (CCAO) Data Science Department. This package is used in the
+CCAO’s custom-built Computer Assisted Mass Appraisal system. The code
+base for the CCAO’s CAMA system uses a wide range of functions
+regularly, and packaging these functions streamlines and standardizes
+our code base. The CCAO is publishing this package to make it available
+to assessors, reporters, and citizens everywhere.
+
+For assessors, we believe that this package will reduce the complexity
+of calculating ratio statistics and detecting sales chasing. We also
+believe that reporters, taxpayers, and members of academia will find
+this package helpful in monitoring the performance of local assessors
+and conducting research.
 
 ## Installation
 
@@ -99,8 +109,8 @@ ratios_sample %>%
 
 | TOWN      |    COD | COD\_CI        | COD\_MET |   PRD | PRD\_CI      | PRD\_MET |
 | :-------- | -----: | :------------- | :------- | ----: | :----------- | :------- |
-| Evanston  | 16.398 | 14.548, 18.325 | FALSE    | 1.033 | 1.015, 1.062 | FALSE    |
-| New Trier | 19.150 | 17.048, 21.283 | FALSE    | 1.066 | 1.046, 1.082 | FALSE    |
+| Evanston  | 16.398 | 14.67, 18.289  | FALSE    | 1.033 | 1.013, 1.061 | FALSE    |
+| New Trier | 19.150 | 16.988, 21.312 | FALSE    | 1.066 | 1.049, 1.09  | FALSE    |
 
 ### Sales Chasing Detection
 
@@ -205,6 +215,7 @@ each stage of assessment.
 ``` r
 library(dplyr)
 library(tidyr)
+#> Warning: package 'tidyr' was built under R version 3.6.3
 library(knitr)
 
 # Join the two datasets based on PIN, keeping only properties that have assessed
@@ -253,9 +264,9 @@ combined %>%
 
 | TOWN\_NAME | STAGE       |   N |      COD | COD\_CI        | COD\_MET |         PRB | PRB\_CI         | PRB\_MET |
 | :--------- | :---------- | --: | -------: | :------------- | :------- | ----------: | :-------------- | :------- |
-| ELK GROVE  | first\_pass |  71 | 27.78232 | 19.144, 38.06  | FALSE    | \-0.1188841 | \-0.263, 0.026  | FALSE    |
-| ELK GROVE  | certified   |  71 | 24.46860 | 15.915, 36.155 | FALSE    | \-0.0169422 | \-0.154, 0.12   | TRUE     |
-| ELK GROVE  | bor\_result |  71 | 23.49757 | 15.304, 35.537 | FALSE    | \-0.0174319 | \-0.152, 0.118  | TRUE     |
-| LAKE VIEW  | first\_pass | 291 | 20.05137 | 15.376, 26.288 | FALSE    | \-0.0163193 | \-0.069, 0.037  | TRUE     |
-| LAKE VIEW  | certified   | 291 | 18.49785 | 15.126, 22.263 | FALSE    | \-0.0384815 | \-0.078, 0.001  | TRUE     |
-| LAKE VIEW  | bor\_result | 291 | 18.44955 | 15.055, 22.444 | FALSE    | \-0.0425709 | \-0.082, -0.003 | TRUE     |
+| ELK GROVE  | first\_pass |  71 | 27.78232 | 20.073, 39.059 | FALSE    | \-0.1188841 | \-0.263, 0.026  | FALSE    |
+| ELK GROVE  | certified   |  71 | 24.46860 | 16.178, 37.018 | FALSE    | \-0.0169422 | \-0.154, 0.12   | TRUE     |
+| ELK GROVE  | bor\_result |  71 | 23.49757 | 15.619, 34.94  | FALSE    | \-0.0174319 | \-0.152, 0.118  | TRUE     |
+| LAKE VIEW  | first\_pass | 291 | 20.05137 | 15.603, 26.076 | FALSE    | \-0.0163193 | \-0.069, 0.037  | TRUE     |
+| LAKE VIEW  | certified   | 291 | 18.49785 | 15.231, 22.799 | FALSE    | \-0.0384815 | \-0.078, 0.001  | TRUE     |
+| LAKE VIEW  | bor\_result | 291 | 18.44955 | 14.953, 22.447 | FALSE    | \-0.0425709 | \-0.082, -0.003 | TRUE     |

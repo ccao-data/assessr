@@ -15,7 +15,10 @@ knitr::opts_chunk$set(
 
 # AssessR Package <a href="https://gitlab.com/ccao-data-science---modeling/packages/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
 
-An R package to measure the performance of property assessments using standard statistics. Also includes a host of utility functions to make common assessment and evaluation tasks easier and more consistent.
+AssessR is a software package for R developed by the Cook County Assessor’s (CCAO) Data Science Department. This package is used in the CCAO’s custom-built Computer Assisted Mass Appraisal system. The code base for the CCAO’s CAMA system uses a wide range of functions regularly, and packaging these functions streamlines and standardizes our code base. The CCAO is publishing this package to make it available to assessors, reporters, and citizens everywhere.
+
+For assessors, we believe that this package will reduce the complexity of calculating ratio statistics and detecting sales chasing. We also believe that reporters, taxpayers, and members of academia will find this package helpful in monitoring the performance of local assessors and conducting research.
+
 
 ## Installation
 
