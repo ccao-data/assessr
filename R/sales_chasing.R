@@ -42,9 +42,9 @@
 #'
 #' # Plot to view discontinuity
 #' plot(stats::ecdf(normal_ratios))
-#' plot(stats::ecdf(chased_ratios))
-#'
 #' detect_chasing(normal_ratios)
+#' 
+#' plot(stats::ecdf(chased_ratios))
 #' detect_chasing(chased_ratios)
 #' @export
 detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {

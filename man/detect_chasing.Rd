@@ -80,8 +80,8 @@ chased_ratios <- c(rnorm(900, 1, 0.15), rep(1, 100))
 
 # Plot to view discontinuity
 plot(stats::ecdf(normal_ratios))
-plot(stats::ecdf(chased_ratios))
-
 detect_chasing(normal_ratios)
+
+plot(stats::ecdf(chased_ratios))
 detect_chasing(chased_ratios)
 }
