@@ -2,7 +2,7 @@
 % Please edit documentation in R/ci.R
 \name{boot_ci}
 \alias{boot_ci}
-\title{Calculate Bootstrapped Confidence Interval}
+\title{Calculate bootstrapped confidence intervals}
 \usage{
 boot_ci(FUN = NULL, nboot = 100, alpha = 0.05, na.rm = FALSE, ...)
 }

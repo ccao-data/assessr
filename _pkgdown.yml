@@ -1,5 +1,45 @@
 destination: public
 url: https://ccao-data-science---modeling.gitlab.io/packages/assessr/
-links:
-- text: View source code at 
-  href: https://gitlab.com/ccao-data-science---modeling/packages/assessr/
+reference:
+
+- title: Functions
+- subtitle: Coefficient of Dispersion (COD)
+  desc: >
+    COD is the average absolute percent deviation from the median ratio.
+    It is a measure of horizontal equity in assessment. Horizontal equity means
+    properties with a similar fair market value should be similarly assessed.
+- contents:
+  - cod
+  - cod_ci
+  - cod_met
+- subtitle: Price-Related Differential (PRD)
+  desc: >
+    PRD is the mean ratio divided by the mean ratio weighted by sale price.
+    It is a measure of vertical equity in assessment. Vertical equity means
+    that properties at different levels of the income distribution should be
+    similarly assessed.
+- contents:
+  - prd
+  - prd_ci
+  - prd_met
+- subtitle: Price-Related Bias (PRB)
+  desc: >
+    PRB is an index of vertical equity that quantifies the relationship betweem
+    ratios and assessed values as a percentage. In concrete terms, a PRB of 0.02
+    indicates that, on average, ratios increase by 2% whenever assessed values
+    increase by 100 percent.
+- contents: 
+  - prb
+  - prb_ci
+  - prb_met
+- subtitle: Other Functions
+  desc: Functions for other assessment-related tasks
+- contents:
+  - boot_ci
+  - detect_chasing
+  - is_outlier
+
+- title: Data
+  desc: Sample data used for testing and demonstrations
+- contents:
+  - ratios_sample

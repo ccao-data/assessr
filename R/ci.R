@@ -1,4 +1,4 @@
-#' Calculate Bootstrapped Confidence Interval
+#' Calculate bootstrapped confidence intervals
 #'
 #' @description Calculate the non-parametric bootstrap confidence interval
 #'   for a given numeric input and a chosen function.

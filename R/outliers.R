@@ -1,5 +1,5 @@
 # nolint start
-#' Detect Outlier Values
+#' Detect outlier values in a vector using IQR/quantile method
 #'
 #' @description Detect outliers in a numeric vector using standard methods.
 #'

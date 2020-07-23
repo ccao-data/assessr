@@ -3,7 +3,7 @@
 \docType{data}
 \name{ratios_sample}
 \alias{ratios_sample}
-\title{Sample of ratio and sales data pulled from CCAO records.}
+\title{Sample of ratio and sales data pulled from CCAO records}
 \format{
 A data frame with 979 observation and 4 variables:
 \describe{

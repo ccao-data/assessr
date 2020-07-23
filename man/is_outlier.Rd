@@ -4,7 +4,7 @@
 \alias{is_outlier}
 \alias{quantile_outlier}
 \alias{iqr_outlier}
-\title{Detect Outlier Values}
+\title{Detect outlier values in a vector using IQR/quantile method}
 \usage{
 is_outlier(x, method = "iqr", na.rm = FALSE, ...)
 

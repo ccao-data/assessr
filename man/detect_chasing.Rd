@@ -4,7 +4,7 @@
 \alias{detect_chasing}
 \alias{detect_chasing_cdf}
 \alias{detect_chasing_dist}
-\title{Detect Sales Chasing in Ratios}
+\title{Detect sales chasing in a vector of sales ratios}
 \usage{
 detect_chasing(ratio, method = "both", na.rm = FALSE, ...)
 

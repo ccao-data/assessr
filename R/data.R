@@ -1,4 +1,4 @@
-#' Sample of ratio and sales data pulled from CCAO records.
+#' Sample of ratio and sales data pulled from CCAO records
 #'
 #' This sample was take from Evanston and New Trier in 2019. Ratios are
 #' calculated using assessor certified (post-appeal) fair market values.

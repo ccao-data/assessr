@@ -1,5 +1,5 @@
 # nolint start
-#' Detect Sales Chasing in Ratios
+#' Detect sales chasing in a vector of sales ratios
 #'
 #' @description Sales chasing is when a property is selectively reappraised to
 #'   shift its assessed value toward its actual sale price. Sales chasing is
