@@ -3,15 +3,9 @@ Type: Package
 Title: Measure Property Assessment Performance
 Version: 0.3.0
 Authors@R: c(
-    person(given = "Dan", family = "Snow", email="dsnow@cookcountyassessor.com", role=c("aut", "cre"))
-    ),
-    c(
-    person(given = "Rob", family = "Ross", email="rross@cookcountyassessor.com", role=c("ctb"))
-    ),
-    c(
-    person(given = "William", family = "Ridgeway", email="wridgeway@cookcountyassessor.com", role=c("ctb"))
-    ),
-    c(
+    person(given = "Dan", family = "Snow", email="dsnow@cookcountyassessor.com", role=c("aut", "cre")),
+    person(given = "Rob", family = "Ross", email="rross@cookcountyassessor.com", role=c("ctb")),
+    person(given = "William", family = "Ridgeway", email="wridgeway@cookcountyassessor.com", role=c("ctb")),
     person(given = "Nathan", family = "Dignazio", role=c("ctb"))
     )
 Date: 2020-05-22
