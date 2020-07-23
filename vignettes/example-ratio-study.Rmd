@@ -117,6 +117,10 @@ dbDisconnect(CCAODATA)
 
 In this section, we will use data published on the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Assessments/uqb9-r7vn) to produce sales ratio studies. 
 
+### Prepare the data
+
+Above, we pulled assessments and sales from the Open Data Portal. In order to produce our sales ratio statistics, our data needs to be formatted in 'long form,' meaninig that each row is a property in a given year.  
+
 ```{r, results='asis'}
 library(assessr)
 library(dplyr)
@@ -143,7 +147,13 @@ combined <- combined %>%
   mutate_at(vars(sale_price, assessed), as.numeric) %>%
   mutate(ratio = assessed / sale_price)
 
+```
 
+### Sales ratio statistics by township
+
+Cook County has jurisdictions called townships that are important units for assessment. In the chunk below, we calculate sales ratio statistics for each township in the City of Chicago.
+
+```{r, results='asis'}
 # For each town and stage, calculate COD, PRD, and PRB, and their respective
 # confidence intervals then arrange by town name and stage of assessment
 combined %>%
@@ -166,4 +176,62 @@ combined %>%
   rename_all(toupper) %>%
   kable(format = "markdown")
 
+```
+
+
+### Median ratios by sale price
+
+Suppose you are concerned that an assessment role is unfair to lower value homes. One way to visually see whether ratios are  systematically biased with respect to property value is to graph median ratios by decile. In our sample data, we can see each decile of sale price using the `quantile` function:
+
+```{r, results='asis'}
+library(DT)
+
+setNames(data.frame(quantile(combined$sale_price, probs=c(0, .1,.2,.3,.4,.5,.6,.7,.8,.9,1)))
+         , 'Sale Price')%>%
+  add_rownames(var = "Decile") %>%
+  DT::datatable( class = 'cell-border stripe'
+              , rownames = FALSE
+              , options = list(dom = 't')) %>%
+  formatCurrency('Sale Price') 
+
+```
+
+Using these decile values, we can graph sale ratio across each decile of value. Here, we use the very useful `ggplot2` package to make an attractive graph.
+
+
+```{r, results='asis'}
+library(ggplot2)
+
+graph_data <- combined %>%
+  mutate(`Sale price decile` = case_when(
+     between(sale_price, 0, 12000) ~ '$0 - $12,000'
+     , between(sale_price, 12001, 124000) ~ '$12,000 - $124K'
+     , between(sale_price, 124001, 160000) ~ '$124K - $160K'
+     , between(sale_price, 160001, 195000) ~ '$160K - $195K'
+     , between(sale_price, 195001, 236000) ~ '$195K - $236K'
+     , between(sale_price, 236001, 285000) ~ '$236K - $285K'
+     , between(sale_price, 285001, 340000) ~ '$285K - $340K'
+     , between(sale_price, 340001, 427000) ~ '$340K - $427K'
+     , between(sale_price, 427001, 549000) ~ '$427K - $549K'
+     , between(sale_price, 549001, 760000) ~ '$549K - $760K'
+     , sale_price > 760000  ~ '$760K+'
+  )
+) %>% 
+  dplyr::filter(year == 2019) %>%
+  group_by(`Sale price decile`) %>%
+summarise(
+    n = n(),
+    `Median sales ratio` = median(ratio)
+  ) %>%
+  dplyr::filter(n>70) 
+
+ggplot(graph_data, aes(x=`Sale price decile`, y=`Median sales ratio`)) +
+  geom_point(size=3)+
+  scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1)
+        , legend.position = 'bottom')+
+  labs(title='Median Sale Ratios: NW Suburbs',
+       subtitle = 'By decile of sale price in 2019')+
+  xlab(' ') + ylab(' ')
 ```
