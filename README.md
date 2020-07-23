@@ -74,8 +74,8 @@ ratios_sample %>%
 
 | TOWN      |    COD | COD\_CI        | COD\_MET |   PRD | PRD\_CI      | PRD\_MET |
 | :-------- | -----: | :------------- | :------- | ----: | :----------- | :------- |
-| Evanston  | 16.398 | 14.489, 18.391 | FALSE    | 1.033 | 1.009, 1.058 | FALSE    |
-| New Trier | 19.150 | 17.13, 21.444  | FALSE    | 1.066 | 1.048, 1.092 | FALSE    |
+| Evanston  | 16.398 | 14.516, 18.235 | FALSE    | 1.033 | 1.008, 1.063 | FALSE    |
+| New Trier | 19.150 | 17.063, 21.391 | FALSE    | 1.066 | 1.047, 1.083 | FALSE    |
 
 ### Sales Chasing Detection
 

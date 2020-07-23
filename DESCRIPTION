@@ -18,12 +18,14 @@ Imports:
 RoxygenNote: 7.1.1
 Suggests: 
     covr,
+    dplyr,
     devtools,
     jsonlite,
     knitr,
     lintr,
     pkgdown,
     rmarkdown,
-    testthat
+    testthat,
+    tidyr
 Depends: 
     R (>= 2.10)
