@@ -28,11 +28,11 @@ document.addEventListener("DOMContentLoaded", function() {
   padding: 10px;
   display: inline-block;
   border: none;
-  width: 30%;
+  width: 36%;
   margin-top: 2px;
   margin-bottom: 50px;
-  margin-left: 35%;
-  margin-right: 35%
+  margin-left: 32%;
+  margin-right: 32%
 }
 </style>
 
@@ -86,7 +86,7 @@ Each page of the table shown below shows a different comparables set (5 sets in 
 ```
 </div>
 
-<button class=toggle_button onclick="plot_switch('table1', 'table2')">Switch Distance Trade-Off Parameter Value</button>
+<button class=toggle_button onclick="plot_switch('table1', 'table2')">Toggle Distance Trade-Off Parameter Value</button>
 
 
 
@@ -136,7 +136,7 @@ However, good comparables should also be nearby the target property. We can chec
 ```
 </div>
 
-<button class=toggle_button onclick="plot_switch('map1', 'map2')">Switch Distance Trade-Off Parameter Value</button>
+<button class=toggle_button onclick="plot_switch('map1', 'map2')">Toggle Distance Trade-Off Parameter Value</button>
 
 
 
@@ -198,4 +198,4 @@ Finally, good comparables will be close to each other in price. Here we show dis
 ```
 </div>
 
-<button class=toggle_button onclick="plot_switch('dist1', 'dist2')">Switch Distance Trade-Off Parameter Value</button>
+<button class=toggle_button onclick="plot_switch('dist1', 'dist2')">Toggle Distance Trade-Off Parameter Value</button>
