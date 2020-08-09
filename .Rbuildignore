@@ -21,3 +21,4 @@
 ^pkgdown$
 ^public$
 ^vignettes/articles$
+^data-raw$
