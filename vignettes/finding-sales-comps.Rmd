@@ -277,29 +277,27 @@ comparables_df <- sales_prepped %>%
   relocate(group:type, .before = "price") %>%
   arrange(group, desc(type)) %>%
   select(-is_sale)
+
+# Choose arbitrary subset of comparables
+comps_groups <- c(1, 100, 250, 300, 350)
+
+# Filter the dataset to contain only those groups, and rename the groups var
+# for better visualization
+comparables_small <- comparables_df %>%
+  filter(group %in% comps_groups) %>%
+  group_by(group) %>%
+  mutate(
+    group = paste("Group", cur_group_id()),
+    median_sp = median(price)
+  ) %>%
+  ungroup()
 ```
 
-### Visualizing different comparable sets {.tabset .tabset-pills}
+### Visualizing different comparable sets
 
-We can now visualize the resulting comparables in a variety of ways. To see the trade-off caused by changing $l$, we choose a random subset of comparable groups from the dataset, then compare them for $l = 0.9$ and $l = 0.1$.
-
-Each page of the table shown below shows a different comparables set (5 sets in total). Switching between the two tables reveals that $l = 0.1$ yields much more physically similar properties.
-
-However, good comparables should also be nearby the target property. We can check the spatial distribution of our comparables sets by plotting them on a map of Evanston. Note that for $l = 0.1$ the properties are much more sparsely distributed. This may be appropriate for a small area such as Evanston, but might be less acceptable for a larger area such as an entire county. 
-
-Finally, good comparables will be close to each other in price. Here we show distributions of sale prices for each comparables set, along with the last assessed value for each target property. The resulting distributions are quite wide for some properties, however, our clustering was done using just 10 variables. Adding further variables or choosing a higher $m$ value will likely result in tighter distributions.
+We can now visualize the resulting comparables in a variety of ways. To see the trade-off caused by changing $l$, we choose a random subset of comparable groups from the dataset, then compare them for $l = 0.9$ and $l = 0.1$. Click the buttons below to toggle the value of $l$ for each table or plot.
 
 ```{r plots, child="_finding-sales-comps-plots.Rmd"}
-```
-
-```{r, include=FALSE}
-l <- 0.1
-```
-
-```{r find_comps2, include=FALSE, ref.label="find_comps"}
-```
-
-```{r plots2, child="_finding-sales-comps-plots.Rmd"}
 ```
 
 ## Suggestions

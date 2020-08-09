@@ -1,20 +1,51 @@
-#### Table $(l = `r l`)$
+<script>
+function plot_switch(id1, id2) {
+    var x = document.getElementById(id1);
+    var y = document.getElementById(id2);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+        y.style.display = "none";
+    } else {
+        x.style.display = "none";
+        y.style.display = "block";
+    }
+}
 
-```{r, echo=FALSE, out.width='100%', cache=FALSE}
-# Choose arbitrary comparable sets
-comps_groups <- c(1, 100, 250, 300, 350)
+document.addEventListener("DOMContentLoaded", function() {
+  plot_switch('table2', 'table1');
+  plot_switch('map2', 'map1');
+  plot_switch('dist2', 'dist1');
+});
+</script>
 
-# Filter the dataset to contain only those groups, and rename the groups var
-# for better visualization
-comparables_small <- comparables_df %>%
-  filter(group %in% comps_groups) %>%
-  group_by(group) %>%
-  mutate(
-    group = paste("Group", cur_group_id()),
-    median_sp = median(price)
-  ) %>%
-  ungroup()
+<style>
+.toggle_button {
+  color: #fff !important;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: bold;
+  background: #CD5C5C;
+  padding: 10px;
+  display: inline-block;
+  border: none;
+  width: 30%;
+  margin-top: 2px;
+  margin-bottom: 50px;
+  margin-left: 35%;
+  margin-right: 35%
+}
+</style>
 
+
+
+
+<br>
+<div id="table1">
+#### Sales Comparables Characteristics $(l = `r l`)$
+
+Each page of the table shown below shows a different comparables set (5 sets in total). Switching between the two tables reveals that $l = 0.1$ yields much more physically similar properties. 
+
+```{r table1, echo=FALSE, out.width='100%', cache=FALSE}
 # Create a datatable object with rows k + 1
 comparables_small %>%
   select(-median_sp, Group = group, Type = type, Price = price) %>%
@@ -37,10 +68,42 @@ comparables_small %>%
   DT::formatCurrency("Price", digits = 0) %>%
   DT::formatRound("Building Square Feet", digits = 0)
 ```
+</div>
 
-#### Map $(l = `r l`)$
+<div id="table2">
+```{r, include=FALSE}
+l <- 0.1
+```
 
-```{r, echo=FALSE, out.width='100%', cache=FALSE}
+```{r find_comps2, include=FALSE, ref.label="find_comps", cache=FALSE}
+```
+
+#### Sales Comparables Characteristics $(l = `r l`)$
+
+Each page of the table shown below shows a different comparables set (5 sets in total). Switching between the two tables reveals that $l = 0.1$ yields much more physically similar properties.
+
+```{r table2, echo=FALSE, out.width='100%', ref.label="table1"}
+```
+</div>
+
+<button class=toggle_button onclick="plot_switch('table1', 'table2')">Switch Distance Trade-Off Parameter Value</button>
+
+
+
+
+<div id="map1">
+```{r, include=FALSE}
+l <- 0.9
+```
+
+```{r find_comps3, include=FALSE, ref.label="find_comps", cache=FALSE}
+```
+
+#### Sales Comparables Locations in Evanston $(l = `r l`)$
+
+However, good comparables should also be nearby the target property. We can check the spatial distribution of our comparables sets by plotting them on a map of Evanston. Note that for $l = 0.1$ the properties are much more sparsely distributed. This may be appropriate for a small area such as Evanston, but might be less acceptable for a larger area such as an entire county. 
+
+```{r map1, echo=FALSE, out.width='100%', cache=FALSE, warning=FALSE}
 comparables_small %>%
   st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
   st_transform(4326) %>%
@@ -55,10 +118,42 @@ comparables_small %>%
   labs(caption = "Sub-boundaries represent Cook County Assessor neighborhoods") +
   theme_void()
 ```
+</div>
 
-#### Distribution $(l = `r l`)$
+<div id="map2">
+```{r, include=FALSE}
+l <- 0.1
+```
 
-```{r, echo=FALSE, out.width='100%', message=FALSE, warning=FALSE, cache=FALSE}
+```{r find_comps4, include=FALSE, ref.label="find_comps", cache=FALSE}
+```
+
+#### Sales Comparables Locations in Evanston $(l = `r l`)$
+
+However, good comparables should also be nearby the target property. We can check the spatial distribution of our comparables sets by plotting them on a map of Evanston. Note that for $l = 0.1$ the properties are much more sparsely distributed. This may be appropriate for a small area such as Evanston, but might be less acceptable for a larger area such as an entire county. 
+
+```{r map2, echo=FALSE, out.width='100%', ref.label="map1", message=FALSE, warning=FALSE}
+```
+</div>
+
+<button class=toggle_button onclick="plot_switch('map1', 'map2')">Switch Distance Trade-Off Parameter Value</button>
+
+
+
+
+<div id="dist1">
+```{r, include=FALSE}
+l <- 0.9
+```
+
+```{r find_comps5, include=FALSE, ref.label="find_comps", cache=FALSE}
+```
+
+#### Distributions of Sale Prices vs. Fair Market Value $(l = `r l`)$
+
+Finally, good comparables will be close to each other in price. Here we show distributions of sale prices for each comparables set, along with the last assessed value for each target property. The resulting distributions are quite wide for some properties, however, our clustering was done using just 10 variables. Adding further variables or choosing a higher $m$ value will likely result in tighter distributions.
+
+```{r dist1, echo=FALSE, out.width='100%', message=FALSE, warning=FALSE, cache=FALSE}
 comparables_small %>%
   ggplot() +
   geom_histogram(aes(x = price, fill = type)) +
@@ -72,8 +167,7 @@ comparables_small %>%
   ) +
   facet_wrap(vars(group), ncol = 1, strip.position = "right") +
   labs(
-    title = "Distribution of Sales for Each Comparable Set",
-    subtitle = "Target PIN price is most recent FMV",
+    caption = "Target PIN price is most recent FMV",
     x = "Sale Price / FMV",
     y = "Count"
   ) +
@@ -86,3 +180,22 @@ comparables_small %>%
     axis.text.y = element_text(margin = margin(l = 6))
   )
 ```
+</div>
+
+<div id="dist2">
+```{r, include=FALSE}
+l <- 0.1
+```
+
+```{r find_comps6, include=FALSE, ref.label="find_comps", cache=FALSE}
+```
+
+#### Distributions of Sale Prices vs. Fair Market Value $(l = `r l`)$
+
+Finally, good comparables will be close to each other in price. Here we show distributions of sale prices for each comparables set, along with the last assessed value for each target property. The resulting distributions are quite wide for some properties, however, our clustering was done using just 10 variables. Adding further variables or choosing a higher $m$ value will likely result in tighter distributions.
+
+```{r dist2, echo=FALSE, out.width='100%', ref.label="dist1", message=FALSE, warning=FALSE}
+```
+</div>
+
+<button class=toggle_button onclick="plot_switch('dist1', 'dist2')">Switch Distance Trade-Off Parameter Value</button>
