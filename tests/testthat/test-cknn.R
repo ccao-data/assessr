@@ -51,6 +51,10 @@ test_that("bad input data stops execution", {
   expect_error(cknn(data_lpd, lon, lat, var_weights = w))
 })
 
+test_that("results are consistent when seed set", {
+  expect_known_hash(clust_out, "4b0f658169")
+})
+
 
 ##### TEST CKNN.PREDICT #####
 context("test cknn_predict function")
@@ -63,15 +67,21 @@ comparables <- predict(clust_out, pred_data, pred_lon, pred_lat, 11)
 
 test_that("output has expected attributes", {
   expect_type(comparables, "list")
-  expect_length(comparables, 2)
+  expect_length(comparables, 4)
   expect_length(comparables$knn, 426)
   expect_length(comparables$cluster, 426)
 })
 
 test_that("bad input data stops execution", {
+  # Error on new data containing different cols than original
   expect_error(
     predict(clust_out, pred_data %>% rename(sqft = bldg_sf), pred_lon, pred_lat)
   )
+  # Error and invalid params
+  expect_error(predict(clust_out, pred_data, pred_lon, pred_lat, k = -1))
+  expect_error(predict(clust_out, pred_data, pred_lon, pred_lat, l = 2))
+  expect_error(predict(clust_out, pred_data, pred_lon, pred_lat, l = -0.5))
+  # Error on coltype of new data not matching original
   expect_error(
     predict(
       clust_out,
@@ -80,6 +90,7 @@ test_that("bad input data stops execution", {
       pred_lat
     )
   )
+  # Error on NAs in input data
   expect_error(
     predict(
       clust_out,
@@ -89,4 +100,8 @@ test_that("bad input data stops execution", {
       pred_lat
     )
   )
+})
+
+test_that("results are consistent when seed set", {
+  expect_known_hash(comparables, "3a94264601")
 })

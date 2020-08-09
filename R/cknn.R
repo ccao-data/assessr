@@ -413,7 +413,9 @@ predict.cknn <- function(object, newdata, lon, lat, k = NULL, l = NULL, ...) {
   # Output a list with cluster type and knn for each new data point
   out <- list(
     cluster = kproto_clusts$cluster,
-    knn = data_idx[order(as.numeric(gsub("\\D+", "", names(data_idx))))]
+    knn = data_idx[order(as.numeric(gsub("\\D+", "", names(data_idx))))],
+    k = k,
+    l = l
   )
 
   return(out)
