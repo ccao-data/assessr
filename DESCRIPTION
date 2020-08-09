@@ -1,14 +1,14 @@
 Package: assessr
 Type: Package
 Title: Measure Property Assessment Performance
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: c(
     person(given = "Dan", family = "Snow", email="dsnow@cookcountyassessor.com", role=c("aut", "cre")),
     person(given = "Rob", family = "Ross", email="rross@cookcountyassessor.com", role=c("ctb")),
     person(given = "William", family = "Ridgeway", email="wridgeway@cookcountyassessor.com", role=c("ctb")),
     person(given = "Nathan", family = "Dignazio", role=c("ctb"))
     )
-Date: 2020-05-22
+Date: 2020-08-07
 Description: An R package to measure the performance of property assessments
     using IAAO standard statistics. Also includes a host of utility functions
     to make common assessment and evaluation tasks easier and more consistent.
@@ -17,19 +17,28 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports:
+    clustMixType,
+    dbscan,
     stats
 RoxygenNote: 7.1.1
 Suggests: 
+    ccao,
     covr,
-    dplyr,
     devtools,
+    dplyr,
+    DT,
+    forcats,
+    ggplot2,
     jsonlite,
     knitr,
     lintr,
     pkgdown,
     rmarkdown,
+    scales,
+    sf,
     testthat,
-    tidyr,
-    ggplot2
+    tidyr
+Remotes: 
+    gitlab::ccao-data-science---modeling/packages/ccao
 Depends: 
     R (>= 2.10)

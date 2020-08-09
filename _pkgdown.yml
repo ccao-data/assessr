@@ -32,7 +32,12 @@ reference:
   - prb
   - prb_ci
   - prb_met
-- subtitle: Other Functions
+- subtitle: Finding comparables
+  desc: Functions and methods for finding sales and property comparables
+- contents:
+  - cknn
+  - predict.cknn
+- subtitle: Other functions
   desc: Functions for other assessment-related tasks
 - contents:
   - boot_ci
