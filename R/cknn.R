@@ -254,7 +254,7 @@ cknn <- function(data, lon, lat, m = 5, k = 10, var_weights = NULL, ...) {
 }
 
 # nolint start
-#' Predict cluster and k nearest neighbors for new properties
+#' Predict clusters and k nearest neighbors for new properties
 #'
 #' @description Predict cluster membership and \code{k} nearest neighbors
 #'   for data not included in the original \code{\link{cknn}} function. See the

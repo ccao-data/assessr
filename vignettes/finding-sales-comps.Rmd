@@ -184,7 +184,7 @@ sales_with_knn %>%
   st_transform(4326) %>%
 ggplot() +
   geom_sf(data = st_set_crs(ccao::town_shp, 4326) %>% filter(township_name == "Evanston")) +
-  geom_sf(aes(color = m, geometry = geometry)) +
+  geom_sf(aes(color = m, geometry = geometry), size = 0.9) +
   geom_text(aes(x = -87.748, y = 42.048, label = median_sp), check_overlap = TRUE, hjust = 0) +
   geom_text(aes(x = -87.748, y = 42.038, label = median_age), check_overlap = TRUE, hjust = 0) +
   geom_text(aes(x = -87.748, y = 42.028, label = median_sf), check_overlap = TRUE, hjust = 0) +

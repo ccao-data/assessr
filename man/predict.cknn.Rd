@@ -2,7 +2,7 @@
 % Please edit documentation in R/cknn.R
 \name{predict.cknn}
 \alias{predict.cknn}
-\title{Predict cluster and k nearest neighbors for new properties}
+\title{Predict clusters and k nearest neighbors for new properties}
 \usage{
 \method{predict}{cknn}(object, newdata, lon, lat, k = NULL, ...)
 }
