@@ -4,7 +4,7 @@
 \alias{cknn}
 \title{Find comparable properties using clustered nearest neighbors}
 \usage{
-cknn(data, lon, lat, m = 5, k = 10, var_weights = NULL, ...)
+cknn(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...)
 }
 \arguments{
 \item{data}{A data frame containing the variables to cluster on. Should
@@ -26,6 +26,11 @@ details on reprojection using R.}
 
 \item{k}{The number of nearest neighbors to return for each row of
 input data.}
+
+\item{l}{Hyperparameter representing the trade-off between distance and
+characteristics in kNN matching. Must be >= 0 and <= 1. Value equal to 1
+will match on distance only, while value equal to 0 will disregard distance
+and match on characteristics only. Default 0.5 (equal weight).}
 
 \item{var_weights}{Value(s) passed to \code{lambda} input of
 \code{\link[clustMixType]{kproto}}. See details.}
@@ -59,6 +64,8 @@ for scaling new input data.}
 
 \item{k}{Number of nearest neighbors returned by
 \code{\link[dbscan]{kNN}}.}
+
+\item{l}{Hyperparameter used for distance/characteristics trade-off.}
 }
 \description{
 Sales comparables are recent sales which have the same

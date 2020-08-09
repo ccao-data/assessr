@@ -4,23 +4,29 @@
 \alias{predict.cknn}
 \title{Predict clusters and k nearest neighbors for new properties}
 \usage{
-\method{predict}{cknn}(object, newdata, lon, lat, k = NULL, ...)
+\method{predict}{cknn}(object, newdata, lon, lat, k = NULL, l = NULL, ...)
 }
 \arguments{
 \item{object}{Object of class \code{"cknn"}.}
 
 \item{newdata}{A data frame containing data in the same format as the
-data used to create \code{obj}, but with new observations.}
+data used to create \code{object}, but with new observations.}
 
 \item{lon}{A numeric vector of longitude values, in the same projection as
-the values stored in \code{obj}.}
+the values stored in \code{object}.}
 
 \item{lat}{A numeric vector of latitude values, in the same projection as
-the values stored in \code{obj}.}
+the values stored in \code{object}.}
 
 \item{k}{An optional value for the number nearest neighbors to return
 for each row of new data. Set to value used to create
-\code{obj} by default.}
+\code{object} by default.}
+
+\item{l}{Hyperparameter representing the trade-off between distance and 
+characteristics in kNN matching. Must be >= 0 and <= 1. Value equal to 1
+will match on distance only, while value equal to 0 will disregard distance
+and match on characteristics only. Set to value used to create
+\code{object} by default.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

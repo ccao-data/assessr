@@ -70,6 +70,10 @@
 #'   \code{\link[clustMixType]{kproto}} function.
 #' @param k The number of nearest neighbors to return for each row of
 #'   input data.
+#' @param l Hyperparameter representing the trade-off between distance and 
+#'   characteristics in kNN matching. Must be >= 0 and <= 1. Value equal to 1
+#'   will match on distance only, while value equal to 0 will disregard distance
+#'   and match on characteristics only. Default 0.5 (equal weight).
 #' @param var_weights Value(s) passed to \code{lambda} input of
 #'   \code{\link[clustMixType]{kproto}}. See details.
 #' @param ... Arguments passed on to \code{\link[clustMixType]{kproto}},
@@ -92,12 +96,13 @@
 #'   \code{\link[clustMixType]{kproto}}.}
 #' @return \item{k}{Number of nearest neighbors returned by
 #'   \code{\link[dbscan]{kNN}}.}
+#' @return \item{l}{Hyperparameter used for distance/characteristics trade-off.}
 #'
 #' @md
 #' @family cknn
 #' @export
 # nolint end
-cknn <- function(data, lon, lat, m = 5, k = 10, var_weights = NULL, ...) {
+cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...) { # nolint
 
   # Basic error handling and expected input checking
   stopifnot(
@@ -109,6 +114,7 @@ cknn <- function(data, lon, lat, m = 5, k = 10, var_weights = NULL, ...) {
     is.numeric(lat) & length(lat) == nrow(data),
     is.numeric(m) & m > 1,
     is.numeric(k) & k > 1,
+    is.numeric(l) & l >= 0 & l <= 1,
     is.numeric(var_weights) | is.null(var_weights)
   )
 
@@ -172,9 +178,9 @@ cknn <- function(data, lon, lat, m = 5, k = 10, var_weights = NULL, ...) {
   # Create a matrix of distance data for kNN. NOTE, the input data MUST be
   # rescaled according to the original data, otherwise kNN will not work
   dist_data <- data.frame(
-    lon = rescale(lon - mean(lon), from = demean_coords(lon, lat)),
-    lat = rescale(lat - mean(lat), from = demean_coords(lon, lat)),
-    dist = apply(kproto_clusts$dists, 2, rescale), # rescale each col
+    lon = rescale(lon - mean(lon), from = demean_coords(lon, lat)) * l,
+    lat = rescale(lat - mean(lat), from = demean_coords(lon, lat)) * l,
+    dist = apply(kproto_clusts$dists, 2, rescale) * (1 - l),
     row.names = seq_len(nrow(data))
   )
 
@@ -246,7 +252,8 @@ cknn <- function(data, lon, lat, m = 5, k = 10, var_weights = NULL, ...) {
     lon = lon,
     lat = lat,
     m = m,
-    k = k
+    k = k,
+    l = l
   )
   attr(out, "class") <- "cknn"
 
@@ -263,14 +270,19 @@ cknn <- function(data, lon, lat, m = 5, k = 10, var_weights = NULL, ...) {
 #'
 #' @param object Object of class \code{"cknn"}.
 #' @param newdata A data frame containing data in the same format as the
-#'   data used to create \code{obj}, but with new observations.
+#'   data used to create \code{object}, but with new observations.
 #' @param lon A numeric vector of longitude values, in the same projection as
-#'   the values stored in \code{obj}.
+#'   the values stored in \code{object}.
 #' @param lat A numeric vector of latitude values, in the same projection as
-#'   the values stored in \code{obj}.
+#'   the values stored in \code{object}.
 #' @param k An optional value for the number nearest neighbors to return
 #'   for each row of new data. Set to value used to create
-#'   \code{obj} by default.
+#'   \code{object} by default.
+#' @param l Hyperparameter representing the trade-off between distance and 
+#'   characteristics in kNN matching. Must be >= 0 and <= 1. Value equal to 1
+#'   will match on distance only, while value equal to 0 will disregard distance
+#'   and match on characteristics only. Set to value used to create
+#'   \code{object} by default.
 #' @param ... Further arguments passed to or from other methods.
 #'
 #' @return List containing:
@@ -283,8 +295,9 @@ cknn <- function(data, lon, lat, m = 5, k = 10, var_weights = NULL, ...) {
 #' @importFrom stats predict
 #' @export
 # nolint end
-predict.cknn <- function(object, newdata, lon, lat, k = NULL, ...) {
+predict.cknn <- function(object, newdata, lon, lat, k = NULL, l = NULL, ...) {
   if (is.null(k)) k <- object$k
+  if (is.null(l)) l <- object$l
 
   # Basic error handling and expected input checking
   stopifnot(
@@ -295,7 +308,8 @@ predict.cknn <- function(object, newdata, lon, lat, k = NULL, ...) {
     all(!is.na(lon)) & all(!is.na(lat)),
     is.numeric(lon) & length(lon) == nrow(newdata),
     is.numeric(lat) & length(lat) == nrow(newdata),
-    is.numeric(k) & k > 1
+    is.numeric(k) & k > 1,
+    is.numeric(l) & l >= 0 & l <= 1
   )
 
   # Stop if missing values are present
@@ -326,12 +340,12 @@ predict.cknn <- function(object, newdata, lon, lat, k = NULL, ...) {
     lon = rescale(
       x = lon - mean(object$lon),
       from = demean_coords(object$lat, object$lon)
-    ),
-    lon = rescale(
+    ) * l,
+    lat = rescale(
       x = lat - mean(object$lat),
       from = demean_coords(object$lat, object$lon)
-    ),
-    dist = rescale_data(object$kproto$dists, kproto_clusts$dists),
+    ) * l,
+    dist = rescale_data(object$kproto$dists, kproto_clusts$dists) * (1 - l),
     row.names = seq_len(nrow(newdata))
   )
 
@@ -348,12 +362,12 @@ predict.cknn <- function(object, newdata, lon, lat, k = NULL, ...) {
         rescale(
           x = object$lon - mean(object$lon),
           from = demean_coords(object$lon, object$lat)
-        )[c_idx],
+        )[c_idx] * l,
         rescale(
           x = object$lat - mean(object$lat),
           from = demean_coords(object$lon, object$lat)
-        )[c_idx],
-        apply(object$kproto$dists, 2, rescale)[c_idx, ]
+        )[c_idx] * l,
+        apply(object$kproto$dists, 2, rescale)[c_idx, ] * (1 - l)
       ))
 
       # Query the original cluster data using the new data

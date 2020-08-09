@@ -22,7 +22,7 @@ clust_out <- cknn(data = data_lpd, lon = lon, lat = lat, m = 8)
 test_that("output has expected attributes", {
   expect_s3_class(clust_out, "cknn")
   expect_s3_class(clust_out$kproto, "kproto")
-  expect_length(clust_out, 8)
+  expect_length(clust_out, 9)
   expect_length(clust_out$knn, 1978)
   expect_length(unique(clust_out$kproto$cluster), 8)
 })

@@ -95,6 +95,7 @@ sales_prepped <- sales %>%
 
 # Visualize prepared data
 head(sales_prepped) %>%
+  select(-sale_price) %>%
   knitr::kable(digits = 3)
 ```
 
@@ -124,7 +125,8 @@ clusts <- lapply(num_clusts, function(m) {
     lat = sales_prepped %>% pull(lat),
     var_weights = weights,
     m = m,
-    k = 10
+    k = 10,
+    l = 0.5
   )
 })
 ```
@@ -133,7 +135,7 @@ clusts <- lapply(num_clusts, function(m) {
 
 The optimal number of clusters depends on the input data, knowledge of the market, and trade-offs between accuracy and overfitting. There is no perfect method, but there are a number of heuristics to help make the choice. Here we use the elbow method to determine a suitable number, in this case $m = 8$.
 
-```{r, message=FALSE, out.width='100%'}
+```{r, message=FALSE, out.width='100%', results='hold'}
 # Elbow plot of total sum square dists * number of clusters
 data.frame(
   m = num_clusts,
@@ -182,7 +184,7 @@ sales_with_knn %>%
   ) %>%
   st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
   st_transform(4326) %>%
-ggplot() +
+  ggplot() +
   geom_sf(data = st_set_crs(ccao::town_shp, 4326) %>% filter(township_name == "Evanston")) +
   geom_sf(aes(color = m, geometry = geometry), size = 0.9) +
   geom_text(aes(x = -87.748, y = 42.048, label = median_sp), check_overlap = TRUE, hjust = 0) +
@@ -202,7 +204,7 @@ Now that we've created a `cknn()` object, we can feed it new characteristics dat
 
 Data input for the predict method must be in exactly the same form as the data originally input to the `cknn()` function. In practice, this means the input data must have the same number of columns, column types, and column names as the sales data. Here we've effectively copied the code used to prepare the previous data. Note that the `price` will be excluded later.
 
-```{r}
+```{r prep_comps}
 # Keep only properties with characteristics that are NOT in the set of sold
 # properties recorded in the sales data frame
 properties_prepped <- properties %>%
@@ -232,14 +234,19 @@ properties_prepped <- properties %>%
 
 # Visualize prepared data
 head(properties_prepped) %>%
+  select(-price) %>%
   knitr::kable(digits = 3)
 ```
 
 ### Finding comparables using new data
 
-The predict method works using inputs that are nearly identical to those of the `cknn()` function. It outputs a list containing the cluster membership and nearest neighbors for each property in the new data. Here, we've used that list to construct a new data frame containing both the unsold properties **and** the comparable sales from the original data. Note that the predict method take an argument `k`, which can be used to vary the number of comparables returned.
+The predict method works using inputs that are nearly identical to those of the `cknn()` function. It outputs a list containing the cluster membership and nearest neighbors for each property in the new data. Here, we've used that list to construct a new data frame containing both the unsold properties **and** the comparable sales from the original data. Note that the predict method takes an argument $k$, which can be used to vary the number of comparables returned. It also takes an argument $l$, which can vary the trade-off between distance and characteristic similarities.
 
-```{r}
+```{r, include=FALSE}
+l <- 0.9
+```
+
+```{r find_comps}
 # Set the number of comps to return. If k is unspecified in predict() the original
 # value used to create the cknn object is used
 k <- 10
@@ -250,7 +257,8 @@ comparables <- predict(
   newdata = properties_prepped %>% select(-price, -lon, -lat),
   lon = properties_prepped %>% pull(lon),
   lat = properties_prepped %>% pull(lat),
-  k = k
+  k = k,
+  l = l # set to 0.9 here
 )
 
 # Use those memberships to construct a dataset of both unsold and sold properties
@@ -271,90 +279,27 @@ comparables_df <- sales_prepped %>%
   select(-is_sale)
 ```
 
-### Visualizing the resulting comparables sets
+### Visualizing different comparable sets {.tabset .tabset-pills}
 
-We can now visualize the set of comparables in a variety of ways. Here we choose a random selection of comparable groups from the dataset. The resulting sets are shown in the interactive table below.
+We can now visualize the resulting comparables in a variety of ways. To see the trade-off caused by changing $l$, we choose a random subset of comparable groups from the dataset, then compare them for $l = 0.9$ and $l = 0.1$.
 
-```{r, out.width='100%'}
-# Choose arbitrary comparable sets
-comps_groups <- c(1, 100, 250, 300, 350)
+Each page of the table shown below shows a different comparables set (5 sets in total). Switching between the two tables reveals that $l = 0.1$ yields much more physically similar properties.
 
-# Filter the dataset to contain only those groups, and rename the groups var
-# for better visualization
-comparables_small <- comparables_df %>%
-  filter(group %in% comps_groups) %>%
-  group_by(group) %>%
-  mutate(
-    group = paste("Group", cur_group_id()),
-    median_sp = median(price)
-  ) %>%
-  ungroup()
+However, good comparables should also be nearby the target property. We can check the spatial distribution of our comparables sets by plotting them on a map of Evanston. Note that for $l = 0.1$ the properties are much more sparsely distributed. This may be appropriate for a small area such as Evanston, but might be less acceptable for a larger area such as an entire county. 
 
-# Create a datatable object with rows k + 1
-comparables_small %>%
-  select(-lon, -lat) %>%
-  vars_recode(type = "short") %>%
-  DT::datatable(
-    rownames = FALSE,
-    filter = "none",
-    autoHideNavigation = TRUE,
-    selection = "none",
-    options = list(
-      pageLength = 11,
-      autoWidth = TRUE,
-      scrollX = TRUE,
-      searching = FALSE,
-      info = FALSE
-    )
-  )
+Finally, good comparables will be close to each other in price. Here we show distributions of sale prices for each comparables set, along with the last assessed value for each target property. The resulting distributions are quite wide for some properties, however, our clustering was done using just 10 variables. Adding further variables or choosing a higher $m$ value will likely result in tighter distributions.
+
+```{r plots, child="_finding-sales-comps-plots.Rmd"}
 ```
 
-Good comparables should also be nearby the target property. We can check the spatial distribution of our small comparables set by plotting them on a map of Evanston. The sub-boundaries shown represent Cook County Assessor neighborhoods.
-
-```{r, out.width='100%'}
-
-comparables_small %>%
-  st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
-  st_transform(4326) %>%
-ggplot() +
-  geom_sf(data = st_set_crs(ccao::nbhd_shp, 4326) %>% filter(township_name == "Evanston")) +
-  geom_sf(aes(color = factor(group), shape = type, size = type)) +
-  scale_shape_manual(name = "Type", values = c("Target" = 15, "Comp" = 10)) +
-  scale_size_manual(name = "Type", values = c("Target" = 3, "Comp" = 2)) +
-  guides(
-    color = guide_legend(title = "Comparable Groups")
-  ) +
-  theme_void()
+```{r, include=FALSE}
+l <- 0.1
 ```
 
-Finally, good comparables will be close to each other in price. Here we show a distribution of sale prices for each comparable set, along with the last assessed value for each target property. The resulting distribution is quite wide for some properties, however, our clustering was done using just 10 variables. Adding further variables or choosing a higher $m$ value will likely result in tighter distributions.
+```{r find_comps2, include=FALSE, ref.label="find_comps"}
+```
 
-```{r, out.width='100%'}
-comparables_small %>%
-  ggplot() +
-  geom_histogram(aes(x = price, fill = type)) +
-  geom_vline(aes(xintercept = median_sp, color = "Median", linetype = "Median")) +
-  scale_color_manual(name = "", values = c("Median" = "grey10")) +
-  scale_linetype_manual(name = "", values = c("Median" = "dashed")) +
-  scale_x_continuous(labels = scales::dollar) +
-  scale_fill_manual(
-    name = "Type",
-    values = c("Comp" = "grey75", "Target" = "darkred")
-  ) +
-  facet_wrap(vars(group), ncol = 1, strip.position = "right") +
-  labs(
-    title = "Distribution of Sales for Each Comparable Set",
-    subtitle = "Target PIN price is most recent FMV",
-    x = "Sale Price / FMV",
-    y = "Count"
-  ) +
-  theme_minimal() +
-  theme(
-    panel.grid.minor.y = element_blank(),
-    panel.spacing.y = unit(0.5, "cm"),
-    axis.text.x = element_text(margin = margin(b = 10)),
-    axis.text.y = element_text(margin = margin(l = 6))
-  )
+```{r plots2, child="_finding-sales-comps-plots.Rmd"}
 ```
 
 ## Suggestions
@@ -364,4 +309,5 @@ comparables_small %>%
 1. Always clean your input data, both when initially creating clusters and when using the predict method. Due to the nature of `cknn()`'s scaling, it is especially sensitive to numeric outliers.
 2. Choose an initial value of $m$ based on the [elbow method](https://en.wikipedia.org/wiki/Elbow_method_(clustering)) or [silhouette method](https://en.wikipedia.org/wiki/Silhouette_(clustering)). For even better performance, the predict function can be used to tune $m$ based on a validation set. Higher values of $m$ will lead to tighter, smaller clusters, but may lead to overfitting.
 3. The relative weights passed to the `var_weights` argument in `cknn()` should be based on some measure of variable importance. Many assessors have an intuitive notion of what variables drive value. If that intuition can be translated to a numeric ranking, then it's possible to use it as a set of weights. For a more empirical method, it's possible to create a set of weights using methods such as random forest or permutation feature importance.
-4. Increasing the value of $k$ will yield increasingly dissimilar/far away sales. For tight spatial and price distributions, keep $k$ relatively low.
+4. Keep $k$ relatively low for tight spatial and price distributions. Increasing the value of $k$ will yield increasingly dissimilar/far away sales. 
+5. Choose a value for $l$ based on your subjective need. If you value proximity, keep $l$ close to 1, if you value very similar properties, keep $l$ near 0. Otherwise, the default value (0.5) represents a good trade-off between distance and similarity.
