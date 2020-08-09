@@ -1,0 +1,88 @@
+#### Table $(l = `r l`)$
+
+```{r, echo=FALSE, out.width='100%', cache=FALSE}
+# Choose arbitrary comparable sets
+comps_groups <- c(1, 100, 250, 300, 350)
+
+# Filter the dataset to contain only those groups, and rename the groups var
+# for better visualization
+comparables_small <- comparables_df %>%
+  filter(group %in% comps_groups) %>%
+  group_by(group) %>%
+  mutate(
+    group = paste("Group", cur_group_id()),
+    median_sp = median(price)
+  ) %>%
+  ungroup()
+
+# Create a datatable object with rows k + 1
+comparables_small %>%
+  select(-median_sp, Group = group, Type = type, Price = price) %>%
+  ccao::vars_rename(names_from = "socrata", names_to = "pretty") %>%
+  select(-lon, -lat) %>%
+  vars_recode(type = "short") %>%
+  DT::datatable(
+    rownames = FALSE,
+    filter = "none",
+    autoHideNavigation = TRUE,
+    selection = "none",
+    options = list(
+      pageLength = 11,
+      autoWidth = TRUE,
+      scrollX = TRUE,
+      searching = FALSE,
+      info = FALSE
+    )
+  ) %>%
+  DT::formatCurrency("Price", digits = 0) %>%
+  DT::formatRound("Building Square Feet", digits = 0)
+```
+
+#### Map $(l = `r l`)$
+
+```{r, echo=FALSE, out.width='100%', cache=FALSE}
+comparables_small %>%
+  st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
+  st_transform(4326) %>%
+  ggplot() +
+  geom_sf(data = st_set_crs(ccao::nbhd_shp, 4326) %>% filter(township_name == "Evanston")) +
+  geom_sf(aes(color = factor(group), shape = type, size = type)) +
+  scale_shape_manual(name = "Type", values = c("Target" = 15, "Comp" = 10)) +
+  scale_size_manual(name = "Type", values = c("Target" = 3, "Comp" = 2)) +
+  guides(
+    color = guide_legend(title = "Comparable Groups")
+  ) +
+  labs(caption = "Sub-boundaries represent Cook County Assessor neighborhoods") +
+  theme_void()
+```
+
+#### Distribution $(l = `r l`)$
+
+```{r, echo=FALSE, out.width='100%', message=FALSE, warning=FALSE, cache=FALSE}
+comparables_small %>%
+  ggplot() +
+  geom_histogram(aes(x = price, fill = type)) +
+  geom_vline(aes(xintercept = median_sp, color = "Median", linetype = "Median")) +
+  scale_color_manual(name = "", values = c("Median" = "grey10")) +
+  scale_linetype_manual(name = "", values = c("Median" = "dashed")) +
+  scale_x_continuous(labels = scales::dollar) +
+  scale_fill_manual(
+    name = "Type",
+    values = c("Comp" = "grey75", "Target" = "darkred")
+  ) +
+  facet_wrap(vars(group), ncol = 1, strip.position = "right") +
+  labs(
+    title = "Distribution of Sales for Each Comparable Set",
+    subtitle = "Target PIN price is most recent FMV",
+    x = "Sale Price / FMV",
+    y = "Count"
+  ) +
+  coord_cartesian(xlim = c(2.5e5, 1.5e6), ylim = c(0, 4)) +
+  theme_minimal() +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.spacing.y = unit(0.5, "cm"),
+    axis.text.x = element_text(margin = margin(b = 10)),
+    axis.text.y = element_text(margin = margin(l = 6))
+  )
+```

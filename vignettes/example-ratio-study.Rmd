@@ -190,7 +190,7 @@ data.frame(quantile(combined$sale_price, probs = 1:9 / 10)) %>%
     rownames = FALSE,
     options = list(dom = "t")
   ) %>%
-  formatCurrency("Sale Price")
+  formatCurrency("Sale Price", digits = 0)
 ```
 
 Using these decile values, we can graph sales ratios across each decile of value. Here, we use the very useful `ggplot2` package to make an attractive graph.
