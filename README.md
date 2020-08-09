@@ -35,7 +35,7 @@ by running the following R command after installing
 remotes::install_gitlab("ccao-data-science---modeling/packages/assessr")
 
 # Or, to install a specific version
-remotes::install_gitlab("ccao-data-science---modeling/packages/assessr@0.3.0")
+remotes::install_gitlab("ccao-data-science---modeling/packages/assessr@0.4.0")
 ```
 
 Once it is installed, you can use it just like any other package. Simply
