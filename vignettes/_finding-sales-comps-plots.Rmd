@@ -56,7 +56,7 @@ comparables_small %>%
   scale_shape_manual(name = "Type", values = c("Target" = 15, "Comp" = 10)) +
   scale_size_manual(name = "Type", values = c("Target" = 3, "Comp" = 2)) +
   guides(
-    color = guide_legend(title = "Comparable Groups")
+    color = guide_legend(title = "Comparable groups")
   ) +
   labs(caption = "Sub-boundaries represent Cook County Assessor neighborhoods") +
   theme_void()
@@ -101,7 +101,8 @@ However, comparable properties should also have similar characteristics. The plo
 comparables_small %>%
   group_by(group) %>%
   summarize(
-    across(rooms:gar1_size, function(x) sum(x == first(x)) - 1) / (n() - 1)
+    across(bldg_sf:beds, function(x) (sum(between(x, first(x) - (first(x) * 0.1), first(x) + (first(x) * 0.1))) - 1) / (n() - 1)),
+    across(air:gar1_size, function(x) sum(x == first(x)) - 1) / (n() - 1)
   ) %>%
   tidyr::pivot_longer(-group, names_to = "var", values_to = "per_match") %>%
   mutate(
@@ -122,7 +123,7 @@ ggplot() +
   scale_y_discrete(expand = c(0, 0)) +
   scale_x_discrete(expand = c(0, 0), position = "top") +
   scale_fill_distiller(
-    name = "Percent of Characteristics from\nComparables which Match Target Property",
+    name = "Percent of comparable characteristics\nwithin 10% of target property's value*",
     direction = 1,
     labels = scales::percent,
     limits = c(0, 1)
@@ -131,7 +132,11 @@ ggplot() +
     values = c("TRUE" = "black", "FALSE" = "white"),
     guide = FALSE
   ) +
-  labs(x = "", y = "") +
+  labs(
+    x = "", y = "",
+    caption = "* Or exactly matching, for categorical variables"
+    
+  ) +
   guides(fill = guide_legend(title.position = "top")) +
   theme(
     legend.title = element_text(margin = margin(b = 6)),
