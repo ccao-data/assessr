@@ -105,7 +105,7 @@ comparables_small %>%
   ) %>%
   tidyr::pivot_longer(-group, names_to = "var", values_to = "per_match") %>%
   mutate(
-    group = forcats::fct_reorder(group, rev(readr::parse_number(group))),
+    group = forcats::fct_reorder(group, rev(as.numeric(gsub("\\D+", "", group)))),
     var = factor(var, levels = names(comparables_small))
   ) %>%
 ggplot() +
