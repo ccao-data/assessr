@@ -295,7 +295,7 @@ comparables_small <- comparables_df %>%
 
 ### Visualizing different comparable sets
 
-We can now visualize the resulting comparables in a variety of ways. To see the trade-off caused by changing $l$, we choose a random subset of comparable groups from the dataset, then compare them for $l = 0.9$ and $l = 0.1$. Click the buttons below to toggle the value of $l$ for each table or plot.
+We can now visualize the resulting comparables in a variety of ways. To see the trade-off caused by changing $l$, we choose a random subset of five comparable groups from the dataset, then compare them for $l = 0.9$ and $l = 0.1$. Each comparables set has a target property plus $k$ comparable properties (in this case 10). Click the buttons below to toggle the value of $l$ for each plot or table.
 
 ```{r plots, child="_finding-sales-comps-plots.Rmd"}
 ```
