@@ -94,7 +94,9 @@ l <- 0.9
 
 #### Sales Comparables Characteristics $(l = `r l`)$
 
-However, comparable properties should also have similar characteristics. The plot below shows the percent of characteristics from each comparables set that matches the target property. Darker values mean a high percentage of comparable characteristics match their target.
+Comparable properties should also have similar characteristics. The plot below shows the percent of comparable characteristics that are within 10% of the corresponding value for the target property (or exactly matching, in the case of categorical variables). For example, if the target property in Group 1 has a finished basement, and 9 of its 10 comparables also have a finished basement, then the Group 1 value for `bsmt_fin` will be 90%.
+
+Note that lowering the value of $l$ drastically increases the percentage match of many characteristics, particularly the ones which were more heavily weighted in the initial clustering (`bldg_sf`, `age`, and `ext_wall`).
 
 ```{r tile1, echo=FALSE, out.width='100%', message=FALSE, cache=FALSE}
 # Create a tile plot of chars values
@@ -157,7 +159,9 @@ l <- 0.1
 
 #### Sales Comparables Characteristics $(l = `r l`)$
 
-However, comparable properties should also have similar characteristics. The plot below shows the percent of characteristics from each comparables set that matches the target property. Darker values mean a high percentage of comparable characteristics match their target.
+Comparable properties should also have similar characteristics. The plot below shows the percent of comparable characteristics that are within 10% of the corresponding value for the target property (or exactly matching, in the case of categorical variables). For example, if the target property in Group 1 has a finished basement, and 9 of its 10 comparables also have a finished basement, then the Group 1 value for `bsmt_fin` will be 90%.
+
+Note that lowering the value of $l$ drastically increases the percentage match of many characteristics, particularly the ones which were more heavily weighted in the initial clustering (`bldg_sf`, `age`, and `ext_wall`).
 
 ```{r tile2, echo=FALSE, out.width='100%', message=FALSE, ref.label="tile1"}
 ```
