@@ -30,7 +30,7 @@ comparables_small %>%
   DT::formatRound("Building Square Feet", digits = 0)
 ```
 
-#### Sales Comparables Characteristics
+#### Sales comparables characteristics
 
 Comparable properties should have similar characteristics. The plot below shows the percent of comparable characteristics that are within 10% of the corresponding value for the target property (or exactly matching, in the case of categorical variables). For example, if the target property in Group 1 has a finished basement, and 9 of its 10 comparables also have a finished basement, then the Group 1 value for `bsmt_fin` will be 90%.
 
@@ -91,7 +91,7 @@ ggplot() +
   )
 ```
 
-#### Sales Comparables Locations
+#### Sales comparables locations
 
 Good comparables should also be nearby the target property. We can check the spatial distribution of our comparables sets by plotting them on a map of Evanston. Note that for $l = 0.1$ the properties are much more sparsely distributed. This may be appropriate for a small area such as Evanston, but might be less acceptable for a larger area such as an entire county. 
 
@@ -111,7 +111,7 @@ comparables_small %>%
   theme(strip.text = element_text(size = 13, face = "bold"))
 ```
 
-#### Distributions of Sale Prices vs. Fair Market Value
+#### Distributions of sale prices vs. fair market value
 
 Finally, good comparables will be close to each other in price. Here we show distributions of sale prices for each comparables set, along with the last assessed value for each target property. The resulting distributions are quite wide for some properties, however, our clustering was done using just 10 variables. Adding further variables or choosing a higher $m$ value will likely result in tighter distributions.
 
@@ -122,7 +122,10 @@ comparables_small %>%
   geom_vline(aes(xintercept = median_sp, color = "Median", linetype = "Median")) +
   scale_color_manual(name = "", values = c("Median" = "grey10")) +
   scale_linetype_manual(name = "", values = c("Median" = "dashed")) +
-  scale_x_continuous(labels = scales::dollar) +
+  scale_x_continuous(
+    labels = scales::dollar,
+    breaks = scales::breaks_extended(6)
+  ) +
   scale_fill_manual(
     name = "Type",
     values = c("Comp" = "grey75", "Target" = "darkred")
@@ -138,7 +141,8 @@ comparables_small %>%
     strip.text.x = element_text(size = 13, face = "bold"),
     panel.grid.minor.y = element_blank(),
     panel.spacing.y = unit(0.5, "cm"),
-    axis.text.x = element_text(margin = margin(b = 10)),
+    axis.ticks.x = element_line(size = 0.7),
+    axis.text.x = element_text(margin = margin(b = 4, t = 2), angle = -45, hjust = 0),
     axis.text.y = element_text(margin = margin(l = 6))
   )
 ```

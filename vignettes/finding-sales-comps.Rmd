@@ -308,10 +308,9 @@ comps_groups <- c(1, 100, 250, 300, 350)
 comparables_small <- comparables_df %>%
   filter(group %in% comps_groups) %>%
   group_by(group) %>%
-  mutate(
-    group = paste("Group", cur_group_id()),
-    median_sp = median(price)
-  ) %>%
+  mutate(group = paste("Group", cur_group_id())) %>%
+  group_by(group, set) %>%
+  mutate(median_sp = median(price)) %>%
   ungroup()
 ```
 
