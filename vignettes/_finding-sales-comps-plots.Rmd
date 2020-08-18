@@ -1,112 +1,50 @@
-<script>
-function plot_switch(id1, id2) {
-    var x = document.getElementById(id1);
-    var y = document.getElementById(id2);
-    if (x.style.display === "none") {
-        x.style.display = "block";
-        y.style.display = "none";
-    } else {
-        x.style.display = "none";
-        y.style.display = "block";
-    }
-}
+We can visualize the resulting comparables in a variety of ways. To see the trade-off caused by changing $l$, we choose a random subset of 5 comparables sets from the predicted data, then compare them for $l = 0.1$ and $l = 0.9$. These sets are shown in the table below. Each page of the table shows 1 comparables set, each of which includes 1 target property, 10 sales for $l = 0.1$ and 10 sales for $l = 0.9$.
 
-document.addEventListener("DOMContentLoaded", function() {
-  plot_switch('map2', 'map1');
-  plot_switch('tile2', 'tile1');
-  plot_switch('table2', 'table1');
-  plot_switch('dist2', 'dist1');
-});
-</script>
-
-<style>
-.toggle_button {
-  color: #fff !important;
-  text-transform: uppercase;
-  text-decoration: none;
-  font-weight: bold;
-  background: #CD5C5C;
-  padding: 10px;
-  display: inline-block;
-  border: none;
-  width: 36%;
-  margin-top: 2px;
-  margin-bottom: 50px;
-  margin-left: 32%;
-  margin-right: 32%
-}
-</style>
-
-
-
-
-<br>
-<div id="map1">
-#### Sales Comparables Locations in Evanston $(l = `r l`)$
-
-Good comparables should be nearby the target property. We can check the spatial distribution of our comparables sets by plotting them on a map of Evanston. Note that for $l = 0.1$ the properties are much more sparsely distributed. This may be appropriate for a small area such as Evanston, but might be less acceptable for a larger area such as an entire county. 
-
-```{r map1, echo=FALSE, out.width='100%', cache=FALSE, warning=FALSE}
+```{r table, echo=FALSE, out.width='100%'}
+# Create a datatable object showing each comparables set
 comparables_small %>%
-  st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
-  st_transform(4326) %>%
-  ggplot() +
-  geom_sf(data = st_set_crs(ccao::nbhd_shp, 4326) %>% filter(township_name == "Evanston")) +
-  geom_sf(aes(color = factor(group), shape = type, size = type)) +
-  scale_shape_manual(name = "Type", values = c("Target" = 15, "Comp" = 10)) +
-  scale_size_manual(name = "Type", values = c("Target" = 3, "Comp" = 2)) +
-  guides(
-    color = guide_legend(title = "Comparable groups")
-  ) +
-  labs(caption = "Sub-boundaries represent Cook County Assessor neighborhoods") +
-  theme_void()
-```
-</div>
-
-<div id="map2">
-```{r, include=FALSE}
-l <- 0.1
-```
-
-```{r, include=FALSE, ref.label="find_comps", cache=FALSE}
-```
-
-#### Sales Comparables Locations in Evanston $(l = `r l`)$
-
-Good comparables should be nearby the target property. We can check the spatial distribution of our comparables sets by plotting them on a map of Evanston. Note that for $l = 0.1$ the properties are much more sparsely distributed. This may be appropriate for a small area such as Evanston, but might be less acceptable for a larger area such as an entire county.  
-
-```{r map2, echo=FALSE, out.width='100%', ref.label="map1", message=FALSE, warning=FALSE}
-```
-</div>
-
-<button class=toggle_button onclick="plot_switch('map1', 'map2')">Toggle Distance Trade-Off Parameter Value</button>
-
-
-
-
-<div id="tile1">
-```{r, include=FALSE}
-l <- 0.9
+  select(-median_sp, Group = group, Type = type, Price = price, -lat, -lon) %>%
+  filter(!(set == "l = 0.9" & Type == "Target")) %>%
+  mutate(
+    set = gsub("l = ", "", set),
+    set = ifelse(Type == "Target", NA, set)
+  ) %>%
+  ccao::vars_rename(names_from = "socrata", names_to = "pretty") %>%
+  vars_recode(type = "short") %>%
+  arrange(Group, desc(Type), set) %>%
+  rename("Tradeoff Value (l)" = set) %>%
+  DT::datatable(
+    rownames = FALSE,
+    filter = "none",
+    autoHideNavigation = TRUE,
+    selection = "none",
+    options = list(
+      pageLength = 21,
+      autoWidth = TRUE,
+      scrollX = TRUE,
+      searching = FALSE,
+      info = FALSE
+    )
+  ) %>%
+  DT::formatCurrency("Price", digits = 0) %>%
+  DT::formatRound("Building Square Feet", digits = 0)
 ```
 
-```{r, include=FALSE, ref.label="find_comps", cache=FALSE}
-```
+#### Sales Comparables Characteristics
 
-#### Sales Comparables Characteristics $(l = `r l`)$
+Comparable properties should have similar characteristics. The plot below shows the percent of comparable characteristics that are within 10% of the corresponding value for the target property (or exactly matching, in the case of categorical variables). For example, if the target property in Group 1 has a finished basement, and 9 of its 10 comparables also have a finished basement, then the Group 1 value for `bsmt_fin` will be 90%.
 
-Comparable properties should also have similar characteristics. The plot below shows the percent of comparable characteristics that are within 10% of the corresponding value for the target property (or exactly matching, in the case of categorical variables). For example, if the target property in Group 1 has a finished basement, and 9 of its 10 comparables also have a finished basement, then the Group 1 value for `bsmt_fin` will be 90%.
+Note that lowering the value of $l$ drastically increases the percentage match of many characteristics, particularly the ones which were more heavily weighted using `var_weights` in the initial clustering (`bldg_sf`, `age`, and `ext_wall`).
 
-Note that lowering the value of $l$ drastically increases the percentage match of many characteristics, particularly the ones which were more heavily weighted in the initial clustering (`bldg_sf`, `age`, and `ext_wall`).
-
-```{r tile1, echo=FALSE, out.width='100%', message=FALSE, cache=FALSE}
+```{r tile, echo=FALSE, out.width='100%', message=FALSE}
 # Create a tile plot of chars values
 comparables_small %>%
-  group_by(group) %>%
+  group_by(set, group) %>%
   summarize(
     across(bldg_sf:beds, function(x) (sum(between(x, first(x) - (first(x) * 0.1), first(x) + (first(x) * 0.1))) - 1) / (n() - 1)),
     across(air:gar1_size, function(x) sum(x == first(x)) - 1) / (n() - 1)
   ) %>%
-  tidyr::pivot_longer(-group, names_to = "var", values_to = "per_match") %>%
+  tidyr::pivot_longer(-c(set, group), names_to = "var", values_to = "per_match") %>%
   mutate(
     group = forcats::fct_reorder(group, rev(as.numeric(gsub("\\D+", "", group)))),
     var = factor(var, levels = names(comparables_small))
@@ -120,10 +58,11 @@ ggplot() +
       label = scales::percent(per_match),
       color = per_match < 0.80
     ),
-    alpha = 0.6
+    alpha = 0.6,
+    size = 2.8
   ) +
   scale_y_discrete(expand = c(0, 0)) +
-  scale_x_discrete(expand = c(0, 0), position = "top") +
+  scale_x_discrete(expand = c(0, 0), position = "bottom") +
   scale_fill_distiller(
     name = "Percent of comparable characteristics\nwithin 10% of target property's value*",
     direction = 1,
@@ -136,113 +75,47 @@ ggplot() +
   ) +
   labs(
     x = "", y = "",
-    caption = "* Or exactly matching, for categorical variables"
+    caption = "*Or exactly matching, for categorical variables"
     
   ) +
-  guides(fill = guide_legend(title.position = "top")) +
+  guides(fill = guide_legend(title.position = "bottom")) +
+  facet_wrap(vars(set), ncol = 2, strip.position = "top") +
+  theme_minimal() +
   theme(
+    plot.margin = margin(r = 14, l = -12),
+    strip.text = element_text(size = 13, face = "bold"),
     legend.title = element_text(margin = margin(b = 6)),
     legend.position = "bottom",
-    axis.text.x = element_text(angle = 45, hjust = 0),
+    axis.text.x = element_text(angle = -45, hjust = 0),
     axis.ticks = element_blank()
   )
 ```
-</div>
 
-<div id="tile2">
-```{r, include=FALSE}
-l <- 0.1
-```
+#### Sales Comparables Locations
 
-```{r, include=FALSE, ref.label="find_comps", cache=FALSE}
-```
+Good comparables should also be nearby the target property. We can check the spatial distribution of our comparables sets by plotting them on a map of Evanston. Note that for $l = 0.1$ the properties are much more sparsely distributed. This may be appropriate for a small area such as Evanston, but might be less acceptable for a larger area such as an entire county. 
 
-#### Sales Comparables Characteristics $(l = `r l`)$
-
-Comparable properties should also have similar characteristics. The plot below shows the percent of comparable characteristics that are within 10% of the corresponding value for the target property (or exactly matching, in the case of categorical variables). For example, if the target property in Group 1 has a finished basement, and 9 of its 10 comparables also have a finished basement, then the Group 1 value for `bsmt_fin` will be 90%.
-
-Note that lowering the value of $l$ drastically increases the percentage match of many characteristics, particularly the ones which were more heavily weighted in the initial clustering (`bldg_sf`, `age`, and `ext_wall`).
-
-```{r tile2, echo=FALSE, out.width='100%', message=FALSE, ref.label="tile1"}
-```
-</div>
-
-<button class=toggle_button onclick="plot_switch('tile1', 'tile2')">Toggle Distance Trade-Off Parameter Value</button>
-
-
-
-
-<div id="table1">
-```{r, include=FALSE}
-l <- 0.9
-```
-
-```{r, include=FALSE, ref.label="find_comps", cache=FALSE}
-```
-
-#### Characteristics Table $(l = `r l`)$
-
-Each page of the table shown below shows a different set of comparables (5 sets in total), corresponding to the rows from the plot above. Switching between the two tables reveals that $l = 0.1$ yields much more physically similar properties. 
-
-```{r table1, echo=FALSE, out.width='100%', cache=FALSE}
-# Create a datatable object with rows k + 1
+```{r map, echo=FALSE, out.width='100%', warning=FALSE}
 comparables_small %>%
-  select(-median_sp, Group = group, Type = type, Price = price) %>%
-  ccao::vars_rename(names_from = "socrata", names_to = "pretty") %>%
-  select(-lon, -lat) %>%
-  vars_recode(type = "short") %>%
-  DT::datatable(
-    rownames = FALSE,
-    filter = "none",
-    autoHideNavigation = TRUE,
-    selection = "none",
-    options = list(
-      pageLength = 11,
-      autoWidth = TRUE,
-      scrollX = TRUE,
-      searching = FALSE,
-      info = FALSE
-    )
-  ) %>%
-  DT::formatCurrency("Price", digits = 0) %>%
-  DT::formatRound("Building Square Feet", digits = 0)
-```
-</div>
-
-<div id="table2">
-```{r, include=FALSE}
-l <- 0.1
+  st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
+  st_transform(4326) %>%
+  ggplot() +
+  geom_sf(data = st_set_crs(ccao::nbhd_shp, 4326) %>% filter(township_name == "Evanston")) +
+  geom_sf(aes(color = factor(group), shape = type, size = type)) +
+  scale_shape_manual(name = "Type", values = c("Target" = 15, "Comp" = 10)) +
+  scale_size_manual(name = "Type", values = c("Target" = 3, "Comp" = 2)) +
+  guides(color = guide_legend(title = "Comparable groups")) +
+  labs(caption = "*Sub-boundaries represent Cook County Assessor neighborhoods") +
+  facet_wrap(vars(set), nrow = 1) +
+  theme_void() +
+  theme(strip.text = element_text(size = 13, face = "bold"))
 ```
 
-```{r, include=FALSE, ref.label="find_comps", cache=FALSE}
-```
-
-#### Characteristics Table $(l = `r l`)$
-
-Each page of the table shown below shows a different set of comparables (5 sets in total), corresponding to the rows from the plot above. Switching between the two tables reveals that $l = 0.1$ yields much more physically similar properties. 
-
-```{r table2, echo=FALSE, out.width='100%', ref.label="table1"}
-```
-</div>
-
-<button class=toggle_button onclick="plot_switch('table1', 'table2')">Toggle Distance Trade-Off Parameter Value</button>
-
-
-
-
-<div id="dist1">
-```{r, include=FALSE}
-l <- 0.9
-```
-
-```{r, include=FALSE, ref.label="find_comps", cache=FALSE}
-```
-
-#### Distributions of Sale Prices vs. Fair Market Value $(l = `r l`)$
+#### Distributions of Sale Prices vs. Fair Market Value
 
 Finally, good comparables will be close to each other in price. Here we show distributions of sale prices for each comparables set, along with the last assessed value for each target property. The resulting distributions are quite wide for some properties, however, our clustering was done using just 10 variables. Adding further variables or choosing a higher $m$ value will likely result in tighter distributions.
 
-```{r dist1, echo=FALSE, out.width='100%', message=FALSE, warning=FALSE, cache=FALSE}
+```{r dist, echo=FALSE, out.width='100%', message=FALSE, warning=FALSE}
 comparables_small %>%
   ggplot() +
   geom_histogram(aes(x = price, fill = type), binwidth = 5e4) +
@@ -254,37 +127,18 @@ comparables_small %>%
     name = "Type",
     values = c("Comp" = "grey75", "Target" = "darkred")
   ) +
-  facet_wrap(vars(group), ncol = 1, strip.position = "right") +
+  facet_grid(rows = vars(group), cols = vars(set)) +
   labs(
-    caption = "Target PIN price is most recent FMV",
-    x = "Sale Price / FMV",
+    caption = "*Target property (red) price is most recent Fair Market Value",
+    x = "Sale Price",
     y = "Count"
   ) +
-  coord_cartesian(xlim = c(2.5e5, 1.5e6), ylim = c(0, 4)) +
   theme_minimal() +
   theme(
+    strip.text.x = element_text(size = 13, face = "bold"),
     panel.grid.minor.y = element_blank(),
     panel.spacing.y = unit(0.5, "cm"),
     axis.text.x = element_text(margin = margin(b = 10)),
     axis.text.y = element_text(margin = margin(l = 6))
   )
 ```
-</div>
-
-<div id="dist2">
-```{r, include=FALSE}
-l <- 0.1
-```
-
-```{r, include=FALSE, ref.label="find_comps", cache=FALSE}
-```
-
-#### Distributions of Sale Prices vs. Fair Market Value $(l = `r l`)$
-
-Finally, good comparables will be close to each other in price. Here we show distributions of sale prices for each comparables set, along with the last assessed value for each target property. The resulting distributions are quite wide for some properties, however, our clustering was done using just 10 variables. Adding further variables or choosing a higher $m$ value will likely result in tighter distributions.
-
-```{r dist2, echo=FALSE, out.width='100%', ref.label="dist1", message=FALSE, warning=FALSE}
-```
-</div>
-
-<button class=toggle_button onclick="plot_switch('dist1', 'dist2')">Toggle Distance Trade-Off Parameter Value</button>
