@@ -56,11 +56,6 @@ rescale_data <- function(data, newdata) {
   # Combine the datasets
   df <- rbind(as.data.frame(data), as.data.frame(newdata))
 
-  # For each factor column, relevel according to levels from old data
-  fct_cols <- which(unlist(lapply(df, is.factor)))
-  rlvl <- function(x) factor(x, levels = levels(factor(x[data_idx])))
-  df[fct_cols] <- lapply(df[fct_cols], rlvl)
-
   # For each numeric column, rescale according to min/max from old data
   num_cols <- which(unlist(lapply(df, is.numeric)))
   rscl <- function(x) rescale(x, from = range(x[data_idx], na.rm = T))
@@ -69,3 +64,4 @@ rescale_data <- function(data, newdata) {
   # Return only the new data from the combined df
   return(df[newdata_idx, ])
 }
+
