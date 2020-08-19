@@ -37,6 +37,7 @@ To demonstrate `cknn()`, we will load real sales and assessment data from the [C
 library(dplyr)
 library(ggplot2)
 library(sf)
+library(forcats)
 library(jsonlite)
 library(assessr)
 library(ccao)
@@ -89,6 +90,9 @@ sales_prepped <- sales %>%
     age = ccao::chars_fix_age(age, as.numeric(sale_year), town_code)
   ) %>%
   select(-sale_year, -town_code) %>%
+  # Recode factor vars and encode missing
+  ccao::vars_recode(type = "code") %>%
+  mutate(across(where(is.factor), fct_explicit_na)) %>%
   # Convert lat/lon to planar projection. In the case of Illinois, 3435 is ideal
   # This code converts to the new coordinate system, but immediately removes the
   # resulting geometry column (only the coordinates are needed)
@@ -232,6 +236,9 @@ properties_prepped <- properties %>%
     age = ccao::chars_fix_age(age, as.numeric(tax_year), town_code)
   ) %>%
   select(-tax_year, -town_code) %>%
+  # Recode factor vars and encode missing
+  ccao::vars_recode(type = "code") %>%
+  mutate(across(where(is.factor), fct_explicit_na)) %>%
   # Reproject coordinates into planar meters
   st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
   st_transform(3435) %>%
