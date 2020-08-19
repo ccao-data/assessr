@@ -194,23 +194,22 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
   knn_clusts <- lapply(
     split(dist_data, kproto_clusts$cluster),
     function(m_cluster) {
-      ifelse(
-        nrow(m_cluster) > k,
-
-        # If C > k, return k nearest neighbors
-        list(dbscan::kNN(m_cluster, k = k, sort = FALSE)$id),
-
-        # Otherwise, return the members of C in a C * k matrix
-        list(matrix(
-          rep(
-            c(as.integer(rownames(m_cluster)), rep(NA, k - nrow(m_cluster))),
-            nrow(m_cluster)
-          ),
-          nrow = nrow(m_cluster),
+      nrd <- nrow(m_cluster)
+      if (nrd > k) {
+        # If m > k, return k nearest neighbors
+        list(dbscan::kNN(m_cluster, k = k, sort = FALSE)$id)
+      } else {
+        # Otherwise, return the members of m in a m * k matrix
+        m_out <- matrix(
+          rep(c(as.integer(rownames(m_cluster)), rep(NA, k - nrd)), nrd),
+          nrow = nrd,
           ncol = k,
           byrow = TRUE
-        ))
-      )
+        )
+        rownames(m_out) <- rownames(m_cluster)
+        colnames(m_out) <- as.character(seq_len(ncol(m_out)))
+        list(m_out)
+      }
     }
   )
 
@@ -390,12 +389,28 @@ predict.cknn <- function(object, newdata, lon, lat,
       ))
 
       # Query the original cluster data using the new data
-      list(dbscan::kNN(
-        x = c_original_data,
-        query = c_new_data,
-        k = k,
-        sort = FALSE
-      )$id)
+      nrd <- nrow(c_original_data)
+      nro <- nrow(c_new_data)
+      if (nrd > k) {
+        # If m > k, return k nearest neighbors
+        list(dbscan::kNN(
+          x = c_original_data,
+          query = c_new_data,
+          k = k,
+          sort = FALSE
+        )$id)
+      } else {
+        # Otherwise, return the members of m in a m * k matrix
+        m_out <- matrix(
+          rep(c(as.integer(rownames(c_original_data)), rep(NA, k - nrd)), nro),
+          nrow = nro,
+          ncol = k,
+          byrow = TRUE
+        )
+        rownames(m_out) <- rownames(c_new_data)
+        colnames(m_out) <- as.character(seq_len(ncol(m_out)))
+        list(m_out)
+      }
     },
 
     # Split the distance input data by cluster and feed to KNN function
