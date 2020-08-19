@@ -20,6 +20,7 @@ lat <- sales_prepped %>% pull(lat)
 w <- c("bsmt_fin" = 10, "bldg_sf" = 30)
 clust_out <- cknn(data = data, lon = lon, lat = lat, m = 8)
 clust_out_nodata <- cknn(data, lon = lon, lat = lat, m = 8, keep_data = FALSE)
+clust_out_high_k <- cknn(data = data, lon = lon, lat = lat, m = 8, k = 200)
 
 test_that("output has expected attributes", {
   expect_s3_class(clust_out, "cknn")
@@ -95,6 +96,9 @@ comparables_d <- predict(
 comparables_nd <- predict(
   clust_out_nodata, pred_data, pred_lon, pred_lat, 11,
   data = data
+)
+comparables_high_k <- predict(
+  clust_out, pred_data, pred_lon, pred_lat, 200
 )
 
 test_that("output has expected attributes", {
