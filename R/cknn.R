@@ -343,7 +343,7 @@ predict.cknn <- function(object, newdata, lon, lat,
 
   # Stop if data types in new data are not the same as original data
   col_types <- sapply(list(newdata, olddata), sapply, class)
-  if (!identical(col_types[[1]], col_types[[2]])) {
+  if (!identical(col_types[, 1], col_types[, 2])) {
     stop("Column types in new data do not match the original cknn input data\n")
   }
 
