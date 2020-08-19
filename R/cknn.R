@@ -292,7 +292,6 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...
 #'   new data.}
 #'
 #' @family cknn
-#' @importFrom stats predict
 #' @export
 # nolint end
 predict.cknn <- function(object, newdata, lon, lat, k = NULL, l = NULL, ...) {
@@ -332,7 +331,7 @@ predict.cknn <- function(object, newdata, lon, lat, k = NULL, l = NULL, ...) {
   newdata <- rescale_data(object$data, newdata)
 
   # Get cluster predictions for new data using the kproto predict method
-  kproto_clusts <- predict(object$kproto, newdata)
+  kproto_clusts <- clustMixType:::predict.kproto(object$kproto, newdata)
 
   # Create a matrix of distance data for kNN. NOTE, the input data MUST be
   # rescaled according to the original data, otherwise kNN will not work
