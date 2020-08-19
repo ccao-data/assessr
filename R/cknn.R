@@ -70,7 +70,7 @@
 #'   \code{\link[clustMixType]{kproto}} function.
 #' @param k The number of nearest neighbors to return for each row of
 #'   input data.
-#' @param l Hyperparameter representing the trade-off between distance and 
+#' @param l Hyperparameter representing the trade-off between distance and
 #'   characteristics in kNN matching. Must be >= 0 and <= 1. Value equal to 1
 #'   will match on distance only, while value equal to 0 will disregard distance
 #'   and match on characteristics only. Default 0.5 (equal weight).
@@ -278,7 +278,7 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...
 #' @param k An optional value for the number nearest neighbors to return
 #'   for each row of new data. Set to value used to create
 #'   \code{object} by default.
-#' @param l Hyperparameter representing the trade-off between distance and 
+#' @param l Hyperparameter representing the trade-off between distance and
 #'   characteristics in kNN matching. Must be >= 0 and <= 1. Value equal to 1
 #'   will match on distance only, while value equal to 0 will disregard distance
 #'   and match on characteristics only. Set to value used to create

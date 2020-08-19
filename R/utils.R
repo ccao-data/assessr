@@ -64,4 +64,3 @@ rescale_data <- function(data, newdata) {
   # Return only the new data from the combined df
   return(df[newdata_idx, ])
 }
-

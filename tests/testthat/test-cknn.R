@@ -48,7 +48,8 @@ test_that("warnings thrown when expected", {
       lat = c(lat, 1.9e6),
       var_weights = w
     )
-  )})
+  )
+})
 
 test_that("bad input data stops execution", {
   # Warn when missing vals present
