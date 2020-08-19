@@ -38,6 +38,13 @@ List containing:
 
 \item{knn}{List of \code{k} nearest neighbors for each row in the
   new data.}
+
+\item{m}{Number of clusters created in the original \code{cknn}
+  object.}
+
+\item{k}{Number of nearest neighbors searched for.}
+
+\item{l}{Hyperparameter used for distance/characteristics trade-off.}
 }
 \description{
 Predict cluster membership and \code{k} nearest neighbors

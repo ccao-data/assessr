@@ -86,7 +86,7 @@ comparables <- predict(clust_out, pred_data, pred_lon, pred_lat, 11)
 
 test_that("output has expected attributes", {
   expect_type(comparables, "list")
-  expect_length(comparables, 4)
+  expect_length(comparables, 5)
   expect_length(comparables$knn, 412)
   expect_length(comparables$cluster, 412)
 })
@@ -122,5 +122,5 @@ test_that("bad input data stops execution", {
 })
 
 test_that("results are consistent when seed set", {
-  expect_known_hash(comparables, "7ad849c5ba")
+  expect_known_hash(comparables, "022aff029b")
 })

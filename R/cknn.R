@@ -290,6 +290,10 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...
 #'   in the new data.}
 #' @return \item{knn}{List of \code{k} nearest neighbors for each row in the
 #'   new data.}
+#' @return \item{m}{Number of clusters created in the original \code{cknn}
+#'   object.}
+#' @return \item{k}{Number of nearest neighbors searched for.}
+#' @return \item{l}{Hyperparameter used for distance/characteristics trade-off.}
 #'
 #' @family cknn
 #' @export
@@ -413,6 +417,7 @@ predict.cknn <- function(object, newdata, lon, lat, k = NULL, l = NULL, ...) {
   out <- list(
     cluster = kproto_clusts$cluster,
     knn = data_idx[order(as.numeric(gsub("\\D+", "", names(data_idx))))],
+    m = object$m,
     k = k,
     l = l
   )
