@@ -1,4 +1,5 @@
 library(dplyr)
+library(ccao)
 library(sf)
 
 # Load max 100k rows of sales data for Evanston
@@ -25,13 +26,16 @@ sales_prepped <- jsonlite::read_json(
     across(air:gar1_size, as.factor),
     across(c(sale_price:beds, lon, lat), as.numeric),
   ) %>%
+  ccao::vars_recode(type = "code") %>%
   # Convert lat/lon to planar projection. In the case of Illinois, 3435 is ideal
   # This code converts to the new coordinate system, but immediately removes the
   # resulting geometry column (only the coordinates are needed)
   st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
   st_transform(3435) %>%
   mutate(lon = st_coordinates(.)[, 1], lat = st_coordinates(.)[, 2]) %>%
-  st_set_geometry(NULL)
+  st_set_geometry(NULL) %>%
+  # Filter rare factor levels
+  filter(!bsmt_fin == "2", !gar1_size %in% c("6", "7"), !is.na(heat))
 
 # Load 100k rows of characteristic data for Evanston
 properties_prepped <- jsonlite::read_json(
@@ -56,11 +60,14 @@ properties_prepped <- jsonlite::read_json(
     across(air:gar1_size, as.factor),
     across(c(bldg_sf:beds, lon, lat), as.numeric)
   ) %>%
+  ccao::vars_recode(type = "code") %>%
   # Reproject coordinates into planar meters
   st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
   st_transform(3435) %>%
   mutate(lon = st_coordinates(.)[, 1], lat = st_coordinates(.)[, 2]) %>%
-  st_set_geometry(NULL)
+  st_set_geometry(NULL) %>%
+  # Filter rare factor levels
+  filter(!bsmt_fin == "2", !gar1_size %in% c("6", "7"), !is.na(heat))
 
 usethis::use_data(
   sales_prepped,
