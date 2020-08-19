@@ -4,7 +4,17 @@
 \alias{cknn}
 \title{Find comparable properties using clustered nearest neighbors}
 \usage{
-cknn(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...)
+cknn(
+  data,
+  lon,
+  lat,
+  m = 5,
+  k = 10,
+  l = 0.5,
+  var_weights = NULL,
+  keep_data = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{A data frame containing the variables to cluster on. Should
@@ -35,6 +45,9 @@ and match on characteristics only. Default 0.5 (equal weight).}
 \item{var_weights}{Value(s) passed to \code{lambda} input of
 \code{\link[clustMixType]{kproto}}. See details.}
 
+\item{keep_data}{Logical whether original data should be included in the
+returned object.}
+
 \item{...}{Arguments passed on to \code{\link[clustMixType]{kproto}},
 most commonly \code{iter.max}.}
 }
@@ -50,9 +63,6 @@ input data.}
 \item{knn_idx}{Lookup for translating in-cluster index positions to
 row indices from the input data. Used by predict method.}
 
-\item{data}{Unaltered input data frame. Used by predict method for
-scaling new input data.}
-
 \item{lon}{Unaltered input longitude vector. Used by predict method
 for scaling new input data.}
 
@@ -66,6 +76,9 @@ for scaling new input data.}
 \code{\link[dbscan]{kNN}}.}
 
 \item{l}{Hyperparameter used for distance/characteristics trade-off.}
+
+\item{data}{Unaltered input data frame. Used by predict method for
+scaling new input data. Only returned if \code{keep_data} is \code{TRUE}.}
 }
 \description{
 Sales comparables are recent sales which have the same

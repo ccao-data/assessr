@@ -19,6 +19,7 @@ lat <- sales_prepped %>% pull(lat)
 
 w <- c("bsmt_fin" = 10, "bldg_sf" = 30)
 clust_out <- cknn(data = data, lon = lon, lat = lat, m = 8)
+clust_out_nodata <- cknn(data, lon = lon, lat = lat, m = 8, keep_data = FALSE)
 
 test_that("output has expected attributes", {
   expect_s3_class(clust_out, "cknn")
@@ -26,6 +27,9 @@ test_that("output has expected attributes", {
   expect_length(clust_out, 9)
   expect_length(clust_out$knn, 1958)
   expect_length(unique(clust_out$kproto$cluster), 8)
+  expect_length(clust_out_nodata, 8)
+  expect_length(clust_out_nodata$knn, 1958)
+  expect_length(unique(clust_out_nodata$kproto$cluster), 8)
 })
 
 test_that("warnings thrown when expected", {
@@ -70,7 +74,7 @@ test_that("bad input data stops execution", {
 })
 
 test_that("results are consistent when seed set", {
-  expect_known_hash(clust_out, "c3e9694d38")
+  expect_known_hash(clust_out, "a09e4edd75")
 })
 
 
@@ -84,18 +88,36 @@ pred_lon <- properties_prepped %>% pull(lon)
 pred_lat <- properties_prepped %>% pull(lat)
 
 comparables <- predict(clust_out, pred_data, pred_lon, pred_lat, 11)
+comparables_d <- predict(
+  clust_out, pred_data, pred_lon, pred_lat, 11,
+  data = data
+)
+comparables_nd <- predict(
+  clust_out_nodata, pred_data, pred_lon, pred_lat, 11,
+  data = data
+)
 
 test_that("output has expected attributes", {
   expect_type(comparables, "list")
   expect_length(comparables, 5)
   expect_length(comparables$knn, 412)
   expect_length(comparables$cluster, 412)
+  expect_equivalent(comparables, comparables_d)
 })
 
 test_that("bad input data stops execution", {
   # Error on new data containing different cols than original
   expect_error(
     predict(clust_out, pred_data %>% rename(sqft = bldg_sf), pred_lon, pred_lat)
+  )
+  # Error on not passing any data
+  expect_error(
+    predict(
+      clust_out_nodata,
+      pred_data %>% rename(sqft = bldg_sf),
+      pred_lon,
+      pred_lat
+    )
   )
   # Error and invalid params
   expect_error(predict(clust_out, pred_data, pred_lon, pred_lat, k = -1))

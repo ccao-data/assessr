@@ -76,6 +76,8 @@
 #'   and match on characteristics only. Default 0.5 (equal weight).
 #' @param var_weights Value(s) passed to \code{lambda} input of
 #'   \code{\link[clustMixType]{kproto}}. See details.
+#' @param keep_data Logical whether original data should be included in the
+#'   returned object.
 #' @param ... Arguments passed on to \code{\link[clustMixType]{kproto}},
 #'   most commonly \code{iter.max}.
 #'
@@ -86,8 +88,6 @@
 #'   input data.}
 #' @return \item{knn_idx}{Lookup for translating in-cluster index positions to
 #'   row indices from the input data. Used by predict method.}
-#' @return \item{data}{Unaltered input data frame. Used by predict method for
-#'   scaling new input data.}
 #' @return \item{lon}{Unaltered input longitude vector. Used by predict method
 #'   for scaling new input data.}
 #' @return \item{lat}{Unaltered input latitude vector. Used by predict method
@@ -97,12 +97,15 @@
 #' @return \item{k}{Number of nearest neighbors returned by
 #'   \code{\link[dbscan]{kNN}}.}
 #' @return \item{l}{Hyperparameter used for distance/characteristics trade-off.}
+#' @return \item{data}{Unaltered input data frame. Used by predict method for
+#'   scaling new input data. Only returned if \code{keep_data} is \code{TRUE}.}
 #'
 #' @md
 #' @family cknn
 #' @export
 # nolint end
-cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...) { # nolint
+cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
+                 var_weights = NULL, keep_data = TRUE, ...) {
 
   # Basic error handling and expected input checking
   stopifnot(
@@ -138,7 +141,7 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...
 
   # Copy data for later output with the cknn object, rescale numeric columns
   # in-place to be between 0 and 1
-  data_unscaled <- data
+  if (keep_data) data_unscaled <- data else data_unscaled <- NULL
   num_cols <- which(unlist(lapply(data, is.numeric)))
   data[num_cols] <- lapply(data[num_cols], rescale)
 
@@ -248,13 +251,13 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...
     kproto = kproto_clusts,
     knn = data_idx[order(as.numeric(gsub("\\D+", "", names(data_idx))))],
     knn_idx = knn_idx,
-    data = data_unscaled,
     lon = lon,
     lat = lat,
     m = m,
     k = k,
     l = l
   )
+  if (keep_data) out <- c(out, list(data = data_unscaled))
   attr(out, "class") <- "cknn"
 
   return(out)
@@ -283,6 +286,9 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...
 #'   will match on distance only, while value equal to 0 will disregard distance
 #'   and match on characteristics only. Set to value used to create
 #'   \code{object} by default.
+#' @param data A data frame containing the input data used to create the
+#'   \code{cknn} object. Only necessary if \code{keep_data} was \code{FALSE}
+#'   when the original object was created.
 #' @param ... Further arguments passed to or from other methods.
 #'
 #' @return List containing:
@@ -298,9 +304,11 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5, var_weights = NULL, ...
 #' @family cknn
 #' @export
 # nolint end
-predict.cknn <- function(object, newdata, lon, lat, k = NULL, l = NULL, ...) {
+predict.cknn <- function(object, newdata, lon, lat,
+                         k = NULL, l = NULL, data = NULL, ...) {
   if (is.null(k)) k <- object$k
   if (is.null(l)) l <- object$l
+  if (is.null(data)) olddata <- object$data else olddata <- data
 
   # Basic error handling and expected input checking
   stopifnot(
@@ -315,24 +323,32 @@ predict.cknn <- function(object, newdata, lon, lat, k = NULL, l = NULL, ...) {
     is.numeric(l) & l >= 0 & l <= 1
   )
 
+  # Stop if original data is missing
+  if (is.null(object$data) & is.null(data)) {
+    stop(
+      "Original data must be passed to the predict method.\n",
+      "Set keep_data = TRUE in cknn or use the data argument in predict"
+    )
+  }
+
   # Stop if missing values are present
   if (any(sapply(newdata, function(x) sum(is.na(x))))) {
     stop("Missing values present in the input data\n")
   }
 
   # Stop if input data does not have columns from original data
-  if (!all(names(newdata) %in% names(object$data))) {
-    stop("New data contains columns not in the original cknn input data")
+  if (!all(names(newdata) %in% names(olddata))) {
+    stop("New data contains columns not in the original cknn input data\n")
   }
 
   # Stop if data types in new data are not the same as original data
-  col_types <- sapply(list(newdata, object$data), sapply, class)
+  col_types <- sapply(list(newdata, olddata), sapply, class)
   if (!identical(col_types[[1]], col_types[[2]])) {
-    stop("Column types in new data do not match the original cknn input data")
+    stop("Column types in new data do not match the original cknn input data\n")
   }
 
   # Rescale new input data according to data from model object
-  newdata <- rescale_data(object$data, newdata)
+  newdata <- rescale_data(olddata, newdata)
 
   # Get cluster predictions for new data using the kproto predict method
   kproto_clusts <- clustMixType:::predict.kproto(object$kproto, newdata)
