@@ -76,8 +76,11 @@
 #'   and match on characteristics only. Default 0.5 (equal weight).
 #' @param var_weights Value(s) passed to \code{lambda} input of
 #'   \code{\link[clustMixType]{kproto}}. See details.
-#' @param keep_data Logical whether original data should be included in the
+#' @param keep_data Logical for whether original data should be included in the
 #'   returned object.
+#' @param verbose Logical for whether to display message output created by
+#'   \code{\link[clustMixType]{lambdaest}} and 
+#'   \code{\link[clustMixType]{kproto}}.
 #' @param ... Arguments passed on to \code{\link[clustMixType]{kproto}},
 #'   most commonly \code{iter.max}.
 #'
@@ -105,7 +108,11 @@
 #' @export
 # nolint end
 cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
-                 var_weights = NULL, keep_data = TRUE, ...) {
+                 var_weights = NULL, keep_data = TRUE, verbose = FALSE, ...) {
+
+  # Sink output to null device (kproto output is very annoying/unhelpful)
+  dev_null <- ifelse(.Platform$OS.type == "windows", "NUL:", "/dev/null")
+  if (!verbose) sink(dev_null)
 
   # Basic error handling and expected input checking
   stopifnot(
@@ -118,7 +125,9 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
     is.numeric(m) & m > 1,
     is.numeric(k) & k > 1,
     is.numeric(l) & l >= 0 & l <= 1,
-    is.numeric(var_weights) | is.null(var_weights)
+    is.numeric(var_weights) | is.null(var_weights),
+    is.logical(keep_data),
+    is.logical(verbose)
   )
 
   # Stop if any cols are not numeric or factor
@@ -129,7 +138,7 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
 
   # Warn if factors contain levels with rare values (less than 0.5% of vals)
   fct_cols <- unlist(lapply(data, is.factor))
-  chk_levels <- function(x) any((table(droplevels(x)) / nrow(data)) < 0.01)
+  chk_levels <- function(x) any((table(droplevels(x)) / nrow(data)) < 0.001)
   if (any(sapply(data[, fct_cols], chk_levels))) {
     warning("One or more factor columns contains rare levels, see ?cknn for details\n") # nolint
   }
@@ -149,7 +158,6 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
   # by relative weights from var_weights. Weight = 1 if not specified. If var
   # weights is a single value, then this is passed to kproto function directly
   var_c <- rep(1, ncol(data))
-
   if (length(names(var_weights)) > 0 & any(!names(var_weights) %in% names(data))) { # nolint
     stop("All named values in var_weights must be present in data\n")
   } else if (!is.null(var_weights) & length(names(var_weights)) > 0) {
@@ -161,15 +169,8 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
     lambdas <- clustMixType::lambdaest(data, outtype = "numeric")
   }
 
-  # Print m and k values
-  message(
-    "Creating ",
-    m, " clusters and searching for ",
-    k, " nearest neighors\n "
-  )
-
   # Create m clusters, where m is determined by the user using the
-  # elbow method, index or some other validation function
+  # elbow method, index or some other validation function.
   kproto_clusts <- clustMixType::kproto(
     x = data,
     lambda = lambdas,
@@ -177,6 +178,10 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
     keep.data = FALSE,
     ...
   )
+  if (!verbose) sink()
+
+  # Print m, k, and l values
+  message("Creating clusters with: m = ", m, ", k = ", k, ", l = ", l, "\n")
 
   # Create a matrix of distance data for kNN. NOTE, the input data MUST be
   # rescaled according to the original data, otherwise kNN will not work
