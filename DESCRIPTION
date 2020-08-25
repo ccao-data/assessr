@@ -19,7 +19,8 @@ LazyData: true
 Imports:
     clustMixType,
     dbscan,
-    stats
+    stats,
+    utils
 RoxygenNote: 7.1.1
 Suggests: 
     ccao,
