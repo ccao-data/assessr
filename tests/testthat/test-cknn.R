@@ -74,10 +74,6 @@ test_that("bad input data stops execution", {
   expect_error(cknn(data, lon, lat, var_weights = w))
 })
 
-test_that("output cat when verbose", {
-  expect_output(cknn(data = data, lon = lon, lat = lat, m = 8, verbose = TRUE))
-})
-
 test_that("results are consistent when seed set", {
   expect_known_hash(clust_out, "a09e4edd75")
 })

@@ -13,7 +13,6 @@ cknn(
   l = 0.5,
   var_weights = NULL,
   keep_data = TRUE,
-  verbose = FALSE,
   ...
 )
 }
@@ -48,10 +47,6 @@ and match on characteristics only. Default 0.5 (equal weight).}
 
 \item{keep_data}{Logical for whether original data should be included in the
 returned object.}
-
-\item{verbose}{Logical for whether to display message output created by
-\code{\link[clustMixType]{lambdaest}} and
-\code{\link[clustMixType]{kproto}}.}
 
 \item{...}{Arguments passed on to \code{\link[clustMixType]{kproto}},
 most commonly \code{iter.max}.}

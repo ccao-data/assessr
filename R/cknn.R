@@ -78,9 +78,6 @@
 #'   \code{\link[clustMixType]{kproto}}. See details.
 #' @param keep_data Logical for whether original data should be included in the
 #'   returned object.
-#' @param verbose Logical for whether to display message output created by
-#'   \code{\link[clustMixType]{lambdaest}} and 
-#'   \code{\link[clustMixType]{kproto}}.
 #' @param ... Arguments passed on to \code{\link[clustMixType]{kproto}},
 #'   most commonly \code{iter.max}.
 #'
@@ -105,14 +102,11 @@
 #'
 #' @md
 #' @family cknn
+#' @importFrom utils capture.output
 #' @export
 # nolint end
 cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
-                 var_weights = NULL, keep_data = TRUE, verbose = FALSE, ...) {
-
-  # Sink output to null device (kproto output is very annoying/unhelpful)
-  dev_null <- ifelse(.Platform$OS.type == "windows", "NUL:", "/dev/null")
-  if (!verbose) sink(dev_null)
+                 var_weights = NULL, keep_data = TRUE, ...) {
 
   # Basic error handling and expected input checking
   stopifnot(
@@ -126,8 +120,7 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
     is.numeric(k) & k > 1,
     is.numeric(l) & l >= 0 & l <= 1,
     is.numeric(var_weights) | is.null(var_weights),
-    is.logical(keep_data),
-    is.logical(verbose)
+    is.logical(keep_data)
   )
 
   # Stop if any cols are not numeric or factor
@@ -162,23 +155,28 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
     stop("All named values in var_weights must be present in data\n")
   } else if (!is.null(var_weights) & length(names(var_weights)) > 0) {
     var_c[which(names(data) %in% names(var_weights))] <- var_weights
-    lambdas <- clustMixType::lambdaest(data, outtype = "vector") * var_c
+    invisible(capture.output(
+      lambdas <- clustMixType::lambdaest(data, outtype = "vector") * var_c
+    ))
   } else if (length(var_weights) == 1 | length(var_weights) == ncol(data)) {
     lambdas <- var_weights
   } else {
-    lambdas <- clustMixType::lambdaest(data, outtype = "numeric")
+    invisible(capture.output(
+      lambdas <- clustMixType::lambdaest(data, outtype = "numeric")
+    ))
   }
 
   # Create m clusters, where m is determined by the user using the
   # elbow method, index or some other validation function.
-  kproto_clusts <- clustMixType::kproto(
-    x = data,
-    lambda = lambdas,
-    k = m,
-    keep.data = FALSE,
-    ...
-  )
-  if (!verbose) sink()
+  invisible(capture.output(
+    kproto_clusts <- clustMixType::kproto(
+      x = data,
+      lambda = lambdas,
+      k = m,
+      keep.data = FALSE,
+      ...
+    )
+  ))
 
   # Print m, k, and l values
   message("Creating clusters with: m = ", m, ", k = ", k, ", l = ", l, "\n")
