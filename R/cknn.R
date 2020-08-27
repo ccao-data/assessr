@@ -131,8 +131,8 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
 
   # Warn if factors contain levels with rare values (less than 0.5% of vals)
   fct_cols <- unlist(lapply(data, is.factor))
-  chk_levels <- function(x) any((table(droplevels(x)) / nrow(data)) < 0.001)
-  if (any(sapply(data[, fct_cols], chk_levels))) {
+  chk_levels <- function(x) any((table(droplevels(x)) / nrow(data)) < 0.005)
+  if (any(sapply(data[fct_cols], chk_levels))) {
     warning("One or more factor columns contains rare levels, see ?cknn for details\n") # nolint
   }
 
