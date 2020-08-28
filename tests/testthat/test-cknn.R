@@ -25,10 +25,10 @@ clust_out_high_k <- cknn(data = data, lon = lon, lat = lat, m = 8, k = 200)
 test_that("output has expected attributes", {
   expect_s3_class(clust_out, "cknn")
   expect_s3_class(clust_out$kproto, "kproto")
-  expect_length(clust_out, 9)
+  expect_length(clust_out, 10)
   expect_length(clust_out$knn, 1958)
   expect_length(unique(clust_out$kproto$cluster), 8)
-  expect_length(clust_out_nodata, 8)
+  expect_length(clust_out_nodata, 9)
   expect_length(clust_out_nodata$knn, 1958)
   expect_length(unique(clust_out_nodata$kproto$cluster), 8)
 })
@@ -75,7 +75,7 @@ test_that("bad input data stops execution", {
 })
 
 test_that("results are consistent when seed set", {
-  expect_known_hash(clust_out, "a09e4edd75")
+  expect_known_hash(clust_out, "d760f60834")
 })
 
 

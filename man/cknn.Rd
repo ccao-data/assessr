@@ -69,6 +69,9 @@ for scaling new input data.}
 \item{lat}{Unaltered input latitude vector. Used by predict method
 for scaling new input data.}
 
+\item{var_weights}{Unaltered variable weights used to construct the
+cknn model.}
+
 \item{m}{Number of clusters created by
 \code{\link[clustMixType]{kproto}}.}
 
