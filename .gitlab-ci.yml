@@ -18,7 +18,7 @@ variables:
   DOCKER_DRIVER: "overlay2" # Docker FS driver, don't change this
   GIT_SUBMODULE_STRATEGY: "recursive"  # Set how GitLab handles submodules
   # If a package has a dependency that isn't already listed, add it here
-  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev pandoc git libudunits2-dev libgdal-dev libgeos-dev libproj-dev"
+  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev pandoc git libudunits2-dev libgdal-dev libgeos-dev libproj-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev"
   # Arbitrary location to install R libraries to. It must be in the project path
   # This folder is what gets cached in order to speed up build times
   R_LIBS_USER: "$CI_PROJECT_DIR/ci/lib"
@@ -97,7 +97,7 @@ test:
 pages:
   stage: pages
   script:
-    - Rscript -e 'remotes::install_version("pkgdown", "1.5.1", repos = "https://cloud.r-project.org/")'
+    - Rscript -e 'remotes::install_github("r-lib/pkgdown")'
     - Rscript -e 'pkgdown::build_site()'
   artifacts:
     paths:
