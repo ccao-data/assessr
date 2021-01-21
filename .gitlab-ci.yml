@@ -70,7 +70,7 @@ build:
     - R CMD build . --no-build-vignettes --no-manual
   artifacts:
     name: "$CI_JOB_STAGE"
-    expire_in: 2 weeks
+    expire_in: 4 weeks
     when: on_success
     paths:
       - ${CI_PROJECT_NAME}*.tar.gz
@@ -89,8 +89,11 @@ test:
     - Rscript -e 'devtools::test(reporter = testthat::JunitReporter$new(file = "test-out.xml"))'
     - Rscript -e 'covr::package_coverage()'
   artifacts:
+    when: always
+    paths:
+      - ./tests/testthat/test-out.xml
     reports:
-      junit: test-out.xml
+      junit: ./tests/testthat/test-out.xml
      
 # The pages stage will build package documentation using pkgdown, saving the static
 # site content to public/ and creating an artifact that is deployed to GL Pages
