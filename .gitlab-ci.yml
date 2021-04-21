@@ -70,7 +70,7 @@ build:
     - R CMD build . --no-build-vignettes --no-manual
   artifacts:
     name: "$CI_JOB_STAGE"
-    expire_in: 4 weeks
+    expire_in: 6 mos 
     when: on_success
     paths:
       - ${CI_PROJECT_NAME}*.tar.gz
