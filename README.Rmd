@@ -31,7 +31,7 @@ You can install the released version of `assessr` directly from GitLab by runnin
 remotes::install_gitlab("ccao-data-science---modeling/packages/assessr")
 
 # Or, to install a specific version
-remotes::install_gitlab("ccao-data-science---modeling/packages/assessr@0.4.3")
+remotes::install_gitlab("ccao-data-science---modeling/packages/assessr@0.4.4")
 ```
 
 Once it is installed, you can use it just like any other package. Simply call `library(assessr)` at the beginning of your script.
