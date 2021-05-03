@@ -50,11 +50,11 @@ test_that("bad input data stops execution", {
 test_that("incomplete data returns NAs unless removed", {
   expect_error(is_outlier(c(dist1_iqr_out, NA)))
   expect_equal(
-    is_outlier(c(test_dist1, NA), na.rm = TRUE),
+    is_outlier(c(test_dist1, NA)),
     c(rep(FALSE, 100), NA)
   )
   expect_equal(
-    is_outlier(c(test_dist1, NA), method = "quantile", na.rm = TRUE),
+    is_outlier(c(test_dist1, NA), method = "quantile"),
     c(dist1_qnt_out, NA)
   )
 })

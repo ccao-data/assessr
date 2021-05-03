@@ -16,22 +16,14 @@
 #'   \code{Inf} or \code{NaN}.
 #' @param method Default "iqr". String indicating outlier detection method.
 #'   Options are \code{iqr} or \code{quantile}.
-#' @param na.rm Default FALSE. A boolean value indicating whether or not to
-#'   remove NA values. If missing values are present but not removed the
-#'   function will output NA for those values.
 #' @param ... Named arguments passed on to methods.
 #'
 #' @return A logical vector this same length as \code{x} indicating whether or
 #'   not each value of \code{x} is an outlier.
 #'
 #' @export
-is_outlier <- function(x, method = "iqr", na.rm = FALSE, ...) {
+is_outlier <- function(x, method = "iqr", ...) {
   # nolint end
-
-  # Stop if any are NA and na.rm is not TRUE
-  if (any(is.na(x)) & !na.rm) {
-    stop("x cannot contain NA if na.rm is FALSE")
-  }
 
   # Check that inputs are well-formed numeric vector
   stopifnot(exprs = {
@@ -43,10 +35,9 @@ is_outlier <- function(x, method = "iqr", na.rm = FALSE, ...) {
     all(is.finite(x) | is.na(x)) # All values are finite OR are NA
   })
 
-  out <- switch(
-    method,
-    "quantile" = quantile_outlier(x, na.rm = na.rm, ...),
-    "iqr" = iqr_outlier(x, na.rm = na.rm, ...)
+  out <- switch(method,
+    "quantile" = quantile_outlier(x, na.rm = TRUE, ...),
+    "iqr" = iqr_outlier(x, na.rm = TRUE, ...)
   )
 
   # Warn about removing data from small samples, as it can severely distort
@@ -64,10 +55,10 @@ is_outlier <- function(x, method = "iqr", na.rm = FALSE, ...) {
 
 #' @describeIn is_outlier Quantile method for identifying outliers.
 #' @param probs Upper and lower percentiles denoting outlier boundaries.
-quantile_outlier <- function(x, probs = c(0.05, 0.95), na.rm = FALSE, ...) { # nolint
+quantile_outlier <- function(x, probs = c(0.05, 0.95), ...) { # nolint
 
   # Determine valid range of the data
-  range <- stats::quantile(x, probs = probs, na.rm = na.rm)
+  range <- stats::quantile(x, probs = probs, na.rm = TRUE)
 
   # Determine which input values are in range
   out <- x < range[1] | x > range[2]
@@ -78,21 +69,21 @@ quantile_outlier <- function(x, probs = c(0.05, 0.95), na.rm = FALSE, ...) { # n
 
 #' @describeIn is_outlier IQR method for identifying outliers.
 #' @param mult Multiplier for IQR to determine outlier boundaries.
-iqr_outlier <- function(x, mult = 3, na.rm = FALSE, ...) { # nolint
+iqr_outlier <- function(x, mult = 3, ...) { # nolint
 
   # Check that inputs are well-formed numeric vector
   stopifnot(is.numeric(mult), sign(mult) == 1)
 
   # Calculate quartiles and mult*IQR
-  quartiles <- stats::quantile(x, probs = c(0.25, 0.75), na.rm = na.rm)
-  iqr_mult <- mult * stats::IQR(x, na.rm = na.rm)
+  quartiles <- stats::quantile(x, probs = c(0.25, 0.75), na.rm = TRUE)
+  iqr_mult <- mult * stats::IQR(x, na.rm = TRUE)
 
   # Find values that are outliers
   out <- x < (quartiles[1] - iqr_mult) | x > (quartiles[2] + iqr_mult)
 
   # Warn if IQR trimmed values are within 95% CI. This indicates potentially
   # non-normal/narrow distribution of data
-  if (any(out & !quantile_outlier(x, na.rm = na.rm), na.rm = TRUE)) {
+  if (any(out & !quantile_outlier(x), na.rm = TRUE)) {
     warning(paste(
       "Some values flagged as outliers despite being within 95% CI.",
       "Check for narrow or skewed distribution."

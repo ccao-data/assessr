@@ -6,11 +6,11 @@
 \alias{iqr_outlier}
 \title{Detect outlier values in a vector using IQR/quantile method}
 \usage{
-is_outlier(x, method = "iqr", na.rm = FALSE, ...)
+is_outlier(x, method = "iqr", ...)
 
-quantile_outlier(x, probs = c(0.05, 0.95), na.rm = FALSE, ...)
+quantile_outlier(x, probs = c(0.05, 0.95), ...)
 
-iqr_outlier(x, mult = 3, na.rm = FALSE, ...)
+iqr_outlier(x, mult = 3, ...)
 }
 \arguments{
 \item{x}{A numeric vector. Must be longer than 2 and not contain
@@ -18,10 +18,6 @@ iqr_outlier(x, mult = 3, na.rm = FALSE, ...)
 
 \item{method}{Default "iqr". String indicating outlier detection method.
 Options are \code{iqr} or \code{quantile}.}
-
-\item{na.rm}{Default FALSE. A boolean value indicating whether or not to
-remove NA values. If missing values are present but not removed the
-function will output NA for those values.}
 
 \item{...}{Named arguments passed on to methods.}
 
