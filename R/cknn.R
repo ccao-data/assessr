@@ -92,8 +92,8 @@
 #'   for scaling new input data.}
 #' @return \item{lat}{Unaltered input latitude vector. Used by predict method
 #'   for scaling new input data.}
-#'@return \item{var_weights}{Unaltered variable weights used to construct the
-#'   cknn model.} 
+#' @return \item{var_weights}{Unaltered variable weights used to construct the
+#'   cknn model.}
 #' @return \item{m}{Number of clusters created by
 #'   \code{\link[clustMixType]{kproto}}.}
 #' @return \item{k}{Number of nearest neighbors returned by

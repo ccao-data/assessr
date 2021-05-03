@@ -73,8 +73,7 @@ detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {
     return(NA)
   }
 
-  out <- switch(
-    method,
+  out <- switch(method,
     "cdf" = detect_chasing_cdf(ratio, ...),
     "dist" = detect_chasing_dist(ratio, na.rm = na.rm, ...),
     "both" = detect_chasing_cdf(ratio, ...) &
