@@ -12,6 +12,7 @@
 ^docs$
 ^vignettes$
 ^examples$
+^LICENSE$ 
 ^LICENSE\.md$ 
 ^README\.Rmd$
 ^README\.md$
