@@ -91,7 +91,7 @@ sales_prepped <- sales %>%
   ) %>%
   select(-sale_year, -town_code) %>%
   # Recode factor vars and encode missing
-  ccao::vars_recode(type = "code") %>%
+  ccao::vars_recode(type = "code", dict = ccao::vars_dict_legacy) %>%
   mutate(across(where(is.factor), fct_explicit_na)) %>%
   # Convert lat/lon to planar projection. In the case of Illinois, 3435 is ideal
   # This code converts to the new coordinate system, but immediately removes the
@@ -237,7 +237,7 @@ properties_prepped <- properties %>%
   ) %>%
   select(-tax_year, -town_code) %>%
   # Recode factor vars and encode missing
-  ccao::vars_recode(type = "code") %>%
+  ccao::vars_recode(type = "code", dict = ccao::vars_dict_legacy) %>%
   mutate(across(where(is.factor), fct_explicit_na)) %>%
   # Reproject coordinates into planar meters
   st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%

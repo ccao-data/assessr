@@ -11,14 +11,14 @@
 
 # Base R image to build the package with
 # Should be version locked to the highest version most CCAO employees are using
-image: rocker/r-ver:4.1.0
+image: rocker/r-ver:4.2.0
 
 # Defining static variables used throughout the CI pipeline
 variables:
   DOCKER_DRIVER: "overlay2" # Docker FS driver, don't change this
   GIT_SUBMODULE_STRATEGY: "recursive" # Set how GitLab handles submodules
   # If a package has a linux dependency that isn't already listed, add it here
-  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev pandoc git libudunits2-dev libgdal-dev libgeos-dev libproj-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev"
+  APT_DEPS: "libcurl4-openssl-dev libssl-dev libxml2-dev libgit2-dev pandoc git libudunits2-dev libgdal-dev libgeos-dev libproj-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libxt-dev"
   # Specify vars to enable caching and dependency management via renv
   RENV_CONFIG_REPOS_OVERRIDE: "https://cloud.r-project.org/"
   RENV_PATHS_CACHE: ${CI_PROJECT_DIR}/cache

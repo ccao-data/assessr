@@ -9,7 +9,11 @@ comparables_small %>%
     set = gsub("l = ", "", set),
     set = ifelse(Type == "Target", NA, set)
   ) %>%
-  ccao::vars_rename(names_from = "socrata", names_to = "pretty") %>%
+  ccao::vars_rename(
+    names_from = "socrata",
+    names_to = "pretty",
+    dict = ccao::vars_dict_legacy
+  ) %>%
   vars_recode(type = "short") %>%
   arrange(Group, desc(Type), set) %>%
   rename("Tradeoff Value (l)" = set) %>%
