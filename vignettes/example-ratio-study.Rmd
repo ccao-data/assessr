@@ -9,27 +9,27 @@ knitr::opts_chunk$set(
 )
 ```
 
-AssessR can easily be used with various data to conduct a sales ratio study. In this vignette, we demonstrate this process using real data from the Cook County Assessor's Office (CCAO). The CCAO publishes assessments and sales on the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/stories/s/i22y-9sd2).
+AssessR can easily be used with various data to conduct a sales ratio study. In this vignette, we demonstrate this process using real data from the Cook County Assessor's Office (CCAO). The CCAO publishes residential assessments and sales annually on the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Assessments/uqb9-r7vn). 
 
 ## Basics of sales ratio studies
 
-A sales ratio is the ratio of the assessor's estimate of a property's value to the sale price of a property. A sales ratio study is a report on how accurately and fairly an assessor predicted property values. The CCAO has a [rigorous set of rules](https://gitlab.com/groups/ccao-data-science---modeling/-/wikis/SOPs/Sales%20Ratio%20Studies) that govern how sales ratios studies are conducted.
+A sales ratio is the ratio of the assessor's estimate of a property's value to the sale price of a property. A sales ratio study is a report on how accurately and fairly an assessor predicted property values. The CCAO has a [rigorous set of rules](https://gitlab.com/ccao-data-science---modeling/documentation/wiki_content/-/blob/master/sops/sales-ratio-studies.md) that govern how sales ratios studies are conducted.
 
-In general, there are four important statistics produced in sales ratio studies, listed in the table below. It is important to understand that these statistics are calculated based on properties that sell. In most jurisdictions, the number of properties that sell in any single year is a very small percentage of the overall number of properties. In order to characterize the quality of the assessment role in a jurisdiction, we draw an inference from this small number of properties.
+In general, there are four important statistics produced in sales ratio studies, listed in the table below. It is important to understand that these statistics are calculated based on properties that sell. In most jurisdictions, the number of properties that sell in any single year is a very small percentage of the overall number of properties. In order to characterize the quality of the assessment role in a jurisdiction, we draw an inference from this small number of properties. 
 
-| Statistic               | Acceptable Range | Interpretation                                                                                                                                                                             |
-|------------------------|------------------------|------------------------|
-| COD                     | 5 - 15           | How often properties with the *same* sale price receive the same predicted market value. Lower CODs indicate more fairness between similarly priced properties.                            |
-| PRD                     | .98 - 1.03       | How often properties with *different* sale prices receive the proportionately different predicted market values. Lower PRDs indicate more fairness between low and high-priced properties. |
-| PRB                     | -.05 - .05       | PRB is a different approach to measuring fairness across homes with different sale prices.                                                                                                 |
-| Median Assessment Ratio | .095 - 1.05      | The median ratio measures whether the most common ratios accurately reflect sale prices                                                                                                    |
-| Sales Chasing (E.4)     | $\le$ 5%         | Measures the degree to which the statistics above are *true* reflections of the quality of assessments.                                                                                    |
+| Statistic  | Acceptable Range  | Interpretation |
+|---|---| --- |
+|COD   | 5 - 15   | How often properties with the *same* sale price receive the same predicted market value. Lower CODs indicate more fairness between similarly priced properties. |
+|PRD   | .98 - 1.03  | How often properties with *different* sale prices receive the proportionately different predicted market values. Lower PRDs indicate more fairness between low and high-priced properties. |
+|PRB   | -.05 - .05  | PRB is a different approach to measuring fairness across homes with different sale prices. |
+|Median Assessment Ratio   |  .095 - 1.05 | The median ratio measures whether the most common ratios accurately reflect sale prices | 
+|Sales Chasing (E.4)   | $\le$ 5%  | Measures the degree to which the statistics above are *true* reflections of the quality of assessments. |
 
 ### Interpretation of sales ratio statistics
 
 Suppose you have a jurisdiction with a median ratio of one and a COD of 20. This indicates that, on average, the assessor predicts the sale price of properties accurately, but with a high dispersion. To use the dart board analogy, the assessor's darts fall in a wide area centered around the bullseye. On the other hand, if the median ratio is greater than one, and the COD is lower than 10, this indicates that the assessor consistently over-estimates the value of properties in their jurisdiction.
 
-Suppose you have a jurisdiction with a low COD and high PRD & PRB. This indicates that the assessor consistently under-estimates higher value properties, and over-estimates lower value properties. Properties of similar value receive similar estimates, but there is structural inequality in the overall system.
+Suppose you have a jurisdiction with a low COD and high PRD & PRB. This indicates that the assessor consistently under-estimates higher value properties, and over-estimates lower value properties. Properties of similar values receive similar estimates, but there is structural inequality in the overall system.
 
 Finally, suppose you have a jurisdiction with CODs, PRDs, and PRBs all within the acceptable range, but there is strong evidence of selective appraisals. In this case, the sales value statistics should be disregarded, since they are based on a non-random selection of the underlying set of properties. They cannot be used to characterize the quality of the assessment role.
 
@@ -46,7 +46,7 @@ library(RSocrata)
 
 # Load unlimited rows of assessment data, default is 1,000
 assessments <- read.socrata(
-  "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json",
+  "https://datacatalog.cookcountyil.gov/resource/uqb9-r7vn.json",
   app_token = "YOURAPPTOKENHERE",
   email     = "user@example.com",
   password  = "fakepassword"
@@ -55,32 +55,28 @@ assessments <- read.socrata(
 
 ### jsonlite
 
-Socrata can also return raw JSON if you manually construct a query URL. Follow the [API docs](https://dev.socrata.com/foundry/datacatalog.cookcountyil.gov/uzyt-m557) to alter your query. The raw JSON output can be read using the `read_json()` function from `jsonlite`.
+Socrata can also return raw JSON if you manually construct a query URL. Follow the [API docs](https://dev.socrata.com/foundry/datacatalog.cookcountyil.gov/uqb9-r7vn) to alter your query. The raw JSON output can be read using the `read_json()` function from `jsonlite`.
 
 ```{r}
-library(dplyr)
 library(jsonlite)
-library(stringr)
 
-# Load 100k rows of 2020 residential (major class 2) assessment data
+# Load 100k rows of assessment data
 assessments <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?$where=starts_with(class,'2')&year=2020&$limit=100000",
+  "https://datacatalog.cookcountyil.gov/resource/uqb9-r7vn.json?$limit=100000",
   simplifyVector = TRUE
 )
 
-# Load 100k rows of 2020 sales data
+# Load 100k rows of sales data
 sales <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?year=2020&$limit=100000",
+  "https://datacatalog.cookcountyil.gov/resource/5pge-nu6u.json?$limit=100000",
   simplifyVector = TRUE
-) %>%
-  # read_json removes leading zeroes, add them back
-  mutate(pin = str_pad(pin, 14, "left", "0"))
+)
 
 ```
 
 ### From a CSV or Excel
 
-R can also read Excel and CSV files stored on your computer.
+R can also read Excel and CSV files stored on your computer. 
 
 ```{r, eval=FALSE}
 library(readxl)
@@ -96,30 +92,33 @@ sales <- readxl::read_excel(file = "C:/Users/MEEE/Documents/.... where is your f
 
 ### Connecting to a relational database
 
-The CCAO's Data Science team uses Amazon Athena. R can connect to a wide range of database engines.
+The CCAO's Data Science team maintains a relational database on-premises. R can connect to a wide range of database engines.
 
-```{r, eval=FALSE}
-library(noctua)
+``` {r, eval=FALSE}
 library(DBI)
+library(odbc)
 
 # Connect to the database using a configured .Renviron file.
-AWS_ATHENA_CONN_NOCTUA <- dbConnect(noctua::athena())
+CCAODATA <- dbConnect(
+  odbc(),
+  .connection_string = Sys.getenv("DB_CONFIG_CCAODATA")
+)
 
 # Fetch data from the SQL server
-assessments <- dbGetQuery(AWS_ATHENA_CONN_NOCTUA, paste0("
-  SELECT * FROM [MY DATA TABLES]"))
+assessments <- dbGetQuery(CCAODATA, paste0("
+  SELECT * FRM [MY DATA TABLES]"))
 
 # Disconnect DB connection
-dbDisconnect(AWS_ATHENA_CONN_NOCTUA)
+dbDisconnect(CCAODATA)
 ```
 
 ## Sales ratio study
 
-In this section, we will use data published on the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Assessments/uzyt-m557) to produce an example sales ratio study.
+In this section, we will use data published on the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Assessments/uqb9-r7vn) to produce an example sales ratio study. 
 
 ### Prepare the data
 
-Above, we pulled assessment and sales data from the Open Data Portal. In order to produce our sales ratio statistics, our data needs to be formatted in 'long form,' meaning that each row is a property in a given year. The county provides *assessed value* on the Open Data Portal. For residential properties, we need to multiply assessed value by 10 to get fair market value. [Assessment levels](https://prodassets.cookcountyassessor.com/s3fs-public/form_documents/classcode.pdf) can differ for other classes.
+Above, we pulled assessment and sales data from the Open Data Portal. In order to produce our sales ratio statistics, our data needs to be formatted in 'long form,' meaning that each row is a property in a given year.  
 
 ```{r, results='asis', message=FALSE}
 library(assessr)
@@ -127,12 +126,11 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 
-# Join the two datasets based on PIN, keeping only those that have assessed
+# Join the two datasets based on PIN, keeping only properties that have assessed
 # values AND sales
 combined <- inner_join(
-  assessments %>%
-    select(pin, year, township_name, mailed_tot, certified_tot, board_tot),
-  sales %>% select(pin, year, sale_price),
+  assessments %>% select(pin, year, town_name, first_pass, certified, bor_result),
+  sales %>% select(pin, year = sale_year, sale_price),
   by = c("pin", "year")
 )
 
@@ -141,12 +139,12 @@ combined <- inner_join(
 combined <- combined %>%
   filter(sale_price >= 10000) %>%
   pivot_longer(
-    mailed_tot:board_tot,
+    first_pass:bor_result,
     names_to = "stage",
     values_to = "assessed"
   ) %>%
   mutate_at(vars(sale_price, assessed), as.numeric) %>%
-  mutate(ratio = (assessed * 10) / sale_price)
+  mutate(ratio = assessed / sale_price)
 ```
 
 ### Sales ratio statistics by township
@@ -157,29 +155,29 @@ Cook County has jurisdictions called townships that are important units for asse
 # For each town and stage, calculate COD, PRD, and PRB, and their respective
 # confidence intervals then arrange by town name and stage of assessment
 combined %>%
-  group_by(township_name, stage) %>%
+  group_by(town_name, stage) %>%
   summarise(
     n = n(),
-    cod = cod(ratio, na.rm = TRUE),
-    cod_ci = paste(round(cod_ci(ratio, nboot = 1000, na.rm = TRUE), 3), collapse = ", "),
+    cod = cod(ratio),
+    cod_ci = paste(round(cod_ci(ratio, nboot = 1000), 3), collapse = ", "),
     cod_met = cod_met(cod),
-    prb = prb(assessed, sale_price, na.rm = TRUE),
-    prb_ci = paste(round(prb_ci(assessed, sale_price, na.rm = TRUE), 3), collapse = ", "),
+    prb = prb(assessed, sale_price),
+    prb_ci = paste(round(prb_ci(assessed, sale_price), 3), collapse = ", "),
     prb_met = prb_met(prb)
   ) %>%
   filter(n >= 70) %>%
   mutate(stage = factor(
     stage,
-    levels = c("mailed_tot", "certified_tot", "board_tot")
+    levels = c("first_pass", "certified", "bor_result")
   )) %>%
-  arrange(township_name, stage) %>%
+  arrange(town_name, stage) %>%
   rename_all(toupper) %>%
   kable(format = "markdown")
 ```
 
 ### Median ratios by sale price
 
-Suppose you are concerned that an assessment role is unfair to lower value homes. One way to visually see whether ratios are systematically biased with respect to property value is to plot median ratios by decile. In our sample data, we can see each decile of sale price using the `quantile` function:
+Suppose you are concerned that an assessment role is unfair to lower value homes. One way to visually see whether ratios are  systematically biased with respect to property value is to plot median ratios by decile. In our sample data, we can see each decile of sale price using the `quantile` function:
 
 ```{r, results='asis'}
 library(DT)
@@ -212,6 +210,7 @@ graph_data <- combined %>%
   )) %>%
   mutate(decile_label = ifelse(decile == 10, "$760K+", decile_label)) %>%
   mutate(decile_label = forcats::fct_reorder(decile_label, decile)) %>%
+  dplyr::filter(year == 2019) %>%
   group_by(decile_label) %>%
   summarise(
     n = n(),
@@ -224,8 +223,8 @@ ggplot(graph_data) +
   geom_point(aes(x = decile_label, y = `Median Sales Ratio`), size = 3) +
   scale_y_continuous(labels = function(x) paste0(x * 100, "%")) +
   labs(
-    title = "Median Sale Ratios: Open Data Sample ",
-    subtitle = "By decile of sale price in 2020",
+    title = "Median Sale Ratios: NW Suburbs",
+    subtitle = "By decile of sale price in 2019",
     x = "", y = ""
   ) +
   theme_minimal() +
