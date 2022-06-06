@@ -44,21 +44,28 @@ library(sf)
 library(stringr)
 library(tidyr)
 
-# Load 100k rows of residential (class 2) characteristic data for Evanston
+# Load 100k rows of residential (class 2) characteristic data for Evanston, 2019-2021
 properties <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/x54s-btds.json?$where=starts_with(class,'2')&township_code=17&$limit=100000",
+  "https://datacatalog.cookcountyil.gov/resource/x54s-btds.json?$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
   simplifyVector = TRUE
 )
 
-# Load 100k rows of recent location data for Evanston
+# Load 100k rows of recent location data for Evanston, 2019-2021
 locations <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/tx2p-k2g9.json?$select=pin,lon,lat&$where=starts_with(class,'2')&township_code=17&year='2021'&$limit=100000",
+  "https://datacatalog.cookcountyil.gov/resource/tx2p-k2g9.json?$select=pin,lon,lat&$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
   simplifyVector = TRUE
 )
 
-# Load max 100k rows of residential (class 2) sales data for Evanston
+# Load 100k rows of mailed values for Evanston, 2019-2021
+values <- read_json(
+  "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?$select=pin,year,mailed_tot*10+as+price&$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
+  simplifyVector = TRUE
+)
+
+
+# Load max 100k rows of residential (class 2) sales data for Evanston, 2019-2021
 sales <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?$where=starts_with(class,'2')&township_code=17&$limit=100000",
+  "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
   simplifyVector = TRUE
 )
 ```
@@ -72,20 +79,20 @@ Like most clustering methods, `cknn()` requires carefully prepared input data to
 -   Latitude and longitude inputs *must* be reprojected into a planar projection, preferably one specific to the area of interest. Using Cook County as an example, lat and lon coordinates are reprojected into [EPSG 3435](https://epsg.io/3435), which covers eastern Illinois.
 -   The `cknn()` function assumes that **all** variables in the input data are used for clustering. As such, the prepared data should not contain non-clustering variables such as parcel ID. Since `cknn()` preserves the order of the input data, its results can easily be joined back to the original data.
 
-In addition to these steps, the example case below also removes sales of multiple parcels, those prior to 2016, and those with missing values.
+In addition to these steps, the example case below also removes sales of multiple parcels and those with missing values.
 
 ```{r}
 # Exclude multisales
 sales_prepped <- sales %>%
   right_join(properties) %>%
   inner_join(locations) %>%
+  inner_join(values) %>%
   # read_json sometimes removes leading zeroes, add them back
   mutate(
     pin = str_pad(pin, 14, "left", "0"),
     across(c(year, sale_price), as.numeric)
     ) %>%
   filter(
-    year >= 2016,
     !class %in% c('211', '212', '299'),
     is_multisale == FALSE | is.na(is_multisale)
   ) %>%
@@ -93,7 +100,7 @@ sales_prepped <- sales %>%
   # Keep only the variables used for clustering (except sale price, which is
   # removed later)
   select(
-    sale_price, bldg_sf, yrblt, rooms, beds,
+    sale_price, price, bldg_sf, yrblt, rooms, beds,
     air, bsmt, bsmt_fin, ext_wall, heat, gar1_size,
     lon, lat , year, township_code
   ) %>%
@@ -118,10 +125,12 @@ sales_prepped <- sales %>%
 
 # Split the data into two sets - a set with sales and a set without
 properties_prepped <- sales_prepped %>%
-  filter(is.na(sale_price))
+  filter(is.na(sale_price)) %>%
+  select(-sale_price)
 
 sales_prepped <- sales_prepped %>%
-  filter(!is.na(sale_price))
+  filter(!is.na(sale_price)) %>%
+  select(-price)
 
 # Visualize prepared data
 head(sales_prepped) %>%
@@ -236,7 +245,7 @@ Input data for the predict method must be **in exactly the same form as the orig
 ```{r prep_comps}
 # Visualize prepared data
 head(properties_prepped) %>%
-  select(-sale_price) %>%
+  select(-price) %>%
   knitr::kable(digits = 3)
 ```
 
@@ -258,7 +267,7 @@ l_vals <- c(0.9, 0.1)
 # varying values of l
 comparables <- lapply(l_vals, function(x) predict(
   best_clust,
-  newdata = properties_prepped %>% select(-sale_price, -lon, -lat),
+  newdata = properties_prepped %>% select(-price, -lon, -lat),
   lon = properties_prepped %>% pull(lon),
   lat = properties_prepped %>% pull(lat),
   k = k,
