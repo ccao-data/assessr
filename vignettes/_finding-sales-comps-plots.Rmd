@@ -75,7 +75,7 @@ ggplot() +
   ) +
   scale_color_manual(
     values = c("TRUE" = "black", "FALSE" = "white"),
-    guide = FALSE
+    guide = "none"
   ) +
   labs(
     x = "", y = "",

@@ -132,14 +132,14 @@ library(knitr)
 combined <- inner_join(
   assessments %>%
     select(pin, year, township_name, mailed_tot, certified_tot, board_tot),
-  sales %>% select(pin, year, sale_price),
+  sales %>% select(pin, year, sale_price, is_multisale),
   by = c("pin", "year")
 )
 
-# Remove sales that are not arms length, pivot to longer, then calculate
-# the ratio for each property and assessment stage
+# Remove multisales, pivot to longer, then calculate the ratio for each property
+# and assessment stage
 combined <- combined %>%
-  filter(sale_price >= 10000) %>%
+  filter(is_multisale == FALSE) %>%
   pivot_longer(
     mailed_tot:board_tot,
     names_to = "stage",
