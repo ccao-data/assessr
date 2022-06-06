@@ -151,8 +151,8 @@ num_clusts <- 2:15
 clusts <- lapply(num_clusts, function(m) {
   cknn(
     data = sales_prepped %>% select(-sale_price, -lon, -lat),
-    lon = sales_prepped$lon,
-    lat = sales_prepped$lat,
+    lon = sales_prepped %>% pull(lon),
+    lat = sales_prepped %>% pull(lat),
     var_weights = weights,
     m = m,
     k = 10,
@@ -259,8 +259,8 @@ l_vals <- c(0.9, 0.1)
 comparables <- lapply(l_vals, function(x) predict(
   best_clust,
   newdata = properties_prepped %>% select(-sale_price, -lon, -lat),
-  lon = properties_prepped$lon,
-  lat = properties_prepped$lat,
+  lon = properties_prepped %>% pull(lon),
+  lat = properties_prepped %>% pull(lat),
   k = k,
   l = x
 ))
