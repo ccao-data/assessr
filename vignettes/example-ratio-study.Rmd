@@ -157,6 +157,7 @@ Cook County has jurisdictions called townships that are important units for asse
 # For each town and stage, calculate COD, PRD, and PRB, and their respective
 # confidence intervals then arrange by town name and stage of assessment
 combined %>%
+  filter(assessed > 0) %>%
   group_by(township_name, stage) %>%
   summarise(
     n = n(),
