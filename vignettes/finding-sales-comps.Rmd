@@ -9,16 +9,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-Sales comparables are recent sales which have the same (or very similar) characteristics as a target (unsold) property. They are frequently used by assessors, real estate agents, and appraisers to determine the fair market value of a home. However, finding comparable properties at scale can be difficult. 
+Sales comparables are recent sales which have the same (or very similar) characteristics as a target (unsold) property. They are frequently used by assessors, real estate agents, and appraisers to determine the fair market value of a home. Finding comparable properties at scale can be difficult.
 
 The clustered k-nearest neighbors (CkNN) algorithm from AssessR can be used to quickly find comparables for any number of unsold properties. This vignette demonstrates the process of using the `cknn()` function to find comparable sales in Evanston, Illinois.
 
 ## CkNN algorithm
 
-The `cknn()` algorithm accepts a set of sales as input and works in two stages: 
+The `cknn()` algorithm accepts a set of sales as input and works in two stages:
 
-1. Divide the full set of sales into $m$ clusters according to each property's characteristics. This mimics the process of market segmentation or separating properties into different classes. This clustering is done using the k-prototypes algorithm from [clustMixType](https://rjournal.github.io/archive/2018/RJ-2018-048/RJ-2018-048.pdf).
-2. For each property $i$, find the $k$ nearest neighbors within $i$'s cluster by minimizing the geographic *and* attribute distance to *all* cluster centers. This is accomplished with the fast kNN function from [dbscan](https://cran.r-project.org/web/packages/dbscan/dbscan.pdf).
+1.  Divide the full set of sales into $m$ clusters according to each property's characteristics. This mimics the process of market segmentation or separating properties into different classes. This clustering is done using the k-prototypes algorithm from [clustMixType](https://rjournal.github.io/archive/2018/RJ-2018-048/RJ-2018-048.pdf).
+2.  For each property $i$, find the $k$ nearest neighbors within $i$'s cluster by minimizing the geographic *and* attribute distance to *all* cluster centers. This is accomplished with the fast kNN function from [dbscan](https://cran.r-project.org/web/packages/dbscan/dbscan.pdf).
 
 The result of this algorithm is a model object containing the cluster membership of each input property, as well its $k$ nearest in-cluster neighbors. `cknn()` also has a predict method which can be used to find comparables for properties not in the original dataset.
 
@@ -30,27 +30,42 @@ The first stage of `cknn()` involves creating property clusters based on attribu
 
 ### Loading the data
 
-To demonstrate `cknn()`, we will load real sales and assessment data from the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/Property-Taxation/Cook-County-Assessor-s-Residential-Assessments/uqb9-r7vn). This data can be loaded using a variety of methods, but the easiest way is to use the Socrata API to fetch JSON results, which can be loaded using the `jsonlite` library.
+To demonstrate `cknn()`, we will load real sales and assessment data from the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/browse?tags=cook%20county%20assessor). This data can be loaded using a variety of methods, but the easiest way is to use the Socrata API to fetch JSON results, which can be loaded using the `jsonlite` library.
 
 ```{r, message=FALSE}
 # Load libraries for this project
-library(dplyr)
-library(ggplot2)
-library(sf)
-library(forcats)
-library(jsonlite)
 library(assessr)
 library(ccao)
+library(dplyr)
+library(forcats)
+library(ggplot2)
+library(jsonlite)
+library(sf)
+library(stringr)
+library(tidyr)
 
-# Load 100k rows of characteristic data for Evanston
+# Load 100k rows of residential (class 2) characteristic data for Evanston, 2019-2021
 properties <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/bcnq-qi2z.json?$limit=10000&town_code=17",
+  "https://datacatalog.cookcountyil.gov/resource/x54s-btds.json?$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
   simplifyVector = TRUE
 )
 
-# Load max 100k rows of sales data for Evanston
+# Load 100k rows of recent location data for Evanston, 2019-2021
+locations <- read_json(
+  "https://datacatalog.cookcountyil.gov/resource/tx2p-k2g9.json?$select=pin,lon,lat&$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
+  simplifyVector = TRUE
+)
+
+# Load 100k rows of mailed values for Evanston, 2019-2021
+values <- read_json(
+  "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?$select=pin,year,mailed_tot*10+as+price&$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
+  simplifyVector = TRUE
+)
+
+
+# Load max 100k rows of residential (class 2) sales data for Evanston, 2019-2021
 sales <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/5pge-nu6u.json?$limit=10000&town_code=17",
+  "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
   simplifyVector = TRUE
 )
 ```
@@ -59,39 +74,46 @@ sales <- read_json(
 
 Like most clustering methods, `cknn()` requires carefully prepared input data to produce good results. The following preparation steps are strongly recommended:
 
-* Categorical variables must be converted to factors. Rare factor types in each variable should be dropped or aggregated into a separate factor level. For example, if only 1% of properties have a type of roof, it may make sense to change the roof type variable of those properties to NA, or to change them to a similar roof type.
-* Numeric variables should have their outliers removed, which can be accomplished using the `is_outlier()` function. Scaling numeric variables is not necessary, as `cknn()` will automatically scale all numeric input variables to be between 0 and 1.
-* Latitude and longitude inputs *must* be reprojected into a planar projection, preferably one specific to the area of interest. Using Cook County as an example, lat and lon coordinates are reprojected into [EPSG 3435](https://epsg.io/3435), which covers eastern Illinois.
-* The `cknn()` function assumes that **all** variables in the input data are used for clustering. As such, the prepared data should not contain non-clustering variables such as parcel ID. Since `cknn()` preserves the order of the input data, its results can easily be joined back to the original data.
+-   Categorical variables must be converted to factors. Rare factor types in each variable should be dropped or aggregated into a separate factor level. For example, if only 1% of properties have a type of roof, it may make sense to change the roof type variable of those properties to NA, or to change them to a similar roof type.
+-   Numeric variables should have their outliers removed, which can be accomplished using the `is_outlier()` function. Scaling numeric variables is not necessary, as `cknn()` will automatically scale all numeric input variables to be between 0 and 1.
+-   Latitude and longitude inputs *must* be reprojected into a planar projection, preferably one specific to the area of interest. Using Cook County as an example, lat and lon coordinates are reprojected into [EPSG 3435](https://epsg.io/3435), which covers eastern Illinois.
+-   The `cknn()` function assumes that **all** variables in the input data are used for clustering. As such, the prepared data should not contain non-clustering variables such as parcel ID. Since `cknn()` preserves the order of the input data, its results can easily be joined back to the original data.
 
-In addition to these steps, the example case below also removes transactions with low-value sales, those prior to 2016, and those with missing values.
+In addition to these steps, the example case below also removes sales of multiple parcels and those with missing values.
 
 ```{r}
-# Keep only arms length transactions for properties with characteristics
+# Exclude multisales
 sales_prepped <- sales %>%
+  right_join(properties) %>%
+  inner_join(locations) %>%
+  inner_join(values) %>%
+  # read_json sometimes removes leading zeroes, add them back
+  mutate(
+    pin = str_pad(pin, 14, "left", "0"),
+    across(c(year, sale_price), as.numeric)
+    ) %>%
   filter(
-    sale_year >= 2016,
-    sale_price >= 10000,
-    !class %in% c(211, 212, 299),
-    as.numeric(rooms) <= 14,
-    !is.na(centroid_x)
+    !class %in% c('211', '212', '299'),
+    is_multisale == FALSE | is.na(is_multisale)
   ) %>%
+  rename_with(~ gsub("char_", "", .x)) %>%
   # Keep only the variables used for clustering (except sale price, which is
   # removed later)
   select(
-    sale_price, bldg_sf, age, rooms, beds,
+    sale_price, price, bldg_sf, yrblt, rooms, beds,
     air, bsmt, bsmt_fin, ext_wall, heat, gar1_size,
-    lon = centroid_x, lat = centroid_y, sale_year, town_code
+    lon, lat , year, township_code
   ) %>%
+  # Remove rows missing clustering column values
+  drop_na(bldg_sf:township_code) %>%
   # Convert categorical variables to factor and numbers to numeric
   mutate(
     across(air:gar1_size, as.factor),
-    across(c(sale_price:beds, lon, lat), as.numeric),
-    age = ccao::chars_fix_age(age, as.numeric(sale_year), town_code)
+    across(c(sale_price:beds, lon, lat), as.numeric)
   ) %>%
-  select(-sale_year, -town_code) %>%
+  select(-year, -township_code) %>%
   # Recode factor vars and encode missing
-  ccao::vars_recode(type = "code", dict = ccao::vars_dict_legacy) %>%
+  # ccao::vars_recode(type = "code", dict = ccao::vars_dict_legacy) %>%
   mutate(across(where(is.factor), fct_explicit_na)) %>%
   # Convert lat/lon to planar projection. In the case of Illinois, 3435 is ideal
   # This code converts to the new coordinate system, but immediately removes the
@@ -100,6 +122,15 @@ sales_prepped <- sales %>%
   st_transform(3435) %>%
   mutate(lon = st_coordinates(.)[, 1], lat = st_coordinates(.)[, 2]) %>%
   st_set_geometry(NULL)
+
+# Split the data into two sets - a set with sales and a set without
+properties_prepped <- sales_prepped %>%
+  filter(is.na(sale_price)) %>%
+  select(-sale_price)
+
+sales_prepped <- sales_prepped %>%
+  filter(!is.na(sale_price)) %>%
+  select(-price)
 
 # Visualize prepared data
 head(sales_prepped) %>%
@@ -111,16 +142,16 @@ head(sales_prepped) %>%
 
 Now that we've prepared the input data, we can use the `cknn()` function to create clusters. The `cknn()` function accepts arbitrary relative weights via the `var_weights` argument. These weights can take the following form:
 
-* A named list with names corresponding to column names in the input data (see example below). Names not included in the list are assumed to have a value of 1. These weights are multiplied by the variance estimates created by `clustMixType::lambdaest()`. Higher values will weight variables more heavily in the clustering.
-* A $p$ long unnamed vector, where $p$ is equal to the number columns in the input data. These weights are **not** multiplied by the variance estimates created by `clustMixType::lambdaest()`.
-* A single unnamed numeric value. This value trades off the relative importance of numeric versus categorical variables. Higher values will more heavily weight categorical variables, while a value of 0 replicates standard k-means (use numeric variables only).
-* A `NULL` value. This uses the default estimates produced by `clustMixType::lambdaest()`. All variables are weighted equally.
+-   A named list with names corresponding to column names in the input data (see example below). Names not included in the list are assumed to have a value of 1. These weights are multiplied by the variance estimates created by `clustMixType::lambdaest()`. Higher values will weight variables more heavily in the clustering.
+-   A $p$ long unnamed vector, where $p$ is equal to the number columns in the input data. These weights are **not** multiplied by the variance estimates created by `clustMixType::lambdaest()`.
+-   A single unnamed numeric value. This value trades off the relative importance of numeric versus categorical variables. Higher values will more heavily weight categorical variables, while a value of 0 replicates standard k-means (use numeric variables only).
+-   A `NULL` value. This uses the default estimates produced by `clustMixType::lambdaest()`. All variables are weighted equally.
 
 Since we don't know the optimal number of clusters, we can loop through a vector of possible values for argument $m$ (number of clusters), and then try to pick the best one.
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
 # Set arbitrary relative weights, unspecified vars = 1
-weights <- c("bldg_sf" = 8, "age" = 4, "ext_wall" = 2)
+weights <- c("bldg_sf" = 8, "yrblt" = 4, "ext_wall" = 2)
 
 # Set the number of potential clusters to try
 num_clusts <- 2:15
@@ -161,7 +192,7 @@ best_clust <- clusts[[8 - 1]]
 
 ### Visualizing the clusters
 
-To visualize whether or not our chosen set of clusters conforms to market expectations, we can visualize each cluster on a map, along with its median sale price, age, and building square footage. Keep in mind that these three variables are not the only ones included in the clustering.
+To visualize whether or not our chosen set of clusters conforms to market expectations, we can visualize each cluster on a map, along with its median sale price, year built, and building square footage. Keep in mind that these three variables are not the only ones included in the clustering.
 
 ```{r, message=FALSE, out.width='100%'}
 # Join the resulting cluster memberships back to the original data frame.
@@ -178,16 +209,16 @@ sales_with_knn <- sales_prepped %>%
 sales_with_knn %>%
   group_by(m) %>%
   mutate(
-    across(any_of(c("sale_price", "age", "bldg_sf")), as.numeric),
+    across(any_of(c("sale_price", "yrblt", "bldg_sf")), as.numeric),
     median_sp = median(sale_price),
-    median_age = median(age),
+    median_yrblt = median(yrblt),
     median_sf = median(bldg_sf)
   ) %>%
   ungroup() %>%
   mutate(
     m = forcats::fct_reorder(factor(m), median_sp),
     median_sp = scales::dollar(median_sp),
-    median_age = paste(scales::comma(median_age, accuracy = 1), "years"),
+    median_yrblt = paste("built:", median_yrblt),
     median_sf = paste(scales::comma(median_sf, accuracy = 1), "sqft.")
   ) %>%
   st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
@@ -196,13 +227,12 @@ sales_with_knn %>%
   geom_sf(data = st_set_crs(ccao::town_shp, 4326) %>% filter(township_name == "Evanston")) +
   geom_sf(aes(color = m, geometry = geometry), size = 0.9) +
   geom_text(aes(x = -87.748, y = 42.048, label = median_sp), check_overlap = TRUE, hjust = 0) +
-  geom_text(aes(x = -87.748, y = 42.038, label = median_age), check_overlap = TRUE, hjust = 0) +
+  geom_text(aes(x = -87.748, y = 42.038, label = median_yrblt), check_overlap = TRUE, hjust = 0) +
   geom_text(aes(x = -87.748, y = 42.028, label = median_sf), check_overlap = TRUE, hjust = 0) +
   facet_wrap(vars(m), ncol = 4) +
   theme_void() +
   theme(legend.position = "none")
 ```
-
 
 ## Finding comparables
 
@@ -210,41 +240,9 @@ Now that we've created a `cknn()` object, we can use the `predict.cknn()` method
 
 ### Preparing the new data
 
-Input data for the predict method must be **in exactly the same form as the original input data** for the `cknn()` function. In practice, this means the input data must have the same number of columns, column types, and column names as the original data. Here we've effectively copied the code used to prepare the previous data. Note that the `price` variable is not used in clustering, it is excluded when the `properties_prepped` data frame is actually passed to `cknn()`.
+Input data for the predict method must be **in exactly the same form as the original input data** for the `cknn()` function. In practice, this means the input data must have the same number of columns, column types, and column names as the original data. We ensured this was the case by "prepping" the collective data as one set before splitting it. Note that the `price` variable is not used in clustering, it is excluded when the `properties_prepped` data frame is actually passed to `cknn()`.
 
 ```{r prep_comps}
-# Keep only properties with characteristics that are NOT in the set of sold
-# properties recorded in the sales data frame
-properties_prepped <- properties %>%
-  filter(!pin %in% sales$pin) %>%
-  filter(
-    !class %in% c(211, 212, 299),
-    rooms <= 14,
-    !is.na(centroid_x)
-  ) %>%
-  mutate(price = as.numeric(pri_est_bldg) + as.numeric(pri_est_land)) %>%
-  # Keep exactly the same columns as the sales_prepped data frame
-  select(
-    price, bldg_sf, age, rooms, beds,
-    air, bsmt, bsmt_fin, ext_wall, heat, gar1_size,
-    lon = centroid_x, lat = centroid_y, tax_year, town_code
-  ) %>%
-  # Convert to numeric and factor types
-  mutate(
-    across(air:gar1_size, as.factor),
-    across(c(bldg_sf:beds, lon, lat), as.numeric),
-    age = ccao::chars_fix_age(age, as.numeric(tax_year), town_code)
-  ) %>%
-  select(-tax_year, -town_code) %>%
-  # Recode factor vars and encode missing
-  ccao::vars_recode(type = "code", dict = ccao::vars_dict_legacy) %>%
-  mutate(across(where(is.factor), fct_explicit_na)) %>%
-  # Reproject coordinates into planar meters
-  st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-  st_transform(3435) %>%
-  mutate(lon = st_coordinates(.)[, 1], lat = st_coordinates(.)[, 2]) %>%
-  st_set_geometry(NULL)
-
 # Visualize prepared data
 head(properties_prepped) %>%
   select(-price) %>%
@@ -258,8 +256,8 @@ The `predict.cknn()` method works using arguments that are nearly identical to t
 Here, we've created two sets of comparables for each target property, one where $l = 0.9$ and one where $l = 0.1$. We've then combined these sets to construct to construct a new data frame containing both the target properties **and** both sets of comparable sales.
 
 ```{r find_comps}
-# Set the number of comps to return. If k is unspecified in predict.cknn() the original
-# value used to create the cknn object is used
+# Set the number of comps to return. If k is unspecified in predict.cknn() the
+# original value used to create the cknn object is used
 k <- 10
 
 # Possible values of parameter l to find comps for
@@ -276,10 +274,10 @@ comparables <- lapply(l_vals, function(x) predict(
   l = x
 ))
 
-# Use cluster memberships to construct a dataset of both unsold and sold properties
-# The "group" variable here corresponds to each unsold property and its set of
-# comparables. The "type" variable is whether or not the property is a comp or
-# the unsold property. And the "set" variable denotes the value of l
+# Use cluster memberships to construct a dataset of both unsold and sold
+# properties. The "group" variable here corresponds to each unsold property and
+# its set of comparables. The "type" variable is whether or not the property is
+# a comp or the unsold property. And the "set" variable denotes the value of l
 comps_set_1 <- sales_prepped %>%
   rename(price = sale_price) %>%
   slice(unlist(comparables[[1]]$knn)) %>%
@@ -330,8 +328,8 @@ comparables_small <- comparables_df %>%
 
 `cknn()` can be used to effectively find market clusters and sales comparables, but it comes with a number of challenges. Here are some suggestions to get the best performance out of the algorithm:
 
-1. Always clean your input data, both when initially creating clusters and when using the predict method. Due to the nature of `cknn()`'s scaling, it is especially sensitive to numeric outliers.
-2. Choose an initial value of $m$ based on the [elbow method](https://en.wikipedia.org/wiki/Elbow_method_(clustering)) or [silhouette method](https://en.wikipedia.org/wiki/Silhouette_(clustering)). For even better performance, the `predict.cknn()` method can be used to tune $m$ based on a validation set. Higher values of $m$ will lead to tighter, smaller clusters, but may lead to overfitting.
-3. The relative weights passed to the `var_weights` argument in `cknn()` should be based on some measure of variable importance. Many assessors have an intuitive notion of what variables drive value. If that intuition can be translated to numeric values, then it's possible to use it as a set of weights. For a more empirical method, it's possible to create a set of weights using methods such as random forest or permutation feature importance.
-4. Keep $k$ relatively low for tight spatial and price distributions. Increasing the value of $k$ will yield increasingly dissimilar/far away sales, particularly in geographic areas with sparse sales.
-5. Choose a value for $l$ based on your subjective need. If you value proximity, keep $l$ close to 1, if you value very similar properties, keep $l$ near 0. Otherwise, the default value (0.5) represents a good trade-off between distance and attribute similarity.
+1.  Always clean your input data, both when initially creating clusters and when using the predict method. Due to the nature of `cknn()`'s scaling, it is especially sensitive to numeric outliers.
+2.  Choose an initial value of $m$ based on the [elbow method](https://en.wikipedia.org/wiki/Elbow_method_(clustering)) or [silhouette method](https://en.wikipedia.org/wiki/Silhouette_(clustering)). For even better performance, the `predict.cknn()` method can be used to tune $m$ based on a validation set. Higher values of $m$ will lead to tighter, smaller clusters, but may lead to overfitting.
+3.  The relative weights passed to the `var_weights` argument in `cknn()` should be based on some measure of variable importance. Many assessors have an intuitive notion of what variables drive value. If that intuition can be translated to numeric values, then it's possible to use it as a set of weights. For a more empirical method, it's possible to create a set of weights using methods such as random forest or permutation feature importance.
+4.  Keep $k$ relatively low for tight spatial and price distributions. Increasing the value of $k$ will yield increasingly dissimilar/far away sales, particularly in geographic areas with sparse sales.
+5.  Choose a value for $l$ based on your subjective need. If you value proximity, keep $l$ close to 1, if you value very similar properties, keep $l$ near 0. Otherwise, the default value (0.5) represents a good trade-off between distance and attribute similarity.
