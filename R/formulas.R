@@ -121,7 +121,7 @@ prd <- function(assessed, sale_price, na.rm = FALSE) {
 ##### PRB #####
 
 # Calculate PRB and return model object
-calc_prd <- function(assessed, sale_price) {
+calc_prb <- function(assessed, sale_price) {
 
   # Calculate ratio of assessed values to sale price
   ratio <- assessed / sale_price
@@ -186,7 +186,7 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
   }
 
   # Calculate PRB
-  prb_model <- calc_prd(assessed, sale_price)
+  prb_model <- calc_prb(assessed, sale_price)
 
   # Extract PRB from model
   prb <- unname(stats::coef(prb_model)[2])
