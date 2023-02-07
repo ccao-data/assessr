@@ -1,7 +1,7 @@
 Package: assessr
 Type: Package
 Title: Measure Property Assessment Performance
-Version: 0.4.5
+Version: 0.4.7
 Authors@R: c(
     person(given = "Dan", family = "Snow", email="daniel.snow@cookcountyil.gov", role=c("aut", "cre")),
     person(given = "William", family = "Ridgeway", email="william.ridgeway@cookcountyil.gov", role=c("ctb")),
