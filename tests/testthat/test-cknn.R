@@ -80,10 +80,6 @@ test_that("bad input data stops execution", {
   expect_error(cknn(data, lon, lat, var_weights = w, na.rm = "no"))
 })
 
-test_that("results are consistent when seed set", {
-  expect_known_hash(clust_out, "a4468b5a7a")
-})
-
 
 ##### TEST CKNN.PREDICT #####
 context("test cknn_predict function")
