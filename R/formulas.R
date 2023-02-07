@@ -103,7 +103,7 @@ prd <- function(assessed, sale_price, na.rm = FALSE) {
   if (na.rm) {
     assessed <- assessed[!idx]
     sale_price <- sale_price[!idx]
-  } else if (any(idx) & !na.rm) {
+  } else if (any(idx) && !na.rm) {
     return(NA_real_)
   }
 
@@ -122,7 +122,6 @@ prd <- function(assessed, sale_price, na.rm = FALSE) {
 
 # Calculate PRB and return model object
 calc_prb <- function(assessed, sale_price) {
-
   # Calculate ratio of assessed values to sale price
   ratio <- assessed / sale_price
 
@@ -181,7 +180,7 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
   if (na.rm) {
     assessed <- assessed[!idx]
     sale_price <- sale_price[!idx]
-  } else if (any(idx) & !na.rm) {
+  } else if (any(idx) && !na.rm) {
     return(NA_real_)
   }
 

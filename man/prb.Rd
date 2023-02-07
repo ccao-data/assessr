@@ -45,15 +45,15 @@ PRB is an index of vertical equity that quantifies the
 }
 \section{Functions}{
 \itemize{
-\item \code{prb}: Returns a numeric vector containing the PRD of the
+\item \code{prb()}: Returns a numeric vector containing the PRD of the
 input vectors.
 
-\item \code{prb_ci}: Returns upper and lower CI as a named vector.
+\item \code{prb_ci()}: Returns upper and lower CI as a named vector.
 
-\item \code{prb_met}: Returns TRUE when input PRB meets IAAO standards
+\item \code{prb_met()}: Returns TRUE when input PRB meets IAAO standards
 (between -0.05 and 0.05).
-}}
 
+}}
 \examples{
 
 # Calculate PRD

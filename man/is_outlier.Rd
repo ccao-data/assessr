@@ -43,8 +43,8 @@ Detect outliers in a numeric vector using standard methods.
 }
 \section{Functions}{
 \itemize{
-\item \code{quantile_outlier}: Quantile method for identifying outliers.
+\item \code{quantile_outlier()}: Quantile method for identifying outliers.
 
-\item \code{iqr_outlier}: IQR method for identifying outliers.
+\item \code{iqr_outlier()}: IQR method for identifying outliers.
+
 }}
-

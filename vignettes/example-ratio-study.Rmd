@@ -64,18 +64,23 @@ library(stringr)
 
 # Load 100k rows of 2020 residential (major class 2) assessment data
 assessments <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?$where=starts_with(class,'2')&year=2020&$limit=100000",
+  paste0(
+    "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?",
+    "$where=starts_with(class,'2')&year=2020&$limit=100000"
+  ),
   simplifyVector = TRUE
 )
 
 # Load 100k rows of 2020 sales data
 sales <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?year=2020&$limit=100000",
+  paste0(
+    "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?",
+    "year=2020&$limit=100000"
+  ),
   simplifyVector = TRUE
 ) %>%
   # read_json removes leading zeroes, add them back
   mutate(pin = str_pad(pin, 14, "left", "0"))
-
 ```
 
 ### From a CSV or Excel
@@ -86,12 +91,21 @@ R can also read Excel and CSV files stored on your computer.
 library(readxl)
 
 # CSV files
-assessments <- read.csv(file = "C:/Users/MEEE/Documents/.... where is your file ?")
-sales <- read.csv(file = "C:/Users/MEEE/Documents/.... where is your file ?")
+assessments <- read.csv(
+  file = "C:/Users/MEEE/Documents/.... where is your file ?"
+)
+sales <- read.csv(
+  file = "C:/Users/MEEE/Documents/.... where is your file ?"
+)
 
 # Excel files
-assessments <- read.csv(file = "C:/Users/MEEE/Documents/.... where is your file ?")
-sales <- readxl::read_excel(file = "C:/Users/MEEE/Documents/.... where is your file ?", sheet = "your sheet")
+assessments <- read.csv(
+  file = "C:/Users/MEEE/Documents/.... where is your file ?"
+)
+sales <- readxl::read_excel(
+  file = "C:/Users/MEEE/Documents/.... where is your file ?",
+  sheet = "your sheet"
+)
 ```
 
 ### Connecting to a relational database
@@ -162,10 +176,16 @@ combined %>%
   summarise(
     n = n(),
     cod = cod(ratio, na.rm = TRUE),
-    cod_ci = paste(round(cod_ci(ratio, nboot = 1000, na.rm = TRUE), 3), collapse = ", "),
+    cod_ci = paste(
+      round(cod_ci(ratio, nboot = 1000, na.rm = TRUE), 3),
+      collapse = ", "
+    ),
     cod_met = cod_met(cod),
     prb = prb(assessed, sale_price, na.rm = TRUE),
-    prb_ci = paste(round(prb_ci(assessed, sale_price, na.rm = TRUE), 3), collapse = ", "),
+    prb_ci = paste(
+      round(prb_ci(assessed, sale_price, na.rm = TRUE), 3),
+      collapse = ", "
+    ),
     prb_met = prb_met(prb)
   ) %>%
   filter(n >= 70) %>%

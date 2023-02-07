@@ -44,28 +44,44 @@ library(sf)
 library(stringr)
 library(tidyr)
 
-# Load 100k rows of residential (class 2) characteristic data for Evanston, 2019-2021
+# Load 100k rows of residential (class 2) chars data for Evanston, 2019-2021
 properties <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/x54s-btds.json?$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
+  paste0(
+    "https://datacatalog.cookcountyil.gov/resource/x54s-btds.json?",
+    "$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+",
+    "year='2021')&township_code=17&$limit=100000"
+  ),
   simplifyVector = TRUE
 )
 
 # Load 100k rows of recent location data for Evanston, 2019-2021
 locations <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/tx2p-k2g9.json?$select=pin,lon,lat&$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
+  paste0(
+    "https://datacatalog.cookcountyil.gov/resource/tx2p-k2g9.json?",
+    "$select=pin,lon,lat&$where=starts_with(class,'2')+and+(year='2029'+or+",
+    "year='2020'+or+year='2021')&township_code=17&$limit=100000"
+  ),
   simplifyVector = TRUE
 )
 
 # Load 100k rows of mailed values for Evanston, 2019-2021
 values <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?$select=pin,year,mailed_tot*10+as+price&$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
+  paste0(
+    "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?$select",
+    "=pin,year,mailed_tot*10+as+price&$where=starts_with(class,'2')+and+",
+    "(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000"
+  ),
   simplifyVector = TRUE
 )
 
 
 # Load max 100k rows of residential (class 2) sales data for Evanston, 2019-2021
 sales <- read_json(
-  "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+year='2021')&township_code=17&$limit=100000",
+  paste0(
+    "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?",
+    "$where=starts_with(class,'2')+and+(year='2029'+or+year='2020'+or+",
+    "year='2021')&township_code=17&$limit=100000"
+  ),
   simplifyVector = TRUE
 )
 ```
@@ -91,9 +107,9 @@ sales_prepped <- sales %>%
   mutate(
     pin = str_pad(pin, 14, "left", "0"),
     across(c(year, sale_price), as.numeric)
-    ) %>%
+  ) %>%
   filter(
-    !class %in% c('211', '212', '299'),
+    !class %in% c("211", "212", "299"),
     is_multisale == FALSE | is.na(is_multisale)
   ) %>%
   rename_with(~ gsub("char_", "", .x)) %>%
@@ -102,7 +118,7 @@ sales_prepped <- sales %>%
   select(
     sale_price, price, bldg_sf, yrblt, rooms, beds,
     air, bsmt, bsmt_fin, ext_wall, heat, gar1_size,
-    lon, lat , year, township_code
+    lon, lat, year, township_code
   ) %>%
   # Remove rows missing clustering column values
   drop_na(bldg_sf:township_code) %>%
@@ -114,7 +130,7 @@ sales_prepped <- sales %>%
   select(-year, -township_code) %>%
   # Recode factor vars and encode missing
   # ccao::vars_recode(type = "code", dict = ccao::vars_dict_legacy) %>%
-  mutate(across(where(is.factor), fct_explicit_na)) %>%
+  mutate(across(where(is.factor), fct_na_value_to_level)) %>%
   # Convert lat/lon to planar projection. In the case of Illinois, 3435 is ideal
   # This code converts to the new coordinate system, but immediately removes the
   # resulting geometry column (only the coordinates are needed)
@@ -181,7 +197,7 @@ data.frame(
   ss = sapply(clusts, function(x) x$kproto$tot.withinss)
 ) %>%
   ggplot() +
-  geom_line(aes(x = m, y = ss), size = 1.2, color = "blue") +
+  geom_line(aes(x = m, y = ss), linewidth = 1.2, color = "blue") +
   labs(x = "# of Clusters", y = "Total Sum Square Dists") +
   theme_minimal()
 
@@ -211,7 +227,7 @@ sales_with_knn %>%
   mutate(
     across(any_of(c("sale_price", "yrblt", "bldg_sf")), as.numeric),
     median_sp = median(sale_price),
-    median_yrblt = median(yrblt),
+    median_yrblt = floor(median(yrblt)),
     median_sf = median(bldg_sf)
   ) %>%
   ungroup() %>%
@@ -224,11 +240,26 @@ sales_with_knn %>%
   st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
   st_transform(4326) %>%
   ggplot() +
-  geom_sf(data = st_set_crs(ccao::town_shp, 4326) %>% filter(township_name == "Evanston")) +
+  geom_sf(
+    data = st_set_crs(ccao::town_shp, 4326) %>%
+      filter(township_name == "Evanston")
+  ) +
   geom_sf(aes(color = m, geometry = geometry), size = 0.9) +
-  geom_text(aes(x = -87.748, y = 42.048, label = median_sp), check_overlap = TRUE, hjust = 0) +
-  geom_text(aes(x = -87.748, y = 42.038, label = median_yrblt), check_overlap = TRUE, hjust = 0) +
-  geom_text(aes(x = -87.748, y = 42.028, label = median_sf), check_overlap = TRUE, hjust = 0) +
+  geom_text(
+    aes(x = -87.748, y = 42.048, label = median_sp),
+    check_overlap = TRUE,
+    hjust = 0
+  ) +
+  geom_text(
+    aes(x = -87.748, y = 42.038, label = median_yrblt),
+    check_overlap = TRUE,
+    hjust = 0
+  ) +
+  geom_text(
+    aes(x = -87.748, y = 42.028, label = median_sf),
+    check_overlap = TRUE,
+    hjust = 0
+  ) +
   facet_wrap(vars(m), ncol = 4) +
   theme_void() +
   theme(legend.position = "none")
@@ -263,16 +294,18 @@ k <- 10
 # Possible values of parameter l to find comps for
 l_vals <- c(0.9, 0.1)
 
-# Find the set of cluster memberships and comparables for each unsold property at
-# varying values of l
-comparables <- lapply(l_vals, function(x) predict(
-  best_clust,
-  newdata = properties_prepped %>% select(-price, -lon, -lat),
-  lon = properties_prepped %>% pull(lon),
-  lat = properties_prepped %>% pull(lat),
-  k = k,
-  l = x
-))
+# Find the set of cluster memberships and comparables for each unsold property
+# at varying values of l
+comparables <- lapply(l_vals, function(x) {
+  predict(
+    best_clust,
+    newdata = properties_prepped %>% select(-price, -lon, -lat),
+    lon = properties_prepped %>% pull(lon),
+    lat = properties_prepped %>% pull(lat),
+    k = k,
+    l = x
+  )
+})
 
 # Use cluster memberships to construct a dataset of both unsold and sold
 # properties. The "group" variable here corresponds to each unsold property and
@@ -297,11 +330,13 @@ comps_set_2 <- sales_prepped %>%
   )
 
 comparables_df <- bind_rows(
-    comps_set_1,
-    comps_set_2,
-    properties_prepped %>% mutate(group = row_number(), type = "Target", set = "l = 0.9"),
-    properties_prepped %>% mutate(group = row_number(), type = "Target", set = "l = 0.1")
-  ) %>%
+  comps_set_1,
+  comps_set_2,
+  properties_prepped %>%
+    mutate(group = row_number(), type = "Target", set = "l = 0.9"),
+  properties_prepped %>%
+    mutate(group = row_number(), type = "Target", set = "l = 0.1")
+) %>%
   relocate(group:set, .before = "price") %>%
   arrange(group, desc(type))
 

@@ -13,14 +13,18 @@ context("test cknn function")
 
 data <- sales_prepped %>%
   select(-pin, -sale_price, -lon, -lat) %>%
-  mutate(across(where(is.factor), forcats::fct_explicit_na))
+  mutate(across(where(is.factor), forcats::fct_na_value_to_level))
 lon <- sales_prepped %>% pull(lon)
 lat <- sales_prepped %>% pull(lat)
 
 w <- c("bsmt_fin" = 10, "bldg_sf" = 30)
-clust_out <- cknn(data = data, lon = lon, lat = lat, m = 8)
-clust_out_nodata <- cknn(data, lon = lon, lat = lat, m = 8, keep_data = FALSE)
-clust_out_high_k <- cknn(data = data, lon = lon, lat = lat, m = 8, k = 200)
+clust_out <- cknn(data = data, lon = lon, lat = lat, m = 8, na.rm = "no")
+clust_out_nodata <- cknn(
+  data, lon = lon, lat = lat, m = 8, keep_data = FALSE, na.rm = "no"
+)
+clust_out_high_k <- cknn(
+  data = data, lon = lon, lat = lat, m = 8, k = 200, na.rm = "no"
+)
 
 test_that("output has expected attributes", {
   expect_s3_class(clust_out, "cknn")
@@ -43,7 +47,8 @@ test_that("warnings thrown when expected", {
       data = data_w_rare,
       lon = c(lon, 1e6),
       lat = c(lat, 1.9e6),
-      var_weights = 1
+      var_weights = 1,
+      na.rm = "no"
     )
   )
   expect_warning(
@@ -51,7 +56,8 @@ test_that("warnings thrown when expected", {
       data = data_w_rare,
       lon = c(lon, 1e6),
       lat = c(lat, 1.9e6),
-      var_weights = w
+      var_weights = w,
+      na.rm = "no"
     )
   )
 })
@@ -62,7 +68,7 @@ test_that("bad input data stops execution", {
     cknn(
       data = data %>%
         mutate(bsmt = ifelse(row_number() %in% sample(bsmt, 10), NA, bsmt)),
-      lon = lon, lat = lat, var_weights = rep(1, 10)
+      lon = lon, lat = lat, var_weights = rep(1, 10), na.rm = "no"
     )
   )
 
@@ -71,11 +77,11 @@ test_that("bad input data stops execution", {
 
   # Stop when var weights input has names not in the input data
   w <- c("bsmt" = 10, "sale_price" = 30)
-  expect_error(cknn(data, lon, lat, var_weights = w))
+  expect_error(cknn(data, lon, lat, var_weights = w, na.rm = "no"))
 })
 
 test_that("results are consistent when seed set", {
-  expect_known_hash(clust_out, "d760f60834")
+  expect_known_hash(clust_out, "a4468b5a7a")
 })
 
 
@@ -84,7 +90,7 @@ context("test cknn_predict function")
 
 pred_data <- properties_prepped %>%
   select(-price, -lon, -lat) %>%
-  mutate(across(where(is.factor), forcats::fct_explicit_na))
+  mutate(across(where(is.factor), forcats::fct_na_value_to_level))
 pred_lon <- properties_prepped %>% pull(lon)
 pred_lat <- properties_prepped %>% pull(lat)
 

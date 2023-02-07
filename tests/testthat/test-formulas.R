@@ -37,7 +37,7 @@ test_that("bad input data stops execution", {
 
 test_that("incomplete data returns NAs unless removed", {
   expect_equal(cod(c(ratio, NA)), NA_real_)
-  expect_equal(cod(c(ratio, NA), na.rm = T), 17.81457, tolerance = 0.02)
+  expect_equal(cod(c(ratio, NA), na.rm = TRUE), 17.81457, tolerance = 0.02)
 })
 
 test_that("standard met function", {

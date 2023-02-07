@@ -109,7 +109,6 @@
 # nolint end
 cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
                  var_weights = NULL, keep_data = TRUE, ...) {
-
   # Basic error handling and expected input checking
   stopifnot(
     is.data.frame(data),
@@ -155,12 +154,12 @@ cknn <- function(data, lon, lat, m = 5, k = 10, l = 0.5,
   var_c <- rep(1, ncol(data))
   if (length(names(var_weights)) > 0 & any(!names(var_weights) %in% names(data))) { # nolint
     stop("All named values in var_weights must be present in data\n")
-  } else if (!is.null(var_weights) & length(names(var_weights)) > 0) {
+  } else if (!is.null(var_weights) && length(names(var_weights)) > 0) {
     var_c[which(names(data) %in% names(var_weights))] <- var_weights
     invisible(capture.output(
       lambdas <- clustMixType::lambdaest(data, outtype = "vector") * var_c
     ))
-  } else if (length(var_weights) == 1 | length(var_weights) == ncol(data)) {
+  } else if (length(var_weights) == 1 || length(var_weights) == ncol(data)) {
     lambdas <- var_weights
   } else {
     invisible(capture.output(
@@ -329,7 +328,7 @@ predict.cknn <- function(object, newdata, lon, lat,
   )
 
   # Stop if original data is missing
-  if (is.null(object$data) & is.null(data)) {
+  if (is.null(object$data) && is.null(data)) {
     stop(
       "Original data must be passed to the predict method.\n",
       "Set keep_data = TRUE in cknn or use the data argument in predict"
@@ -378,7 +377,6 @@ predict.cknn <- function(object, newdata, lon, lat,
   # the original data (within obj)
   knn_clusts <- mapply(
     function(c_new_data, c_name) {
-
       # Create an index and matrix of the original data, keeping only the
       # target cluster
       c_idx <- object$kproto$cluster == c_name

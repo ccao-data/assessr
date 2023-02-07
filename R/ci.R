@@ -36,13 +36,14 @@ boot_ci <- function(FUN = NULL, nboot = 100, alpha = 0.05, na.rm = FALSE, ...) {
   est <- FUN(...)
   stopifnot(
     length(est) == 1,
-    is.numeric(est)
+    is.numeric(est),
+    is.logical(na.rm)
   )
 
   # Create an index of missing values, where TRUE when missing.
   # If na.rm is FALSE and index contains TRUE, return NA
   missing_idx <- index_na(...)
-  if (any(missing_idx) & !na.rm) {
+  if (any(missing_idx) && !na.rm) {
     return(NA_real_)
   }
 
@@ -54,7 +55,6 @@ boot_ci <- function(FUN = NULL, nboot = 100, alpha = 0.05, na.rm = FALSE, ...) {
 
   # Bootstrapping
   for (i in seq_len(nboot)) {
-
     # For each iteration, sample indices between 1 and the number of
     # non-missing values
     idx <- sample(1:n, replace = TRUE)
@@ -145,7 +145,7 @@ prb_ci <- function(assessed, sale_price, alpha = 0.05, na.rm = FALSE) { # nolint
   if (na.rm) {
     assessed <- assessed[!idx]
     sale_price <- sale_price[!idx]
-  } else if (any(idx) & !na.rm) {
+  } else if (any(idx) && !na.rm) {
     return(NA_real_)
   }
 

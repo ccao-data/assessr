@@ -49,15 +49,15 @@ PRD is the mean ratio divided by the mean ratio weighted by sale
 }
 \section{Functions}{
 \itemize{
-\item \code{prd}: Returns a numeric vector containing the PRD of the
+\item \code{prd()}: Returns a numeric vector containing the PRD of the
 input vectors.
 
-\item \code{prd_ci}: Returns upper and lower CI as a named vector.
+\item \code{prd_ci()}: Returns upper and lower CI as a named vector.
 
-\item \code{prd_met}: Returns TRUE when input PRD meets IAAO standards
+\item \code{prd_met()}: Returns TRUE when input PRD meets IAAO standards
 (between 0.98 and 1.03).
-}}
 
+}}
 \examples{
 
 # Calculate PRD

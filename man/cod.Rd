@@ -50,14 +50,14 @@ COD is the average absolute percent deviation from the
 }
 \section{Functions}{
 \itemize{
-\item \code{cod}: Returns a numeric vector containing the COD of \code{ratios}.
+\item \code{cod()}: Returns a numeric vector containing the COD of \code{ratios}.
 
-\item \code{cod_ci}: Returns upper and lower CI as a named vector.
+\item \code{cod_ci()}: Returns upper and lower CI as a named vector.
 
-\item \code{cod_met}: Returns TRUE when input COD meets IAAO standards
+\item \code{cod_met()}: Returns TRUE when input COD meets IAAO standards
 (between 5 and 15).
-}}
 
+}}
 \examples{
 
 # Calculate COD

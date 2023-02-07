@@ -45,15 +45,26 @@ Note that lowering the value of $l$ drastically increases the percentage match o
 comparables_small %>%
   group_by(set, group) %>%
   summarize(
-    across(bldg_sf:beds, function(x) (sum(between(x, first(x) - (first(x) * 0.1), first(x) + (first(x) * 0.1))) - 1) / (n() - 1)),
+    across(bldg_sf:beds, function(x) {
+      fx <- first(x)
+      sums <- sum(between(x, fx - (fx * 0.1), fx + (fx * 0.1)))
+      sums <- (sums - 1) / (n() - 1)
+    }),
     across(air:gar1_size, function(x) sum(x == first(x)) - 1) / (n() - 1)
   ) %>%
-  tidyr::pivot_longer(-c(set, group), names_to = "var", values_to = "per_match") %>%
+  tidyr::pivot_longer(
+    -c(set, group),
+    names_to = "var",
+    values_to = "per_match"
+  ) %>%
   mutate(
-    group = forcats::fct_reorder(group, rev(as.numeric(gsub("\\D+", "", group)))),
+    group = forcats::fct_reorder(
+      group,
+      rev(as.numeric(gsub("\\D+", "", group)))
+    ),
     var = factor(var, levels = names(comparables_small))
   ) %>%
-ggplot() +
+  ggplot() +
   geom_tile(aes(x = var, y = group, fill = per_match)) +
   geom_text(
     aes(
@@ -68,7 +79,10 @@ ggplot() +
   scale_y_discrete(expand = c(0, 0)) +
   scale_x_discrete(expand = c(0, 0), position = "bottom") +
   scale_fill_distiller(
-    name = "Percent of comparable characteristics\nwithin 10% of target property's value*",
+    name = paste(
+      "Percent of comparable characteristics\nwithin",
+      "10% of target property's value*"
+    ),
     direction = 1,
     labels = scales::percent,
     limits = c(0, 1)
@@ -80,7 +94,6 @@ ggplot() +
   labs(
     x = "", y = "",
     caption = "*Or exactly matching, for categorical variables"
-    
   ) +
   guides(fill = guide_legend(title.position = "bottom")) +
   facet_wrap(vars(set), ncol = 2, strip.position = "top") +
@@ -104,12 +117,18 @@ comparables_small %>%
   st_as_sf(coords = c("lon", "lat"), crs = 3435) %>%
   st_transform(4326) %>%
   ggplot() +
-  geom_sf(data = st_set_crs(ccao::nbhd_shp, 4326) %>% filter(township_name == "Evanston")) +
+  geom_sf(
+    data = st_set_crs(ccao::nbhd_shp, 4326) %>%
+      filter(township_name == "Evanston")
+  ) +
   geom_sf(aes(color = factor(group), shape = type, size = type)) +
   scale_shape_manual(name = "Type", values = c("Target" = 15, "Comp" = 10)) +
   scale_size_manual(name = "Type", values = c("Target" = 3, "Comp" = 2)) +
   guides(color = guide_legend(title = "Comparable groups")) +
-  labs(caption = "*Sub-boundaries represent Cook County Assessor neighborhoods") +
+  labs(caption = paste(
+    "*Sub-boundaries represent",
+    "Cook County Assessor neighborhoods"
+  )) +
   facet_wrap(vars(set), nrow = 1) +
   theme_void() +
   theme(strip.text = element_text(size = 13, face = "bold"))
@@ -123,7 +142,9 @@ Finally, good comparables will be close to each other in price. Here we show dis
 comparables_small %>%
   ggplot() +
   geom_histogram(aes(x = price, fill = type), binwidth = 5e4) +
-  geom_vline(aes(xintercept = median_sp, color = "Median", linetype = "Median")) +
+  geom_vline(
+    aes(xintercept = median_sp, color = "Median", linetype = "Median")
+  ) +
   scale_color_manual(name = "", values = c("Median" = "grey10")) +
   scale_linetype_manual(name = "", values = c("Median" = "dashed")) +
   scale_x_continuous(
@@ -146,7 +167,11 @@ comparables_small %>%
     panel.grid.minor.y = element_blank(),
     panel.spacing.y = unit(0.5, "cm"),
     axis.ticks.x = element_line(size = 0.7),
-    axis.text.x = element_text(margin = margin(b = 4, t = 2), angle = -45, hjust = 0),
+    axis.text.x = element_text(
+      margin = margin(b = 4, t = 2),
+      angle = -45,
+      hjust = 0
+    ),
     axis.text.y = element_text(margin = margin(l = 6))
   )
 ```

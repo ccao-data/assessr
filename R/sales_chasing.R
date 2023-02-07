@@ -69,7 +69,7 @@ detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {
   }
 
   # Can't calculate ideal distribution if ratio input contains NA, so output NA
-  if (any(is.na(ratio)) & !na.rm) {
+  if (any(is.na(ratio)) && !na.rm) {
     return(NA)
   }
 

@@ -42,7 +42,7 @@ is_outlier <- function(x, method = "iqr", ...) {
 
   # Warn about removing data from small samples, as it can severely distort
   # ratio study outcomes
-  if (any(out) & length(out) < 30) {
+  if (any(out) && length(out) < 30) {
     warning(paste(
       "Values flagged as outliers despite small sample size (N < 30).",
       "Use caution when removing values from a small sample."

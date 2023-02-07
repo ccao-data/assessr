@@ -21,7 +21,6 @@ check_inputs <- function(...) {
 
 # Create an index of all missing values in the input vectors
 index_na <- function(...) {
-
   # Create a list of lists containing missing vals in each input
   # Merge lists into single index where if one list has NA, idx value is TRUE
   idx <- as.logical(Reduce("+", lapply(list(...), is.na)))
@@ -40,7 +39,9 @@ demean_coords <- function(x, y) {
 
 # Rescale numeric vector to be between 0 and 1
 # Taken from the scales library
-rescale <- function(x, to = c(0, 1), from = range(x, na.rm = T, finite = T)) {
+rescale <- function(x,
+                    to = c(0, 1),
+                    from = range(x, na.rm = TRUE, finite = TRUE)) {
   (x - from[1]) / diff(from) * diff(to) + to[1]
 }
 
@@ -48,7 +49,6 @@ rescale <- function(x, to = c(0, 1), from = range(x, na.rm = T, finite = T)) {
 # Function to rescale new data RELATIVE to old input data. This can be called
 # directly but is called implicitly in predict()
 rescale_data <- function(data, newdata) {
-
   # Create row incides for both the old and new data
   data_idx <- seq_len(nrow(data))
   newdata_idx <- seq_len(nrow(newdata)) + nrow(data)
@@ -58,7 +58,7 @@ rescale_data <- function(data, newdata) {
 
   # For each numeric column, rescale according to min/max from old data
   num_cols <- which(unlist(lapply(df, is.numeric)))
-  rscl <- function(x) rescale(x, from = range(x[data_idx], na.rm = T))
+  rscl <- function(x) rescale(x, from = range(x[data_idx], na.rm = TRUE))
   df[num_cols] <- lapply(df[num_cols], rscl)
 
   # Return only the new data from the combined df

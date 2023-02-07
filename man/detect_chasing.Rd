@@ -66,12 +66,12 @@ Sales chasing is when a property is selectively reappraised to
 }
 \section{Functions}{
 \itemize{
-\item \code{detect_chasing_cdf}: CDF gap method for detecting sales chasing.
+\item \code{detect_chasing_cdf()}: CDF gap method for detecting sales chasing.
 
-\item \code{detect_chasing_dist}: Distribution comparison method
+\item \code{detect_chasing_dist()}: Distribution comparison method
 for detecting sales chasing.
-}}
 
+}}
 \examples{
 
 # Generate fake data with normal vs chased ratios
