@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# AssessR package <a href="https://github.com/ccao-data/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
+# AssessR <a href="https://github.com/ccao-data/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
 
 [![R-CMD-check](https://github.com/ccao-data/assessr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/ccao-data/assessr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/test-coverage.yaml)
