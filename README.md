@@ -3,6 +3,11 @@
 
 # AssessR package <a href="https://github.com/ccao-data/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
 
+[![R-CMD-check](https://github.com/ccao-data/assessr/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/check-standard.yaml)
+[![test](https://github.com/ccao-data/assessr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/test-coverage.yaml)
+[![lint](https://github.com/ccao-data/assessr/actions/workflows/lint.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/lint.yaml)
+[![codecov](https://codecov.io/gh/ccao-data/assessr/branch/master/graph/badge.svg)](https://codecov.io/gh/ccao-data/assessr)
+
 AssessR is a software package for R developed by the Cook County
 Assessor’s (CCAO) Data Science Department. This package is used in the
 CCAO’s custom-built Computer Assisted Mass Appraisal system. The
