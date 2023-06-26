@@ -17,17 +17,13 @@ License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-    clustMixType (>= 0.3-9),
-    dbscan (>= 1.1-11),
+    clustMixType,
+    dbscan,
     stats,
     utils
 RoxygenNote: 7.2.3
 Suggests: 
-    ccao,
-    covr,
-    devtools,
     dplyr,
-    DT,
     forcats,
     ggplot2,
     jsonlite,
@@ -39,7 +35,5 @@ Suggests:
     sf,
     testthat,
     tidyr
-Remotes: 
-    gitlab::ccao-data-science---modeling/packages/ccao
 Depends: 
     R (>= 3.5.0)
