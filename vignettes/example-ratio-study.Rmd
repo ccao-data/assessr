@@ -13,7 +13,7 @@ AssessR can easily be used with various data to conduct a sales ratio study. In 
 
 ## Basics of sales ratio studies
 
-A sales ratio is the ratio of the assessor's estimate of a property's value to the sale price of a property. A sales ratio study is a report on how accurately and fairly an assessor predicted property values. The CCAO has a [rigorous set of rules](https://gitlab.com/groups/ccao-data-science---modeling/-/wikis/SOPs/Sales%20Ratio%20Studies) that govern how sales ratios studies are conducted.
+A sales ratio is the ratio of the assessor's estimate of a property's value to the sale price of a property. A sales ratio study is a report on how accurately and fairly an assessor predicted property values. The CCAO has a [rigorous set of rules](https://github.com/ccao-data/wiki/blob/master/SOPs/Sales-Ratio-Studies.md) that govern how sales ratios studies are conducted.
 
 In general, there are four important statistics produced in sales ratio studies, listed in the table below. It is important to understand that these statistics are calculated based on properties that sell. In most jurisdictions, the number of properties that sell in any single year is a very small percentage of the overall number of properties. In order to characterize the quality of the assessment role in a jurisdiction, we draw an inference from this small number of properties.
 

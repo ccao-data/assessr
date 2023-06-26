@@ -1,7 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# AssessR package <a href="https://gitlab.com/ccao-data-science---modeling/packages/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
+# AssessR <a href="https://github.com/ccao-data/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
+
+[![R-CMD-check](https://github.com/ccao-data/assessr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/R-CMD-check.yaml)
+[![test-coverage](https://github.com/ccao-data/assessr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/test-coverage.yaml)
+[![lint](https://github.com/ccao-data/assessr/actions/workflows/lint.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/lint.yaml)
+[![pre-commit](https://github.com/ccao-data/assessr/actions/workflows/pre-commit.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/pre-commit.yaml)
+[![codecov](https://codecov.io/gh/ccao-data/assessr/branch/master/graph/badge.svg)](https://codecov.io/gh/ccao-data/assessr)
 
 AssessR is a software package for R developed by the Cook County
 Assessor’s (CCAO) Data Science Department. This package is used in the
@@ -19,23 +25,29 @@ and conducting research.
 
 For detailed documentation on included functions and data, [**visit the
 full reference
-list**](https://ccao-data-science---modeling.gitlab.io/packages/assessr/reference/).
+list**](https://ccao-data.github.io/assessr/reference/index.html).
 
 For examples of specific tasks you can complete with `assessr`
 functions, see the [**vignettes
-page**](https://ccao-data-science---modeling.gitlab.io/packages/assessr/articles/index.html).
+page**](https://ccao-data.github.io/assessr/articles/index.html).
 
 ## Installation
 
-You can install the released version of `assessr` directly from GitLab
-by running the following R command after installing
-[remotes](https://github.com/r-lib/remotes):
+You can install the released version of `assessr` directly from GitHub
+with one of the following commands:
 
 ``` r
-remotes::install_gitlab("ccao-data-science---modeling/packages/assessr")
+# Using remotes
+remotes::install_github("ccao-data/assessr")
 
-# Or, to install a specific version
-remotes::install_gitlab("ccao-data-science---modeling/packages/assessr@0.4.4")
+# Using renv
+renv::install("ccao-data/assessr")
+
+# Using pak
+pak::pak("ccao-data/assessr")
+
+# Append the @ symbol for a specific version
+remotes::install_github("ccao-data/assessr@0.4.4")
 ```
 
 Once it is installed, you can use it just like any other package. Simply
