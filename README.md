@@ -3,7 +3,7 @@
 
 # AssessR package <a href="https://github.com/ccao-data/assessr"><img src="man/figures/logo.png" align="right" height="139"/></a>
 
-[![R-CMD-check](https://github.com/ccao-data/assessr/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/check-standard.yaml)
+[![R-CMD-check](https://github.com/ccao-data/assessr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/R-CMD-check.yaml)
 [![test](https://github.com/ccao-data/assessr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/test-coverage.yaml)
 [![lint](https://github.com/ccao-data/assessr/actions/workflows/lint.yaml/badge.svg)](https://github.com/ccao-data/assessr/actions/workflows/lint.yaml)
 [![codecov](https://codecov.io/gh/ccao-data/assessr/branch/master/graph/badge.svg)](https://codecov.io/gh/ccao-data/assessr)
