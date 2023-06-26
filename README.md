@@ -32,7 +32,7 @@ page**](https://ccao-data.github.io/assessr/articles/index.html).
 
 ## Installation
 
-You can install the released version of `assessr` directly from GitLab
+You can install the released version of `assessr` directly from GitHub
 with one of the following commands:
 
 ``` r

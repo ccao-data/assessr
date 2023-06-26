@@ -30,7 +30,7 @@ For examples of specific tasks you can complete with `assessr` functions, see th
 
 ## Installation
 
-You can install the released version of `assessr` directly from GitLab with one of the following commands:
+You can install the released version of `assessr` directly from GitHub with one of the following commands:
 
 ```{r, eval=FALSE}
 # Using remotes
