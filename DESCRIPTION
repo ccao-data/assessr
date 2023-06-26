@@ -22,7 +22,8 @@ Imports:
     stats,
     utils
 RoxygenNote: 7.2.3
-Suggests: 
+Suggests:
+    ccao,
     dplyr,
     forcats,
     ggplot2,
@@ -35,5 +36,7 @@ Suggests:
     sf,
     testthat,
     tidyr
+Remotes:
+    ccao-data/ccao
 Depends: 
     R (>= 3.5.0)
