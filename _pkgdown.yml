@@ -28,15 +28,10 @@ reference:
     ratios and assessed values as a percentage. In concrete terms, a PRB of 0.02
     indicates that, on average, ratios increase by 2% whenever assessed values
     increase by 100 percent.
-- contents: 
+- contents:
   - prb
   - prb_ci
   - prb_met
-- subtitle: Finding comparables
-  desc: Functions and methods for finding sales and property comparables
-- contents:
-  - cknn
-  - predict.cknn
 - subtitle: Other functions
   desc: Functions for other assessment-related tasks
 - contents:
