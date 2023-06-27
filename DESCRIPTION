@@ -33,6 +33,7 @@ Suggests:
     rmarkdown,
     scales,
     testthat,
+    tibble,
     tidyr
 Depends: 
     R (>= 3.5.0)
