@@ -11,6 +11,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RENV_CONFIG_CACHE_ENABLED: false
+      R_CACHE_ROOTPATH: ~/.cache/pre-commit
     steps:
       - uses: actions/checkout@v3
 
