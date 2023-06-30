@@ -8,6 +8,5 @@
 .Rproj.user/
 inst/
 public/
-pkgdown/
 renv/
 renv.lock
