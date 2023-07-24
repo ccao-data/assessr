@@ -195,6 +195,121 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 
 
 
+
+
+
+##### GINI Measure for Vertical Equity #####
+
+#' @description The GINI Measure for Vertical Equity is a mechanism to identify difference in inequality for
+#' assessed and sale value of houses. It uses the GINI coefficient to identify the inequality of housing prices,
+#' and then identifies the distribution of assessed value as housing prices ascend. This produces two GINI
+#' coefficients, both of which are ordered in accordance with sales price. From these coefficients, two metrics are
+#' produced, the Kakwani Index (KI), which is the GINI coefficient of the assessed value - the GINI coefficient of the sale value.
+#' The second is the Modified Kakwani Index (MKI), which is the GINI coefficient of the assessed value / the GINI coefficient of the sale
+#' value. The Modified Kakwani index is a better metric when working across different neighborhoods with different
+#' distributions of sale values.
+#'
+#'
+#' For KI, a negative value represents a regressive assessment structure, and a positive value represents a progressive assessment structure.
+#' For MKI, a ratio < 1 represents a regressive assessment structure and > 1 represents a progressive assessment structure
+#'
+#'
+#'   \href{Quintos Ph D, Carmela. "A Gini measure for vertical equity in property assessments." Journal of Property Tax Assessment & Administration 17.2 (2020): 2.20}
+#'
+#'
+#'@inheritParams cod
+#' @describeIn Returns a list of two results, the MKI and the KI.
+#'
+#'
+#' @param assessed vector or row of assessed values with same length as \code{sale_price}
+#' @param sale_price vector or row of sale values with same length as \code{assessed}
+#'
+
+
+#'
+#' @order 1
+#'
+#'
+#' @family formulas
+#' @export
+
+
+
+#' @examples
+#' # example code
+#' Vertical_Gini(ratios_sample$assessed, ratios_sample$sale_price)
+
+
+
+
+KI_MKI <- function(assessed, sale) {
+
+
+  # Input checking and error handling
+  check_inputs(assessed, sale_price)
+
+  # Remove NAs from input vectors. Otherwise, return NA if the input vectors
+  # # contain any NA values
+  # idx <- index_na(assessed, sale_price)
+  # if (na.rm) {
+  #   assessed <- assessed[!idx]
+  #   sale_price <- sale_price[!idx]
+  # } else if (any(idx) && !na.rm) {
+  #   return(NA_real_)
+  # }
+
+  # Ensure data is arranged in ascending order
+
+  dataset <- data.frame(sale = sale, assessed = assessed)
+  dataset <- dataset %>%
+    arrange(sale)
+
+  # Reassigns information into objects
+  assessed_price <- dataset$assessed
+  sale_price <- dataset$sale
+
+  # Creates vector with the length of data set
+  n <- length(assessed_price)
+
+  #   Calculate the sum of the first n elements of assessed_price vector.
+  G_assessed <- sum(assessed_price * 1L:n)
+
+  #Compute Gini Coefficient:
+  G_assessed <- 2 * G_assessed/sum(assessed_price) - (n + 1L)
+
+  # Normalize the Gini coefficient by dividing it by n.
+  GINI_assessed <- G_assessed/n
+
+
+
+  # Same process for Sale
+  G_sale <- sum(sale_price * 1L:n)
+
+  G_sale <- 2 * G_sale/sum(sale_price) - (n + 1L)
+
+  GINI_sale <- G_sale/n
+
+  # Calculate the MKI
+  MKI <- GINI_assessed / GINI_sale
+
+  # Calculate KI
+  KI <- GINI_assessed - GINI_sale
+
+  #Return Output
+  result <- list(MKI = MKI, KI = KI)
+
+  return(result)
+}
+
+
+
+# TO TEST GINI:
+# Gini(combined$sale_price)
+
+
+
+
+
 ##### STANDARDS #####
 
 # Mini functions to test if IAAO standards are met
