@@ -68,6 +68,7 @@ cod_ci(ratios_sample$ratio)
 }
 \seealso{
 Other formulas: 
+\code{\link{KI_MKI}()},
 \code{\link{prb}()},
 \code{\link{prd}()}
 }
