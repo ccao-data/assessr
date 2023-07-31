@@ -198,18 +198,20 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 
 
 
-##### KI_MKI #####
-
+##### ki_mki #####
+# nolint start
+#' Calculate Kakwani and Modified Kakwani Index
+#'
 #' @description The GINI Measure for Vertical Equity is a mechanism to identify
 #' difference in inequality for assessed and sale value of houses.
 #' It uses two instances of the GINI coefficient, one for the distribution
-#' of sold housing prices, and then assessed prices (ordered by sold price)
-#' From these coefficients, two metrics are produced, the Kakwani Index (KI),
+#' of sold housing prices, and then assessed prices which remain sorted by sale price.
+#' From these coefficients, two metrics are produced. 1st is the Kakwani Index (KI),
 #' GINI of the assessed value - the GINI of the sale value.
-#' The second is the Modified Kakwani Index (MKI),
+#' 2nd is the Modified Kakwani Index (MKI),
 #' GINI of the assessed value / the GINI of the sale value.
-#' The Modified Kakwani index is a better metric when working across different
-#' neighborhoods with different distributions of sale values.
+#' The Modified Kakwani index is the standard, and a better metric when working
+#' across multiple neighborhoods, with different distributions of sale values.
 #'
 #' KI < 0 is regressive
 #' KI = 0 is vertical equity
@@ -219,32 +221,38 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 #' MKI = 1 is vertical equity
 #' MKI > 1 is progressive
 #'
-#'   \href{Quintos Ph D, Carmela.
-#'   "A Gini measure for vertical equity in property assessments."
-#'   Journal of Property Tax Assessment & Administration 17.2 (2020): 2.20}
+#'   \href{https://researchexchange.iaao.org/jptaa/vol17/iss2/2/}{A Gini measure for vertical equity in property assessments}
 #'
+#' @inheritParams ki_mki_met
+#' @describeIn ki_mki returns a list of two results, the MKI and the KI.
 #'
-#' @inheritParams cod
-#' @describeIn Returns a list of two results, the MKI and the KI.
-#'
+#' @param na.rm Default FALSE. A boolean value indicating whether or not to
+#' remove NA values. If missing values are present but not removed the
+#' function will output NA.
 #'
 #' @param assessed vector or row of assessed values
 #' with same length as \code{sale_price}
 #' @param sale_price vector or row of sale values
 #' with same length as \code{assessed}
 #'
+#' @param mki Boolean indicator to identify if the output is mki or ki.
+#' mki = TRUE and default
+#' ki = False
 #'
 #' @order 1
 #'
 #'
 #' @family formulas
-#' @export
 #' @examples
 #' # example code
-#' result <- KI_MKI(ratios_sample$assessed, ratios_sample$sale_price)
-KI_MKI <- function(assessed, sale_price, na.rm = FALSE) {
+#' result <- ki_mki(ratios_sample$assessed, ratios_sample$sale_price, mki = TRUE)
+#'
+#' @export
+#'
+ki_mki <- function(assessed, sale_price, na.rm = FALSE, mki = TRUE) {
   # Input checking and error handling
   check_inputs(assessed, sale_price)
+  # nolint end
 
 
   idx <- index_na(assessed, sale_price)
@@ -255,46 +263,37 @@ KI_MKI <- function(assessed, sale_price, na.rm = FALSE) {
     return(NA_real_)
   }
 
-  # Ensure data is arranged in ascending order
-
   dataset <- data.frame(sale_price = sale_price, assessed = assessed)
-
   dataset <- dataset[order(dataset$sale_price), ]
-
-
-  # Reassigns information into objects
   assessed_price <- dataset$assessed
   sale_price <- dataset$sale_price
-
-  # Creates vector with the length of data set
   n <- length(assessed_price)
 
-  #   Calculate the sum of the first n elements of assessed_price vector.
+  # Calculate the sum of the n elements of the assessed_price vector.
   G_assessed <- sum(assessed_price * 1L:n)
 
-  # Compute Gini Coefficient:
+  # Compute the Gini Coefficient based on the previously calculated sum
+  # and the increasing sum of all elements in the assessed_price vector.
   G_assessed <- 2 * G_assessed / sum(assessed_price) - (n + 1L)
 
   # Normalize the Gini coefficient by dividing it by n.
   GINI_assessed <- G_assessed / n
 
 
-
   # Same process for Sale
   G_sale <- sum(sale_price * 1L:n)
-
   G_sale <- 2 * G_sale / sum(sale_price) - (n + 1L)
-
   GINI_sale <- G_sale / n
 
-  # Calculate the MKI
-  MKI <- GINI_assessed / GINI_sale
+  if (mki) {
+    MKI <- GINI_assessed / GINI_sale
+    result <- c(MKI = MKI)
+  } else {
+    KI <- GINI_assessed - GINI_sale
+    result <- c(KI = KI)
+  }
 
-  # Calculate KI
-  KI <- GINI_assessed - GINI_sale
-
-  # Return Output
-  result <- c(MKI = MKI, KI = KI)
+  result <- unname(result)
 
   # Return 'result'
   return(result)
@@ -326,9 +325,10 @@ prb_met <- function(x) x >= -0.05 & x <= 0.05
 
 
 
-#' @describeIn KI_MKI Returns TRUE when input meets standards
-#'   (between -0.05 and 0.05).
+#' @describeIn ki_mki Returns TRUE when input meets report standards.
 #' @inheritParams cod_met
 #' @export
 #'
-KI_MKI_met <- function(x) x[[1]] >= 0.9 & x[[1]] <= 1.1 & x[[2]] >= -.1 & x[[2]] <= .1
+ki_mki_met <- function(x) {
+  x >= 0.95 & x <= 1.05
+}

@@ -140,26 +140,24 @@ test_that("standard met function", {
 
 
 ##### TEST KI_KMI #####
-context("test KI_MKI function")
+context("test ki_mki function")
 
-# Calculate PRB
-KI_MKI_out <- KI_MKI(assessed, sale_price)
+# ki_mki
+ki_mki_out <- ki_mki(assessed, sale_price, mki = TRUE)
 
 test_that("returns expected type", {
-  expect_type(KI_MKI_out, "double")
-  expect_vector(KI_MKI_out)
+  expect_type(ki_mki_out, "double")
+  expect_vector(ki_mki_out)
 })
 
 test_that("output equal to expected", {
-  expect_equal(KI_MKI_out[[1]], 0.91145702, tolerance = 0.02)
-  expect_equal(KI_MKI_out[[2]], -0.03599249, tolerance = 0.02)
-
+  expect_equal(ki_mki_out, 0.91145702, tolerance = 0.02)
 })
 
 test_that("bad input data stops execution", {
   expect_error(prb(numeric(0)))
   expect_error(prb(numeric(10), numeric(10)))
-  expect_error(prb(c(KI_MKI, Inf), c(KI_MKI, 0)))
+  expect_error(prb(c(ki_mki, Inf), c(ki_mki, 0)))
   expect_error(prb(assessed, c(sale_price, 10e5)))
   expect_error(prb(data.frame(assessed), sale_price))
   expect_error(prb(c(assessed, NaN), c(sale_price, 1)))
@@ -168,20 +166,19 @@ test_that("bad input data stops execution", {
 })
 
 test_input <-
-test_that("incomplete data returns NAs unless removed", {
-  expect_equal(
-    KI_MKI(c(assessed, NA), c(sale_price, 10e5)),
-    NA_real_
-  )
-  expect_equal(
-    KI_MKI(c(assessed, NA), c(sale_price, 10e5), na.rm = TRUE),
-    # This was put in b/c it's a vector length of 2, just verifying that's OK
-    KI_MKI_out,
-    tolerance = 0.02
-  )
-})
+  test_that("incomplete data returns NAs unless removed", {
+    expect_equal(
+      ki_mki(c(assessed, NA), c(sale_price, 10e5)),
+      NA_real_
+    )
+    expect_equal(
+      ki_mki(c(assessed, NA), c(sale_price, 10e5), na.rm = TRUE),
+      0.91145702,
+      tolerance = 0.02
+    )
+  })
 
 # No real standards for this
 test_that("standard met function", {
-  expect_true(KI_MKI_met(KI_MKI_out))
+  expect_false(ki_mki_met(ki_mki_out))
 })

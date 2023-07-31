@@ -68,8 +68,8 @@ prd_ci(ratios_sample$assessed, ratios_sample$sale_price)
 }
 \seealso{
 Other formulas: 
-\code{\link{KI_MKI}()},
 \code{\link{cod}()},
+\code{\link{ki_mki}()},
 \code{\link{prb}()}
 }
 \concept{formulas}
