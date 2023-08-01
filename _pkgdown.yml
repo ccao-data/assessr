@@ -38,6 +38,18 @@ reference:
   - boot_ci
   - detect_chasing
   - is_outlier
+  - title: Functions
+- subtitle: (Modified) Kakwani Index
+  desc: >
+    The Kakwani Index (ki) and the Modified Kakwani Index (mki) are GINI-based measures
+    to test for vertical equity. The method first orders the housing stock by
+    increasing sale prices, and then calculates the GINI coefficient for sale value and
+    assessed value (remaining ordered by sales price). The Kakwani Index then
+    calculates the difference (GINI of Assessed - GINI of Sale), and the
+    Modified Kakwani Index calculates the ratio (GINI of Assessed / GINI of Sale).
+- contents:
+  - ki_mki
+  - ki_mki_met
 
 - title: Data
   desc: Sample data used for testing and demonstrations

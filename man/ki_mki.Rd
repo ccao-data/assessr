@@ -20,24 +20,19 @@ with same length as \code{assessed}}
 remove NA values. If missing values are present but not removed the
 function will output NA.}
 
-\item{mki}{Boolean indicator to identify if the output is mki or ki.
-mki = TRUE and default
-ki = False}
+\item{mki}{Default TRUE. A boolean indicator to identify if the output
+is mki or ki. MKI is the preferred metric.}
 
 \item{x}{Numeric vector of sales ratio statistic(s) to check
 against IAAO standards.}
 }
 \description{
-The GINI Measure for Vertical Equity is a mechanism to identify
-difference in inequality for assessed and sale value of houses.
-It uses two instances of the GINI coefficient, one for the distribution
-of sold housing prices, and then assessed prices which remain sorted by sale price.
-From these coefficients, two metrics are produced. 1st is the Kakwani Index (KI),
-GINI of the assessed value - the GINI of the sale value.
-2nd is the Modified Kakwani Index (MKI),
-GINI of the assessed value / the GINI of the sale value.
-The Modified Kakwani index is the standard, and a better metric when working
-across multiple neighborhoods, with different distributions of sale values.
+The Kakwani Index (ki) and the Modified Kakwani Index (mki) are GINI-based measures
+to test for vertical equity. The method first orders the housing stock by
+increasing sale prices, and then calculates the GINI coefficient for sale value and
+assessed value (remaining ordered by sales price). The Kakwani Index then
+calculates the difference (GINI of Assessed - GINI of Sale), and the
+Modified Kakwani Index calculates the ratio (GINI of Assessed / GINI of Sale).
 
 KI < 0 is regressive
 KI = 0 is vertical equity
@@ -51,7 +46,8 @@ MKI > 1 is progressive
 }
 \section{Functions}{
 \itemize{
-\item \code{ki_mki()}: returns a list of two results, the MKI and the KI.
+\item \code{ki_mki()}: returns either the MKI or KI of numeric indicators
+based on boolean indicator.
 
 \item \code{ki_mki_met()}: Returns TRUE when input meets report standards.
 

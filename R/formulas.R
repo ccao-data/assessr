@@ -195,23 +195,16 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 
 
 
-
-
-
 ##### ki_mki #####
 # nolint start
 #' Calculate Kakwani and Modified Kakwani Index
 #'
-#' @description The GINI Measure for Vertical Equity is a mechanism to identify
-#' difference in inequality for assessed and sale value of houses.
-#' It uses two instances of the GINI coefficient, one for the distribution
-#' of sold housing prices, and then assessed prices which remain sorted by sale price.
-#' From these coefficients, two metrics are produced. 1st is the Kakwani Index (KI),
-#' GINI of the assessed value - the GINI of the sale value.
-#' 2nd is the Modified Kakwani Index (MKI),
-#' GINI of the assessed value / the GINI of the sale value.
-#' The Modified Kakwani index is the standard, and a better metric when working
-#' across multiple neighborhoods, with different distributions of sale values.
+#' @description The Kakwani Index (ki) and the Modified Kakwani Index (mki) are GINI-based measures
+#' to test for vertical equity. The method first orders the housing stock by
+#' increasing sale prices, and then calculates the GINI coefficient for sale value and
+#' assessed value (remaining ordered by sales price). The Kakwani Index then
+#' calculates the difference (GINI of Assessed - GINI of Sale), and the
+#' Modified Kakwani Index calculates the ratio (GINI of Assessed / GINI of Sale).
 #'
 #' KI < 0 is regressive
 #' KI = 0 is vertical equity
@@ -224,23 +217,20 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 #'   \href{https://researchexchange.iaao.org/jptaa/vol17/iss2/2/}{A Gini measure for vertical equity in property assessments}
 #'
 #' @inheritParams ki_mki_met
-#' @describeIn ki_mki returns a list of two results, the MKI and the KI.
+#' @describeIn ki_mki returns either the MKI or KI of numeric indicators
+#' based on boolean indicator.
 #'
 #' @param na.rm Default FALSE. A boolean value indicating whether or not to
 #' remove NA values. If missing values are present but not removed the
 #' function will output NA.
-#'
 #' @param assessed vector or row of assessed values
 #' with same length as \code{sale_price}
 #' @param sale_price vector or row of sale values
 #' with same length as \code{assessed}
-#'
-#' @param mki Boolean indicator to identify if the output is mki or ki.
-#' mki = TRUE and default
-#' ki = False
+#' @param mki Default TRUE. A boolean indicator to identify if the output
+#' is mki or ki. MKI is the preferred metric.
 #'
 #' @order 1
-#'
 #'
 #' @family formulas
 #' @examples
@@ -253,7 +243,6 @@ ki_mki <- function(assessed, sale_price, na.rm = FALSE, mki = TRUE) {
   # Input checking and error handling
   check_inputs(assessed, sale_price)
   # nolint end
-
 
   idx <- index_na(assessed, sale_price)
   if (na.rm) {
@@ -279,7 +268,6 @@ ki_mki <- function(assessed, sale_price, na.rm = FALSE, mki = TRUE) {
   # Normalize the Gini coefficient by dividing it by n.
   GINI_assessed <- G_assessed / n
 
-
   # Same process for Sale
   G_sale <- sum(sale_price * 1L:n)
   G_sale <- 2 * G_sale / sum(sale_price) - (n + 1L)
@@ -295,9 +283,9 @@ ki_mki <- function(assessed, sale_price, na.rm = FALSE, mki = TRUE) {
 
   result <- unname(result)
 
-  # Return 'result'
   return(result)
 }
+
 
 
 ##### STANDARDS #####
@@ -322,8 +310,6 @@ prd_met <- function(x) x >= 0.98 & x <= 1.03
 #' @inheritParams cod_met
 #' @export
 prb_met <- function(x) x >= -0.05 & x <= 0.05
-
-
 
 #' @describeIn ki_mki Returns TRUE when input meets report standards.
 #' @inheritParams cod_met
