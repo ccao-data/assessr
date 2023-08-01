@@ -32,13 +32,6 @@ reference:
   - prb
   - prb_ci
   - prb_met
-- subtitle: Other functions
-  desc: Functions for other assessment-related tasks
-- contents:
-  - boot_ci
-  - detect_chasing
-  - is_outlier
-  - title: Functions
 - subtitle: (Modified) Kakwani Index
   desc: >
     The Kakwani Index (ki) and the Modified Kakwani Index (mki) are GINI-based measures
@@ -50,6 +43,13 @@ reference:
 - contents:
   - ki_mki
   - ki_mki_met
+- subtitle: Other functions
+  desc: Functions for other assessment-related tasks
+- contents:
+  - boot_ci
+  - detect_chasing
+  - is_outlier
+
 
 - title: Data
   desc: Sample data used for testing and demonstrations
