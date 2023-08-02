@@ -292,7 +292,6 @@ Another way to test the vertical equity of assessments is by looking at the diff
 
 
 ```{r}
-
 GINI_data <- combined %>%
   select(sale_price, assessed) %>%
   arrange(sale_price)
@@ -302,28 +301,40 @@ assessed <- GINI_data$assessed
 
 lorenz_data_price <- data.frame(
   Percentage = c(0, cumsum(sale_price) / sum(sale_price)),
-  CumulativePercentage = c(0, 1L:length(sale_price)) / length(sale_price)
+  CumulativePercentage = c(0, seq_along(sale_price)) / length(sale_price)
 )
 
 lorenz_data_assessed <- data.frame(
   Percentage = c(0, cumsum(assessed) / sum(assessed)),
-  CumulativePercentage = c(0, 1L:length(assessed)) / length(assessed)
+  CumulativePercentage = c(0, seq_along(assessed)) / length(assessed)
 )
 
 Lorenz_Curves <- ggplot() +
-  geom_line(data = lorenz_data_price, aes(x = CumulativePercentage, y = Percentage), color = "blue") +
-  geom_line(data = lorenz_data_assessed, aes(x = CumulativePercentage, y = Percentage), color = "red") +
+  geom_line(
+    data = lorenz_data_price,
+    aes(x = CumulativePercentage, y = Percentage), color = "blue"
+  ) +
+  geom_line(
+    data = lorenz_data_assessed,
+    aes(x = CumulativePercentage, y = Percentage), color = "red"
+  ) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "green") +
-  geom_text(data = data.frame(x = 0.8, y = 0.1, label = "Sale Price"), aes(x, y, label = label), color = "blue", vjust = 1) +
-  geom_text(data = data.frame(x = 0.8, y = 0.05, label = "Assessed Price"), aes(x, y, label = label), color = "red", hjust = .34, vjust = 1) +
-  labs(title = "Lorenz Curve for Sale and Assessed Values",
-       x = "Percentage of Houses",
-       y = "Percentage of Value") +
+  geom_text(
+    data = data.frame(x = 0.8, y = 0.1, label = "Sale Price"),
+    aes(x, y, label = label), color = "blue", vjust = 1
+  ) +
+  geom_text(
+    data = data.frame(x = 0.8, y = 0.05, label = "Assessed Price"),
+    aes(x, y, label = label), color = "red", hjust = .34, vjust = 1
+  ) +
+  labs(
+    title = "Lorenz Curve for Sale and Assessed Values",
+    x = "Percentage of Houses",
+    y = "Percentage of Value"
+  ) +
   theme_minimal()
 
 print(Lorenz_Curves)
-
-
 ```
 
 
@@ -345,33 +356,31 @@ Kakwani Index: Assessed GINI - Price GINI
 Modified Kakwani Index: Assessed GINI / Price GINI
 
 ```{r}
+n <- length(assessed)
+# Calculate the sum of the n elements of the assessed_price vector.
+G_assessed <- sum(assessed * 1L:n)
 
-  n <- length(assessed)
-  # Calculate the sum of the n elements of the assessed_price vector.
-  G_assessed <- sum(assessed * 1L:n)
+# Compute the Gini Coefficient based on the previously calculated sum
+# and the increasing sum of all elements in the assessed_price vector.
+G_assessed <- 2 * G_assessed / sum(assessed) - (n + 1L)
 
-  # Compute the Gini Coefficient based on the previously calculated sum
-  # and the increasing sum of all elements in the assessed_price vector.
-  G_assessed <- 2 * G_assessed / sum(assessed) - (n + 1L)
+# Normalize the Gini coefficient by dividing it by n.
+GINI_assessed <- G_assessed / n
 
-  # Normalize the Gini coefficient by dividing it by n.
-  GINI_assessed <- G_assessed / n
+# Same process for Sale
+# This will match Gini(sale_price) in the ineq package.
+G_sale <- sum(sale_price * 1L:n)
+G_sale <- 2 * G_sale / sum(sale_price) - (n + 1L)
+GINI_sale <- G_sale / n
 
-  # Same process for Sale 
-  # This will match Gini(sale_price) in the ineq package.
-  G_sale <- sum(sale_price * 1L:n)
-  G_sale <- 2 * G_sale / sum(sale_price) - (n + 1L)
-  GINI_sale <- G_sale / n
-  
-  MKI <- GINI_assessed / GINI_sale
-  KI <- GINI_assessed - GINI_sale
-  
-  print(MKI)
-  print(KI)
+MKI <- GINI_assessed / GINI_sale
+KI <- GINI_assessed - GINI_sale
 
+print(MKI)
+print(KI)
 ```
 
-The output for the Modified Kakwani Index is .94, and the Kakwani Index is -.019. According to the following table, this means that the assessment policy is regressive. 
+The output for the Modified Kakwani Index is .9413, and the Kakwani Index is -.0197. According to the following table, this means that the assessment policy is regressive. 
 
 | Range              | Interpretation     |
 |--------------------|--------------------|
