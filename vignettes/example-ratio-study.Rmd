@@ -392,6 +392,3 @@ The output for the Modified Kakwani Index is .9413, and the Kakwani Index is -.0
 | < 1                | Regressive Policy  |
 | = 1                | Vertical Equity    |
 | > 1                | Progressive Policy |
-
-
-
