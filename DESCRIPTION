@@ -7,6 +7,7 @@ Authors@R: c(
     person(given = "William", family = "Ridgeway", email="william.ridgeway@cookcountyil.gov", role=c("ctb")),
     person(given = "Rob", family = "Ross", role=c("ctb")),
     person(given = "Nathan", family = "Dignazio", role=c("ctb"))
+    person(given = "Damon", family = "Major", role=c("ctb"))
     )
 Date: 2023-07-31
 Description: An R package to measure the performance of property assessments

@@ -284,3 +284,105 @@ tibble(
 ```
 
 Ratios that include selective appraisals will be clustered around the value of one much more than ratios produced from a CAMA system. We can see this visually in the graph where the cumulative distribution curve shows a discontinuous jump, or 'flat spot', near one.
+
+
+### GINI Based Measure of Vertical Equity
+
+Another way to test the vertical equity of assessments is by looking at the differences in the GINI coefficient, a widely used metric to analyze inequality. The first step in this process is to order the data by sale price. Once done, the GINI coefficient is calculated for both sale and assessed value (both ordered by sale price). A graph of the Lorenz Curve is presented below.
+
+
+```{r}
+
+GINI_data <- combined %>%
+  select(sale_price, assessed) %>%
+  arrange(sale_price)
+
+sale_price <- GINI_data$sale_price
+assessed <- GINI_data$assessed
+
+lorenz_data_price <- data.frame(
+  Percentage = c(0, cumsum(sale_price) / sum(sale_price)),
+  CumulativePercentage = c(0, 1L:length(sale_price)) / length(sale_price)
+)
+
+lorenz_data_assessed <- data.frame(
+  Percentage = c(0, cumsum(assessed) / sum(assessed)),
+  CumulativePercentage = c(0, 1L:length(assessed)) / length(assessed)
+)
+
+Lorenz_Curves <- ggplot() +
+  geom_line(data = lorenz_data_price, aes(x = CumulativePercentage, y = Percentage), color = "blue") +
+  geom_line(data = lorenz_data_assessed, aes(x = CumulativePercentage, y = Percentage), color = "red") +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "green") +
+  geom_text(data = data.frame(x = 0.8, y = 0.1, label = "Sale Price"), aes(x, y, label = label), color = "blue", vjust = 1) +
+  geom_text(data = data.frame(x = 0.8, y = 0.05, label = "Assessed Price"), aes(x, y, label = label), color = "red", hjust = .34, vjust = 1) +
+  labs(title = "Lorenz Curve for Sale and Assessed Values",
+       x = "Percentage of Houses",
+       y = "Percentage of Value") +
+  theme_minimal()
+
+print(Lorenz_Curves)
+
+
+```
+
+
+
+In this graphic, the green line (Line of Equity) represents a hypothetical environment, where housing valuations are completely equitable. The two other curves represent the percentage of value (y axis), encompassed by an increasing percentage of housing (x-axis). Since housing is ordered by sale prices, the rate of increase is increasing. 
+
+What this chart shows is that for the vast majority of the income distribution, assessed values are closer to the Line of Equity. This can be interpreted two ways. 
+
+1st, when the assessed line is above the sale price, the gap between the the two lines at any individual point, represents the cumulative over-assessment for all houses at that value or below.
+
+2nd, it means that the GINI coefficient for sale price is going to be higher than the GINI coefficient for assessed price. 
+
+In this situation, the two curves represent a regressive housing policy. This is not immediately intuitive, but to conceptualize this, think of an exaggerated "progressive" policy, where all houses were valued at $0 with one house encompassing all the assessed value. In this distribution, curve would be at 0 until the final house, where it would jump to 100% of the cumulative value (a GINI of 1). Thus, a higher GINI represents a more progressive assessment policy. 
+
+To translate these curves to a metric, the Kakwani and Modified Kakwani Index are used. These are straightforward, with the following definitions:
+
+Kakwani Index: Assessed GINI - Price GINI
+
+Modified Kakwani Index: Assessed GINI / Price GINI
+
+```{r}
+
+  n <- length(assessed)
+  # Calculate the sum of the n elements of the assessed_price vector.
+  G_assessed <- sum(assessed * 1L:n)
+
+  # Compute the Gini Coefficient based on the previously calculated sum
+  # and the increasing sum of all elements in the assessed_price vector.
+  G_assessed <- 2 * G_assessed / sum(assessed) - (n + 1L)
+
+  # Normalize the Gini coefficient by dividing it by n.
+  GINI_assessed <- G_assessed / n
+
+  # Same process for Sale 
+  # This will match Gini(sale_price) in the ineq package.
+  G_sale <- sum(sale_price * 1L:n)
+  G_sale <- 2 * G_sale / sum(sale_price) - (n + 1L)
+  GINI_sale <- G_sale / n
+  
+  MKI <- GINI_assessed / GINI_sale
+  KI <- GINI_assessed - GINI_sale
+  
+  print(MKI)
+  print(KI)
+
+```
+
+The output for the Modified Kakwani Index is .94, and the Kakwani Index is -.019. According to the following table, this means that the assessment policy is regressive. 
+
+| Range              | Interpretation     |
+|--------------------|--------------------|
+| Kakwani Index      |                    |
+| < 0                | Regressive Policy  |
+| = 0                | Vertical Equity    |
+| > 0                | Progressive Policy |
+| Modified Kakwani Index |                  |
+| < 1                | Regressive Policy  |
+| = 1                | Vertical Equity    |
+| > 1                | Progressive Policy |
+
+
+
