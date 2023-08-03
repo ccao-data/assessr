@@ -55,7 +55,6 @@ based on boolean indicator.
 \examples{
 # example code
 result <- ki_mki(ratios_sample$assessed, ratios_sample$sale_price, mki = TRUE)
-result <- ki_mki(Test_Data$Assessed, Test_Data$"Sale Price", mki = TRUE)
 
 }
 \seealso{

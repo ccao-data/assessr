@@ -10,3 +10,4 @@ inst/
 public/
 renv/
 renv.lock
+.rds

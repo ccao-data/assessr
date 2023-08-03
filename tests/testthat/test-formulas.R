@@ -138,10 +138,7 @@ test_that("standard met function", {
 context("test ki_mki function")
 
 # Data specific to academic article
-ki_mki_data <- read.table("~/assessr/tests/testthat/data/ki_mki_data.csv")
-
-names(ki_mki_data)[names(ki_mki_data) == "V1"] <- "Sale_Price"
-names(ki_mki_data)[names(ki_mki_data) == "V2"] <- "Assessed"
+ki_mki_data <- readRDS("~/assessr/tests/testthat/data/ki_mki_data.rds")
 
 ki_mki_assessed <- ki_mki_data$Assessed
 ki_mki_sale_price <- ki_mki_data$Sale_Price
