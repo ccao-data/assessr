@@ -138,7 +138,7 @@ test_that("standard met function", {
 context("test ki_mki function")
 
 # Data specific to academic article
-ki_mki_data <- read.csv("~/assessr/tests/testthat/data/ki_mki_data.csv")
+ki_mki_data <- read.csv("~/tests/testthat/data/ki_mki_data.csv")
 
 ki_mki_assessed <- ki_mki_data$Assessed
 ki_mki_sale_price <- ki_mki_data$Sale_Price
