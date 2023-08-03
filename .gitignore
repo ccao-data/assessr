@@ -10,3 +10,7 @@ inst/
 public/
 renv/
 renv.lock
+.Rhistory
+.RData
+.rds
+.Rds
