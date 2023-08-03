@@ -17,13 +17,16 @@ A sales ratio is the ratio of the assessor's estimate of a property's value to t
 
 In general, there are four important statistics produced in sales ratio studies, listed in the table below. It is important to understand that these statistics are calculated based on properties that sell. In most jurisdictions, the number of properties that sell in any single year is a very small percentage of the overall number of properties. In order to characterize the quality of the assessment role in a jurisdiction, we draw an inference from this small number of properties.
 
-| Statistic               | Acceptable Range | Interpretation                                                                                                                                                                             |
-|------------------------|------------------------|------------------------|
+
+| Statistic               | Acceptable Range | Interpretation                                                                                                                     |
+|------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------|
 | COD                     | 5 - 15           | How often properties with the *same* sale price receive the same predicted market value. Lower CODs indicate more fairness between similarly priced properties.                            |
 | PRD                     | .98 - 1.03       | How often properties with *different* sale prices receive the proportionately different predicted market values. Lower PRDs indicate more fairness between low and high-priced properties. |
 | PRB                     | -.05 - .05       | PRB is a different approach to measuring fairness across homes with different sale prices.                                                                                                 |
 | Median Assessment Ratio | .095 - 1.05      | The median ratio measures whether the most common ratios accurately reflect sale prices                                                                                                    |
-| Sales Chasing (E.4)     | $\le$ 5%         | Measures the degree to which the statistics above are *true* reflections of the quality of assessments.                                                                                    |
+| Sales Chasing (E.4)     | $\le$ 5%         | Measures the degree to which the statistics above are *true* reflections of the quality of assessments.                          |
+| MKI                     | .95 - 1.05        | Measures the difference in inequality between assessed valuations and sale prices.                                               |
+
 
 ### Interpretation of sales ratio statistics
 
@@ -328,7 +331,7 @@ Lorenz_Curves <- ggplot() +
     aes(x, y, label = label), color = "red", hjust = .34, vjust = 1
   ) +
   labs(
-    title = "Lorenz Curve for Sale and Assessed Values",
+    title = "Lorenz Curve for Sale and Assessed Prices",
     x = "Percentage of Houses",
     y = "Percentage of Value"
   ) +
@@ -339,15 +342,15 @@ print(Lorenz_Curves)
 
 
 
-In this graphic, the green line (Line of Equity) represents a hypothetical environment, where housing valuations are completely equitable. The two other curves represent the percentage of value (y axis), encompassed by an increasing percentage of housing (x-axis). Since housing is ordered by sale prices, the rate of increase is increasing. 
+In this graphic, the green line (Line of Equality) represents a hypothetical environment, where housing valuations are completely equitable. The two other curves represent the percentage of value (y axis), encompassed by an increasing percentage of housing (x-axis). Since housing is ordered by sale prices, the rate of increase is increasing. 
 
 What this chart shows is that for the vast majority of the income distribution, assessed values are closer to the Line of Equity. This can be interpreted two ways. 
 
 1st, when the assessed line is above the sale price, the gap between the the two lines at any individual point, represents the cumulative over-assessment for all houses at that value or below.
 
-2nd, it means that the GINI coefficient for sale price is going to be higher than the GINI coefficient for assessed price. 
+2nd, it means that the GINI coefficient for sale price is going to be higher than the GINI coefficient for assessed price (a larger area between the the curve and the Line of Equality). 
 
-In this situation, the two curves represent a regressive housing policy. This is not immediately intuitive, but to conceptualize this, think of an exaggerated "progressive" policy, where all houses were valued at $0 with one house encompassing all the assessed value. In this distribution, curve would be at 0 until the final house, where it would jump to 100% of the cumulative value (a GINI of 1). Thus, a higher GINI represents a more progressive assessment policy. 
+In this situation, the graph represents a regressive housing policy. This is not immediately intuitive, but to conceptualize this, think of an exaggerated "progressive" policy, where all houses were valued at $0 with one house encompassing all the assessed value. In this distribution, curve would be at 0 until the final house, where it would jump to 100% of the cumulative value (a GINI of 1). Thus, a higher GINI represents a more progressive assessment policy, where tax assessments are larger as housing value increases. 
 
 To translate these curves to a metric, the Kakwani and Modified Kakwani Index are used. These are straightforward, with the following definitions:
 

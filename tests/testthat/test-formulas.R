@@ -137,8 +137,14 @@ test_that("standard met function", {
 ##### TEST KI_KMI #####
 context("test ki_mki function")
 
+# Data specific to academic article
+ki_mki_data <- read_excel("~/assessr/tests/testthat/data/ki_mki_data.xlsx")
+
+ki_mki_assessed <- ki_mki_data$Assessed
+ki_mki_sale_price <- ki_mki_data$Sale_Price
+
 # ki_mki
-ki_mki_out <- ki_mki(assessed, sale_price, mki = TRUE)
+ki_mki_out <- ki_mki(ki_mki_assessed, ki_mki_sale_price, mki = TRUE)
 
 test_that("returns expected type", {
   expect_type(ki_mki_out, "double")
@@ -146,29 +152,29 @@ test_that("returns expected type", {
 })
 
 test_that("output equal to expected", {
-  expect_equal(ki_mki_out, 0.91145702, tolerance = 0.02)
+  expect_equal(ki_mki_out, 0.79, tolerance = 0.02)
 })
 
 test_that("bad input data stops execution", {
-  expect_error(prb(numeric(0)))
-  expect_error(prb(numeric(10), numeric(10)))
-  expect_error(prb(c(ki_mki, Inf), c(ki_mki, 0)))
-  expect_error(prb(assessed, c(sale_price, 10e5)))
-  expect_error(prb(data.frame(assessed), sale_price))
-  expect_error(prb(c(assessed, NaN), c(sale_price, 1)))
-  expect_error(prb(c(assessed, "2"), c(sale_price, 1)))
-  expect_error(prb(assessed, sale_price, na.rm = "yes"))
+  expect_error(ki_mki(numeric(0)))
+  expect_error(ki_mki(numeric(10), numeric(10)))
+  expect_error(ki_mki(c(ki_mki, Inf), c(ki_mki, 0)))
+  expect_error(ki_mki(ki_mki_assessed, c(ki_mki_sale_price, 10e5)))
+  expect_error(ki_mki(data.frame(ki_mki_assessed), ki_mki_sale_price))
+  expect_error(ki_mki(c(ki_mki_assessed, NaN), c(ki_mki_sale_price, 1)))
+  expect_error(ki_mki(c(ki_mki_assessed, "2"), c(ki_mki_sale_price, 1)))
+  expect_error(ki_mki(ki_mki_assessed, ki_mki_sale_price, na.rm = "yes"))
 })
 
 test_input <-
   test_that("incomplete data returns NAs unless removed", {
     expect_equal(
-      ki_mki(c(assessed, NA), c(sale_price, 10e5)),
+      ki_mki(c(ki_mki_assessed, NA), c(ki_mki_sale_price, 10e5)),
       NA_real_
     )
     expect_equal(
-      ki_mki(c(assessed, NA), c(sale_price, 10e5), na.rm = TRUE),
-      0.91145702,
+      ki_mki(c(ki_mki_assessed, NA), c(ki_mki_sale_price, 10e5), na.rm = TRUE),
+      0.79,
       tolerance = 0.02
     )
   })
@@ -177,7 +183,7 @@ test_that("standard met function", {
   expect_false(ki_mki_met(ki_mki_out))
 })
 
-ki_mki_out <- ki_mki(assessed, sale_price, mki = FALSE)
+ki_mki_out <- ki_mki(ki_mki_assessed, ki_mki_sale_price, mki = FALSE)
 
 test_that("returns expected type", {
   expect_type(ki_mki_out, "double")
@@ -185,29 +191,31 @@ test_that("returns expected type", {
 })
 
 test_that("output equal to expected", {
-  expect_equal(ki_mki_out, -0.03599249, tolerance = 0.02)
+  expect_equal(ki_mki_out, -0.0595, tolerance = 0.02)
 })
 
 test_that("bad input data stops execution", {
-  expect_error(prb(numeric(0)))
-  expect_error(prb(numeric(10), numeric(10)))
-  expect_error(prb(c(ki_mki, Inf), c(ki_mki, 0)))
-  expect_error(prb(assessed, c(sale_price, 10e5)))
-  expect_error(prb(data.frame(assessed), sale_price))
-  expect_error(prb(c(assessed, NaN), c(sale_price, 1)))
-  expect_error(prb(c(assessed, "2"), c(sale_price, 1)))
-  expect_error(prb(assessed, sale_price, na.rm = "yes"))
+  expect_error(ki_mki(numeric(0)))
+  expect_error(ki_mki(numeric(10), numeric(10)))
+  expect_error(ki_mki(c(ki_mki, Inf), c(ki_mki, 0)))
+  expect_error(ki_mki(ki_mki_assessed, c(ki_mki_sale_price, 10e5)))
+  expect_error(ki_mki(data.frame(ki_mki_assessed), ki_mki_sale_price))
+  expect_error(ki_mki(c(ki_mki_assessed, NaN), c(ki_mki_sale_price, 1)))
+  expect_error(ki_mki(c(ki_mki_assessed, "2"), c(ki_mki_sale_price, 1)))
+  expect_error(ki_mki(ki_mki_assessed, ki_mki_sale_price, na.rm = "yes"))
 })
 
 test_input <-
   test_that("incomplete data returns NAs unless removed", {
     expect_equal(
-      ki_mki(c(assessed, NA), c(sale_price, 10e5)),
+      ki_mki(c(ki_mki_assessed, NA), c(ki_mki_sale_price, 10e5)),
       NA_real_
     )
     expect_equal(
-      ki_mki(c(assessed, NA), c(sale_price, 10e5), na.rm = TRUE, mki = FALSE),
-      -0.03599249,
+      ki_mki(c(ki_mki_assessed, NA), c(ki_mki_sale_price, 10e5),
+        na.rm = TRUE, mki = FALSE
+      ),
+      -0.0595,
       tolerance = 0.02
     )
   })
