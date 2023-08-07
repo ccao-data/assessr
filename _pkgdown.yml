@@ -1,5 +1,18 @@
 destination: public
 url: https://ccao-data.github.io/assessr/
+
+authors:
+  sidebar:
+    roles: [aut, ctb]
+  Dan Snow:
+    href: https://github.com/dfsnow
+  William Ridgeway:
+    href: https://github.com/wrridgeway
+  Rob Ross:
+    href: https://github.com/rross0
+  Damon Major:
+    href: https://github.com/Damonamajor
+
 reference:
 
 - title: Functions
