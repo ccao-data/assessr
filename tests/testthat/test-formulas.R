@@ -8,6 +8,14 @@ ratio <- ratios_sample$ratio
 sale_price <- ratios_sample$sale_price
 assessed <- ratios_sample$assessed
 
+# Load example data from Quintos article
+mki_ki_data <- read.csv(
+  rprojroot::find_testthat_root_file("data/mki_ki_data.csv")
+)
+
+mki_ki_assessed <- mki_ki_data$Assessed
+mki_ki_sale_price <- mki_ki_data$Sale_Price
+
 
 
 ##### TEST COD #####
@@ -134,88 +142,84 @@ test_that("standard met function", {
 
 
 
-##### TEST KI_KMI #####
-context("test ki_mki function")
+##### TEST MKI #####
+context("test mki function")
 
-# Data specific to academic article
-ki_mki_data <- read.csv("~/tests/testthat/data/ki_mki_data.csv")
-
-ki_mki_assessed <- ki_mki_data$Assessed
-ki_mki_sale_price <- ki_mki_data$Sale_Price
-
-# ki_mki
-ki_mki_out <- ki_mki(ki_mki_assessed, ki_mki_sale_price, mki = TRUE)
+# Calculate MKI
+mki_out <- mki(mki_ki_assessed, mki_ki_sale_price)
 
 test_that("returns expected type", {
-  expect_type(ki_mki_out, "double")
-  expect_vector(ki_mki_out)
+  expect_type(mki_out, "double")
+  expect_vector(mki_out)
 })
 
 test_that("output equal to expected", {
-  expect_equal(ki_mki_out, 0.79, tolerance = 0.02)
+  expect_equal(mki_out, 0.79, tolerance = 0.01)
 })
 
 test_that("bad input data stops execution", {
-  expect_error(ki_mki(numeric(0)))
-  expect_error(ki_mki(numeric(10), numeric(10)))
-  expect_error(ki_mki(c(ki_mki, Inf), c(ki_mki, 0)))
-  expect_error(ki_mki(ki_mki_assessed, c(ki_mki_sale_price, 10e5)))
-  expect_error(ki_mki(data.frame(ki_mki_assessed), ki_mki_sale_price))
-  expect_error(ki_mki(c(ki_mki_assessed, NaN), c(ki_mki_sale_price, 1)))
-  expect_error(ki_mki(c(ki_mki_assessed, "2"), c(ki_mki_sale_price, 1)))
-  expect_error(ki_mki(ki_mki_assessed, ki_mki_sale_price, na.rm = "yes"))
+  expect_error(mki(numeric(0)))
+  expect_error(mki(numeric(10), numeric(10)))
+  expect_error(mki(c(mki_ki_assessed, Inf), c(mki_ki_sale_price, 0)))
+  expect_error(mki(mki_ki_assessed, c(mki_ki_sale_price, 10e5)))
+  expect_error(mki(data.frame(mki_ki_assessed), mki_ki_sale_price))
+  expect_error(mki(c(mki_ki_assessed, NaN), c(mki_ki_sale_price, 1)))
+  expect_error(mki(c(mki_ki_assessed, "2"), c(mki_ki_sale_price, 1)))
+  expect_error(mki(mki_ki_assessed, mki_ki_sale_price, na.rm = "yes"))
 })
 
-test_input <-
-  test_that("incomplete data returns NAs unless removed", {
-    expect_equal(
-      ki_mki(c(ki_mki_assessed, NA), c(ki_mki_sale_price, 10e5)),
-      NA_real_
-    )
-    expect_equal(
-      ki_mki(c(ki_mki_assessed, NA), c(ki_mki_sale_price, 10e5), na.rm = TRUE),
-      0.79,
-      tolerance = 0.02
-    )
-  })
+test_that("incomplete data returns NAs unless removed", {
+  expect_equal(
+    mki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5)),
+    NA_real_
+  )
+  expect_equal(
+    mki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5), na.rm = TRUE),
+    0.79,
+    tolerance = 0.01
+  )
+})
 
 test_that("standard met function", {
-  expect_false(ki_mki_met(ki_mki_out))
+  expect_false(mki_met(mki_out))
 })
 
-ki_mki_out <- ki_mki(ki_mki_assessed, ki_mki_sale_price, mki = FALSE)
+
+
+##### TEST KI #####
+context("test ki function")
+
+# Calculate KI
+ki_out <- ki(mki_ki_assessed, mki_ki_sale_price)
 
 test_that("returns expected type", {
-  expect_type(ki_mki_out, "double")
-  expect_vector(ki_mki_out)
+  expect_type(ki_out, "double")
+  expect_vector(ki_out)
 })
 
 test_that("output equal to expected", {
-  expect_equal(ki_mki_out, -0.0595, tolerance = 0.02)
+  expect_equal(ki_out, -0.0595, tolerance = 0.003)
 })
 
 test_that("bad input data stops execution", {
-  expect_error(ki_mki(numeric(0)))
-  expect_error(ki_mki(numeric(10), numeric(10)))
-  expect_error(ki_mki(c(ki_mki, Inf), c(ki_mki, 0)))
-  expect_error(ki_mki(ki_mki_assessed, c(ki_mki_sale_price, 10e5)))
-  expect_error(ki_mki(data.frame(ki_mki_assessed), ki_mki_sale_price))
-  expect_error(ki_mki(c(ki_mki_assessed, NaN), c(ki_mki_sale_price, 1)))
-  expect_error(ki_mki(c(ki_mki_assessed, "2"), c(ki_mki_sale_price, 1)))
-  expect_error(ki_mki(ki_mki_assessed, ki_mki_sale_price, na.rm = "yes"))
+  expect_error(ki(numeric(0)))
+  expect_error(ki(numeric(10), numeric(10)))
+  expect_error(ki(c(mki_ki_assessed, Inf), c(mki_ki_sale_price, 0)))
+  expect_error(ki(mki_ki_assessed, c(mki_ki_sale_price, 10e5)))
+  expect_error(ki(data.frame(mki_ki_assessed), mki_ki_sale_price))
+  expect_error(ki(c(mki_ki_assessed, NaN), c(mki_ki_sale_price, 1)))
+  expect_error(ki(c(mki_ki_assessed, "2"), c(mki_ki_sale_price, 1)))
+  expect_error(ki(mki_ki_assessed, mki_ki_sale_price, na.rm = "yes"))
 })
 
-test_input <-
-  test_that("incomplete data returns NAs unless removed", {
-    expect_equal(
-      ki_mki(c(ki_mki_assessed, NA), c(ki_mki_sale_price, 10e5)),
-      NA_real_
-    )
-    expect_equal(
-      ki_mki(c(ki_mki_assessed, NA), c(ki_mki_sale_price, 10e5),
-        na.rm = TRUE, mki = FALSE
-      ),
-      -0.0595,
-      tolerance = 0.02
-    )
-  })
+test_that("incomplete data returns NAs unless removed", {
+  expect_equal(
+    ki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5)),
+    NA_real_
+  )
+  expect_equal(
+    ki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5), na.rm = TRUE),
+    -0.0595,
+    tolerance = 0.003
+  )
+})
