@@ -24,7 +24,7 @@ remove NA values. If missing values are present but not removed the
 function will output NA.}
 
 \item{x}{Numeric vector of sales ratio statistic(s) to check
-against IAAO/accepted standards.}
+against IAAO/Quintos standards.}
 }
 \description{
 The Kakwani Index (KI) and the Modified Kakwani Index (MKI)

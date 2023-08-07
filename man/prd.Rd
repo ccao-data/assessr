@@ -30,7 +30,7 @@ the output statistic confidence interval.}
 interval to return. 0.05 will return the 95\% confidence interval.}
 
 \item{x}{Numeric vector of sales ratio statistic(s) to check
-against IAAO/accepted standards.}
+against IAAO/Quintos standards.}
 }
 \description{
 PRD is the mean ratio divided by the mean ratio weighted by sale

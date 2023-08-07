@@ -172,6 +172,7 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 }
 
 
+
 ##### MKI_KI #####
 
 # Calculate the Gini cofficients needed for KI and MKI
@@ -289,6 +290,7 @@ mki <- function(assessed, sale_price, na.rm = FALSE) {
 }
 
 
+
 ##### STANDARDS #####
 
 # Mini functions to test if IAAO standards are met
@@ -296,7 +298,7 @@ mki <- function(assessed, sale_price, na.rm = FALSE) {
 #' @describeIn cod Returns TRUE when input COD meets IAAO standards
 #'   (between 5 and 15).
 #' @param x Numeric vector of sales ratio statistic(s) to check
-#'   against IAAO/accepted standards.
+#'   against IAAO/Quintos standards.
 #' @export
 cod_met <- function(x) x >= 5.00 & x <= 15
 
