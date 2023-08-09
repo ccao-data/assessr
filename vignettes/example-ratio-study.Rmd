@@ -5,34 +5,33 @@ title: "Sales ratio study with real data"
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  out.width = "100%"
 )
 ```
 
-AssessR can easily be used with various data to conduct a sales ratio study. In this vignette, we demonstrate this process using real data from the Cook County Assessor's Office (CCAO). The CCAO publishes assessments and sales on the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/stories/s/i22y-9sd2).
+AssessR's primary use is to conduct sales ratio studies. In this vignette, we demonstrate that process using real data from the Cook County Assessor's Office (CCAO). The CCAO publishes assessments and sales on the [Cook County Open Data Portal](https://datacatalog.cookcountyil.gov/browse?tags=cook+county+assessor).
 
 ## Basics of sales ratio studies
 
 A sales ratio is the ratio of the assessor's estimate of a property's value to the sale price of a property. A sales ratio study is a report on how accurately and fairly an assessor predicted property values. The CCAO has a [rigorous set of rules](https://github.com/ccao-data/wiki/blob/master/SOPs/Sales-Ratio-Studies.md) that govern how sales ratios studies are conducted.
 
-In general, there are four important statistics produced in sales ratio studies, listed in the table below. It is important to understand that these statistics are calculated based on properties that sell. In most jurisdictions, the number of properties that sell in any single year is a very small percentage of the overall number of properties. In order to characterize the quality of the assessment role in a jurisdiction, we draw an inference from this small number of properties.
-
+In general, there are four important statistics produced in sales ratio studies, listed in **bold** in the table below. It is important to understand that these statistics are calculated based on properties that sell. In most jurisdictions, the number of properties that sell in any single year is a very small percentage of the overall number of properties. In order to characterize the quality of the assessment role in a jurisdiction, we draw an inference from this small number of properties.
 
 | Statistic               | Acceptable Range | Interpretation                                                                                                                     |
 |------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| COD                     | 5 - 15           | How often properties with the *same* sale price receive the same predicted market value. Lower CODs indicate more fairness between similarly priced properties.                            |
-| PRD                     | .98 - 1.03       | How often properties with *different* sale prices receive the proportionately different predicted market values. Lower PRDs indicate more fairness between low and high-priced properties. |
-| PRB                     | -.05 - .05       | PRB is a different approach to measuring fairness across homes with different sale prices.                                                                                                 |
-| Median Assessment Ratio | .095 - 1.05      | The median ratio measures whether the most common ratios accurately reflect sale prices                                                                                                    |
-| Sales Chasing (E.4)     | $\le$ 5%         | Measures the degree to which the statistics above are *true* reflections of the quality of assessments.                          |
+| **COD**                 | 5 - 15           | How often properties with the *same* sale price receive the same predicted market value. Lower CODs indicate more fairness between similarly priced properties.                            |
+| **PRD**                 | .98 - 1.03       | How often properties with *different* sale prices receive the proportionately different predicted market values. Lower PRDs indicate more fairness between low and high-priced properties. |
+| **PRB**                 | -.05 - .05       | PRB is a different approach to measuring fairness across homes with different sale prices.                                                                                                 |
+| **Median Ratio**        | .095 - 1.05      | The median ratio measures whether the most common ratios accurately reflect sale prices.                                                                                                    |
 | MKI                     | .95 - 1.05        | Measures the difference in inequality between assessed valuations and sale prices.                                               |
-
+| Sales Chasing (E.4)     | $\le$ 5%         | Measures the degree to which the statistics above are *true* reflections of the quality of assessments.                          |
 
 ### Interpretation of sales ratio statistics
 
-Suppose you have a jurisdiction with a median ratio of one and a COD of 20. This indicates that, on average, the assessor predicts the sale price of properties accurately, but with a high dispersion. To use the dart board analogy, the assessor's darts fall in a wide area centered around the bullseye. On the other hand, if the median ratio is greater than one, and the COD is lower than 10, this indicates that the assessor consistently over-estimates the value of properties in their jurisdiction.
+Suppose you have a jurisdiction with a median ratio of 1 and a COD of 20. This indicates that, on average, the assessor predicts the sale price of properties accurately, but with a high dispersion. To use the dart board analogy, the assessor's darts fall in a wide area centered around the bullseye. On the other hand, if the median ratio is greater than one, and the COD is lower than 10, this indicates that the assessor consistently over-estimates the value of properties in their jurisdiction.
 
-Suppose you have a jurisdiction with a low COD and high PRD & PRB. This indicates that the assessor consistently under-estimates higher value properties, and over-estimates lower value properties. Properties of similar value receive similar estimates, but there is structural inequality in the overall system.
+Suppose you have a jurisdiction with a low COD and high PRD/PRB. This indicates that the assessor consistently under-estimates higher value properties, and over-estimates lower value properties. Properties of similar value receive similar estimates, but there is structural inequality in the overall system.
 
 Finally, suppose you have a jurisdiction with CODs, PRDs, and PRBs all within the acceptable range, but there is strong evidence of selective appraisals. In this case, the sales value statistics should be disregarded, since they are based on a non-random selection of the underlying set of properties. They cannot be used to characterize the quality of the assessment role.
 
@@ -60,7 +59,7 @@ assessments <- read.socrata(
 
 Socrata can also return raw JSON if you manually construct a query URL. Follow the [API docs](https://dev.socrata.com/foundry/datacatalog.cookcountyil.gov/uzyt-m557) to alter your query. The raw JSON output can be read using the `read_json()` function from `jsonlite`.
 
-```{r}
+```{r, message=FALSE}
 library(dplyr)
 library(jsonlite)
 library(stringr)
@@ -86,7 +85,7 @@ sales <- read_json(
   mutate(pin = str_pad(pin, 14, "left", "0"))
 ```
 
-### From a CSV or Excel
+### CSV or Excel
 
 R can also read Excel and CSV files stored on your computer.
 
@@ -111,9 +110,9 @@ sales <- readxl::read_excel(
 )
 ```
 
-### Connecting to a relational database
+### Relational databases
 
-The CCAO's Data Science team uses Amazon Athena. R can connect to a wide range of database engines.
+The CCAO's Data Department uses Amazon Athena, but R can connect to a wide range of database engines.
 
 ```{r, eval=FALSE}
 library(noctua)
@@ -122,9 +121,11 @@ library(DBI)
 # Connect to the database using a configured .Renviron file.
 AWS_ATHENA_CONN_NOCTUA <- dbConnect(noctua::athena())
 
-# Fetch data from the SQL server
-assessments <- dbGetQuery(AWS_ATHENA_CONN_NOCTUA, paste0("
-  SELECT * FROM [MY DATA TABLES]"))
+# Fetch data from Athena
+assessments <- dbGetQuery(
+  AWS_ATHENA_CONN_NOCTUA,
+  "SELECT * FROM [MY DATA TABLES]"
+)
 
 # Disconnect DB connection
 dbDisconnect(AWS_ATHENA_CONN_NOCTUA)
@@ -149,14 +150,16 @@ library(knitr)
 combined <- inner_join(
   assessments %>%
     select(pin, year, township_name, mailed_tot, certified_tot, board_tot),
-  sales %>% select(pin, year, sale_price, is_multisale),
+  sales %>%
+    select(pin, year, sale_price, is_multisale),
   by = c("pin", "year")
-)
+) %>%
+  filter(township_name %in% c("New Trier", "Palatine"))
 
 # Remove multisales, pivot to longer, then calculate the ratio for each property
 # and assessment stage
 combined <- combined %>%
-  filter(is_multisale == FALSE) %>%
+  filter(!is_multisale) %>%
   pivot_longer(
     mailed_tot:board_tot,
     names_to = "stage",
@@ -198,7 +201,7 @@ combined %>%
   )) %>%
   arrange(township_name, stage) %>%
   rename_all(toupper) %>%
-  kable(format = "markdown")
+  kable(format = "markdown", digits = 3)
 ```
 
 ### Median ratios by sale price
@@ -234,7 +237,7 @@ graph_data <- combined %>%
     dollar(max(sale_price) / 1000, accuracy = 1, suffix = "K"),
     sep = " - "
   )) %>%
-  mutate(decile_label = ifelse(decile == 10, "$760K+", decile_label)) %>%
+  mutate(decile_label = ifelse(decile == 10, "$540K+", decile_label)) %>%
   mutate(decile_label = forcats::fct_reorder(decile_label, decile)) %>%
   group_by(decile_label) %>%
   summarise(
@@ -248,16 +251,119 @@ ggplot(graph_data) +
   geom_point(aes(x = decile_label, y = `Median Sales Ratio`), size = 3) +
   scale_y_continuous(labels = function(x) paste0(x * 100, "%")) +
   labs(
-    title = "Median Sale Ratios: Open Data Sample ",
+    title = "Median Sale Ratios: Open Data Sample",
     subtitle = "By decile of sale price in 2020",
-    x = "", y = ""
+    x = "Price Decile Range",
+    y = "Sale Ratio"
   ) +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+    axis.title.x = element_text(margin = margin(t = 6)),
     legend.position = "bottom"
   )
 ```
+
+### Gini-based measures of vertical equity
+
+Another way to measure the vertical equity of assessments is to look at differences in Gini coefficients, a widely used metric to analyze inequality.
+
+The first step in this process is to order the data (ascending) by sale price. Next, calculate the Gini coefficient of sales and assessed values (both ordered by sale price). The difference between these Gini coefficients is known as the Kakwani Index (KI), while the ratio is known as the Modified Kakwani Index (MKI). See [this paper](https://researchexchange.iaao.org/jptaa/vol17/iss2/2/) for more information on these metrics.
+
+#### Lorenz curves
+
+Using the ordered data, you can plot the classic [Lorenz curve](https://en.wikipedia.org/wiki/Lorenz_curve):
+
+```{r}
+gini_data <- combined %>%
+  select(sale_price, assessed) %>%
+  arrange(sale_price)
+
+sale_price <- gini_data$sale_price
+assessed <- gini_data$assessed
+
+lorenz_data_price <- data.frame(
+  pct = c(0, cumsum(sale_price) / sum(sale_price)),
+  cum_pct = c(0, seq_along(sale_price)) / length(sale_price)
+)
+
+lorenz_data_assessed <- data.frame(
+  pct = c(0, cumsum(assessed) / sum(assessed)),
+  cum_pct = c(0, seq_along(assessed)) / length(assessed)
+)
+
+ggplot() +
+  geom_line(
+    data = lorenz_data_price,
+    aes(x = cum_pct, y = pct), color = "blue"
+  ) +
+  geom_line(
+    data = lorenz_data_assessed,
+    aes(x = cum_pct, y = pct), color = "red"
+  ) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "green") +
+  geom_text(
+    data = data.frame(x = 0.8, y = 0.48, label = "Sale Price"),
+    aes(x, y, label = label), color = "blue", vjust = 1
+  ) +
+  geom_text(
+    data = data.frame(x = 0.5, y = 0.45, label = "Assessed Value"),
+    aes(x, y, label = label), color = "red", vjust = 1
+  ) +
+  scale_x_continuous(labels = scales::label_percent()) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(
+    title = "Lorenz Curve for Sales and Assessed Values",
+    x = "Percent of Properties",
+    y = "Percent of Value"
+  ) +
+  theme_minimal()
+```
+
+In this graphic, the green line (Line of Equality) represents a hypothetical environment, where property valuations are completely equitable. The axes represent the cumulative percentage of value (y-axis) as the percentage of properties (x-axis) increases.
+
+The curves show that for the vast majority of the income distribution, assessed values are closer to the Line of Equality. This can be interpreted two ways:
+
+1. When the assessed value curve is above the sale price curve, the gap between the the two lines at any individual point, represents the cumulative over-assessment for all houses at that value or below.
+2. Gini coefficient for sale price is going to be higher than the Gini coefficient for assessed price (larger area between the the curve and the Line of Equality).
+
+In this situation, the graph shows slightly regressive property valuations. This is not immediately intuitive, but to conceptualize this, think of an exaggerated "progressive" policy, where all houses were valued at $0 with one house responsible for all the assessed value. In this distribution, curve would be at 0 until the final house, where it would jump to 100% of the cumulative value (a Gini of 1). Thus, a higher Gini represents more progressive assessments, where tax assessments become larger as property value increases.
+
+#### KI and MKI
+
+To translate these curves to a single metric, the Kakwani Index (KI) and Modified Kakwani Index (MKI) are used (as proposed by [Quintos](https://researchexchange.iaao.org/jptaa/vol17/iss2/2/)). These are straightforward, with the following definitions:
+
+- **Kakwani Index:** `Assessed Gini - Sale Price Gini`
+- **Modified Kakwani Index:** `Assessed Gini / Sale Price Gini`
+
+```{r}
+# Calculate the sum of the n elements of the assessed vector
+n <- length(assessed)
+g_assessed <- sum(assessed * seq_len(n))
+
+# Compute the Gini coefficient based on the previously calculated sum
+# and the increasing sum of all elements in the assessed vector
+g_assessed <- 2 * g_assessed / sum(assessed) - (n + 1L)
+
+# Normalize the Gini coefficient by dividing it by n.
+gini_assessed <- g_assessed / n
+
+# Follow the same process for the sale_price vector
+g_sale <- sum(sale_price * seq_len(n))
+g_sale <- 2 * g_sale / sum(sale_price) - (n + 1L)
+gini_sale <- g_sale / n
+
+MKI <- round(gini_assessed / gini_sale, 4)
+KI <- round(gini_assessed - gini_sale, 4)
+```
+
+The output for the Modified Kakwani Index is `r MKI`, and the Kakwani Index is `r KI`. According to the following table, this means that the assessments are slightly regressive. 
+
+| KI Range           | MKI Range          | Interpretation     |
+|:-------------------|:-------------------|:-------------------|
+| < 0                | < 1                | Regressive         |
+| = 0                | = 1                | Vertical Equity    |
+| > 0                | > 1                | Progressive        |
 
 ### Detecting selective appraisals
 
@@ -277,7 +383,9 @@ ggplot() +
   xlim(0.7, 1.3) +
   labs(x = "Ratio", y = "F(x)") +
   theme_minimal()
+```
 
+```{r}
 # Detect chasing for each vector
 tibble(
   "Blue Chased?" = detect_chasing(normal_ratios),
@@ -286,112 +394,4 @@ tibble(
   kable(format = "markdown", digits = 3)
 ```
 
-Ratios that include selective appraisals will be clustered around the value of one much more than ratios produced from a CAMA system. We can see this visually in the graph where the cumulative distribution curve shows a discontinuous jump, or 'flat spot', near one.
-
-
-### GINI Based Measure of Vertical Equity
-
-Another way to test the vertical equity of assessments is by looking at the differences in the GINI coefficient, a widely used metric to analyze inequality. The first step in this process is to order the data by sale price. Once done, the GINI coefficient is calculated for both sale and assessed value (both ordered by sale price). A graph of the Lorenz Curve is presented below.
-
-
-```{r}
-GINI_data <- combined %>%
-  select(sale_price, assessed) %>%
-  arrange(sale_price)
-
-sale_price <- GINI_data$sale_price
-assessed <- GINI_data$assessed
-
-lorenz_data_price <- data.frame(
-  Percentage = c(0, cumsum(sale_price) / sum(sale_price)),
-  CumulativePercentage = c(0, seq_along(sale_price)) / length(sale_price)
-)
-
-lorenz_data_assessed <- data.frame(
-  Percentage = c(0, cumsum(assessed) / sum(assessed)),
-  CumulativePercentage = c(0, seq_along(assessed)) / length(assessed)
-)
-
-Lorenz_Curves <- ggplot() +
-  geom_line(
-    data = lorenz_data_price,
-    aes(x = CumulativePercentage, y = Percentage), color = "blue"
-  ) +
-  geom_line(
-    data = lorenz_data_assessed,
-    aes(x = CumulativePercentage, y = Percentage), color = "red"
-  ) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "green") +
-  geom_text(
-    data = data.frame(x = 0.8, y = 0.1, label = "Sale Price"),
-    aes(x, y, label = label), color = "blue", vjust = 1
-  ) +
-  geom_text(
-    data = data.frame(x = 0.8, y = 0.05, label = "Assessed Price"),
-    aes(x, y, label = label), color = "red", hjust = .34, vjust = 1
-  ) +
-  labs(
-    title = "Lorenz Curve for Sale and Assessed Prices",
-    x = "Percentage of Houses",
-    y = "Percentage of Value"
-  ) +
-  theme_minimal()
-
-print(Lorenz_Curves)
-```
-
-
-
-In this graphic, the green line (Line of Equality) represents a hypothetical environment, where housing valuations are completely equitable. The two other curves represent the percentage of value (y axis), encompassed by an increasing percentage of housing (x-axis). Since housing is ordered by sale prices, the rate of increase is increasing. 
-
-What this chart shows is that for the vast majority of the income distribution, assessed values are closer to the Line of Equity. This can be interpreted two ways. 
-
-1st, when the assessed line is above the sale price, the gap between the the two lines at any individual point, represents the cumulative over-assessment for all houses at that value or below.
-
-2nd, it means that the GINI coefficient for sale price is going to be higher than the GINI coefficient for assessed price (a larger area between the the curve and the Line of Equality). 
-
-In this situation, the graph represents a regressive housing policy. This is not immediately intuitive, but to conceptualize this, think of an exaggerated "progressive" policy, where all houses were valued at $0 with one house encompassing all the assessed value. In this distribution, curve would be at 0 until the final house, where it would jump to 100% of the cumulative value (a GINI of 1). Thus, a higher GINI represents a more progressive assessment policy, where tax assessments are larger as housing value increases. 
-
-To translate these curves to a metric, the Kakwani and Modified Kakwani Index are used. These are straightforward, with the following definitions:
-
-Kakwani Index: Assessed GINI - Price GINI
-
-Modified Kakwani Index: Assessed GINI / Price GINI
-
-```{r}
-n <- length(assessed)
-# Calculate the sum of the n elements of the assessed_price vector.
-G_assessed <- sum(assessed * 1L:n)
-
-# Compute the Gini Coefficient based on the previously calculated sum
-# and the increasing sum of all elements in the assessed_price vector.
-G_assessed <- 2 * G_assessed / sum(assessed) - (n + 1L)
-
-# Normalize the Gini coefficient by dividing it by n.
-GINI_assessed <- G_assessed / n
-
-# Same process for Sale
-# This will match Gini(sale_price) in the ineq package.
-G_sale <- sum(sale_price * 1L:n)
-G_sale <- 2 * G_sale / sum(sale_price) - (n + 1L)
-GINI_sale <- G_sale / n
-
-MKI <- GINI_assessed / GINI_sale
-KI <- GINI_assessed - GINI_sale
-
-print(MKI)
-print(KI)
-```
-
-The output for the Modified Kakwani Index is .9413, and the Kakwani Index is -.0197. According to the following table, this means that the assessment policy is regressive. 
-
-| Range              | Interpretation     |
-|--------------------|--------------------|
-| Kakwani Index      |                    |
-| < 0                | Regressive Policy  |
-| = 0                | Vertical Equity    |
-| > 0                | Progressive Policy |
-| Modified Kakwani Index |                  |
-| < 1                | Regressive Policy  |
-| = 1                | Vertical Equity    |
-| > 1                | Progressive Policy |
+Ratios that include selective appraisals will be clustered around the value of 1 much more than ratios produced by a CAMA system. We can see this visually in the graph where the cumulative distribution curve shows a discontinuous jump, or 'flat spot', near 1.

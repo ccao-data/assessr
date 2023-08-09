@@ -1,5 +1,18 @@
 destination: public
 url: https://ccao-data.github.io/assessr/
+
+authors:
+  sidebar:
+    roles: [aut, ctb]
+  Dan Snow:
+    href: https://github.com/dfsnow
+  William Ridgeway:
+    href: https://github.com/wrridgeway
+  Rob Ross:
+    href: https://github.com/rross0
+  Damon Major:
+    href: https://github.com/Damonamajor
+
 reference:
 
 - title: Functions
@@ -32,17 +45,15 @@ reference:
   - prb
   - prb_ci
   - prb_met
-- subtitle: (Modified) Kakwani Index
+- subtitle: (Modified) Kakwani Index (MKI)
   desc: >
-    The Kakwani Index (ki) and the Modified Kakwani Index (mki) are GINI-based measures
-    to test for vertical equity. The method first orders the housing stock by
-    increasing sale prices, and then calculates the GINI coefficient for sale value and
-    assessed value (remaining ordered by sales price). The Kakwani Index then
-    calculates the difference (GINI of Assessed - GINI of Sale), and the
-    Modified Kakwani Index calculates the ratio (GINI of Assessed / GINI of Sale).
+    The Kakwani Index (KI) and the Modified Kakwani Index (MKI) are Gini-based measures
+    to test for vertical equity. The work by comparing the cumulative distribution of
+    assessed values to the distribution of sale prices.
 - contents:
-  - ki_mki
-  - ki_mki_met
+  - ki
+  - mki
+  - mki_met
 - subtitle: Other functions
   desc: Functions for other assessment-related tasks
 - contents:
