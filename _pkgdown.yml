@@ -48,7 +48,7 @@ reference:
 - subtitle: (Modified) Kakwani Index (MKI)
   desc: >
     The Kakwani Index (KI) and the Modified Kakwani Index (MKI) are Gini-based measures
-    to test for vertical equity. The work by comparing the cumulative distribution of
+    to test for vertical equity. They work by comparing the cumulative distribution of
     assessed values to the distribution of sale prices.
 - contents:
   - ki
