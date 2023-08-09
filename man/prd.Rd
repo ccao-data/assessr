@@ -30,7 +30,7 @@ the output statistic confidence interval.}
 interval to return. 0.05 will return the 95\% confidence interval.}
 
 \item{x}{Numeric vector of sales ratio statistic(s) to check
-against IAAO standards.}
+against IAAO/Quintos standards.}
 }
 \description{
 PRD is the mean ratio divided by the mean ratio weighted by sale
@@ -59,7 +59,6 @@ input vectors.
 
 }}
 \examples{
-
 # Calculate PRD
 prd(ratios_sample$assessed, ratios_sample$sale_price)
 
@@ -69,6 +68,7 @@ prd_ci(ratios_sample$assessed, ratios_sample$sale_price)
 \seealso{
 Other formulas: 
 \code{\link{cod}()},
+\code{\link{mki}()},
 \code{\link{prb}()}
 }
 \concept{formulas}

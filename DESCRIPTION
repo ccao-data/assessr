@@ -1,14 +1,15 @@
 Package: assessr
 Type: Package
 Title: Measure Property Assessment Performance
-Version: 0.5.2
+Version: 0.6.0
 Authors@R: c(
     person(given = "Dan", family = "Snow", email="daniel.snow@cookcountyil.gov", role=c("aut", "cre")),
     person(given = "William", family = "Ridgeway", email="william.ridgeway@cookcountyil.gov", role=c("ctb")),
     person(given = "Rob", family = "Ross", role=c("ctb")),
-    person(given = "Nathan", family = "Dignazio", role=c("ctb"))
+    person(given = "Nathan", family = "Dignazio", role=c("ctb")),
+    person(given = "Damon", family = "Major", role=c("ctb"))
     )
-Date: 2023-06-26
+Date: 2023-08-07
 Description: An R package to measure the performance of property assessments
     using IAAO standard statistics. Also includes a host of utility functions
     to make common assessment and evaluation tasks easier and more consistent.
@@ -31,6 +32,7 @@ Suggests:
     lintr,
     pkgdown,
     rmarkdown,
+    rprojroot,
     scales,
     testthat,
     tibble,

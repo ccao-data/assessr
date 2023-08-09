@@ -27,7 +27,7 @@ function will output NA.}
 interval to return. 0.05 will return the 95\% confidence interval.}
 
 \item{x}{Numeric vector of sales ratio statistic(s) to check
-against IAAO standards.}
+against IAAO/Quintos standards.}
 }
 \description{
 PRB is an index of vertical equity that quantifies the
@@ -45,7 +45,7 @@ PRB is an index of vertical equity that quantifies the
 }
 \section{Functions}{
 \itemize{
-\item \code{prb()}: Returns a numeric vector containing the PRD of the
+\item \code{prb()}: Returns a numeric vector containing the PRB of the
 input vectors.
 
 \item \code{prb_ci()}: Returns upper and lower CI as a named vector.
@@ -55,8 +55,7 @@ input vectors.
 
 }}
 \examples{
-
-# Calculate PRD
+# Calculate PRB
 prb(ratios_sample$assessed, ratios_sample$sale_price)
 
 # Calculate PRD confidence interval
@@ -65,6 +64,7 @@ prb_ci(ratios_sample$assessed, ratios_sample$sale_price)
 \seealso{
 Other formulas: 
 \code{\link{cod}()},
+\code{\link{mki}()},
 \code{\link{prd}()}
 }
 \concept{formulas}

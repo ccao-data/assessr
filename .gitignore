@@ -2,6 +2,7 @@
 .RData
 .Rprofile
 *.Rdata
+*.rds
 *.utf8.md
 *.knit.md
 *.xml

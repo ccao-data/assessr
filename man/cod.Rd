@@ -28,7 +28,7 @@ the output statistic confidence interval.}
 interval to return. 0.05 will return the 95\% confidence interval.}
 
 \item{x}{Numeric vector of sales ratio statistic(s) to check
-against IAAO standards.}
+against IAAO/Quintos standards.}
 }
 \description{
 COD is the average absolute percent deviation from the
@@ -59,7 +59,6 @@ COD is the average absolute percent deviation from the
 
 }}
 \examples{
-
 # Calculate COD
 cod(ratios_sample$ratio)
 
@@ -68,6 +67,7 @@ cod_ci(ratios_sample$ratio)
 }
 \seealso{
 Other formulas: 
+\code{\link{mki}()},
 \code{\link{prb}()},
 \code{\link{prd}()}
 }

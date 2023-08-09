@@ -31,7 +31,6 @@
 #' @order 1
 #'
 #' @examples
-#'
 #' # Calculate COD
 #' cod(ratios_sample$ratio)
 #' @family formulas
@@ -39,10 +38,7 @@
 cod <- function(ratio, na.rm = FALSE) {
   # nolint end
 
-  # Input checking and error handling
   check_inputs(ratio)
-
-  # Remove NAs if na.rm = TRUE
   if (na.rm) ratio <- stats::na.omit(ratio)
 
   # Calculate median ratio
@@ -86,7 +82,6 @@ cod <- function(ratio, na.rm = FALSE) {
 #' @order 1
 #'
 #' @examples
-#'
 #' # Calculate PRD
 #' prd(ratios_sample$assessed, ratios_sample$sale_price)
 #' @family formulas
@@ -94,11 +89,7 @@ cod <- function(ratio, na.rm = FALSE) {
 prd <- function(assessed, sale_price, na.rm = FALSE) {
   # nolint end
 
-  # Input checking and error handling
   check_inputs(assessed, sale_price)
-
-  # Remove NAs from input vectors. Otherwise, return NA if the input vectors
-  # contain any NA values
   idx <- index_na(assessed, sale_price)
   if (na.rm) {
     assessed <- assessed[!idx]
@@ -122,19 +113,10 @@ prd <- function(assessed, sale_price, na.rm = FALSE) {
 
 # Calculate PRB and return model object
 calc_prb <- function(assessed, sale_price) {
-  # Calculate ratio of assessed values to sale price
   ratio <- assessed / sale_price
-
-  # Calculate median ratio
   med_ratio <- stats::median(ratio)
-
-  # Generate left-hand side of PRB regression
-  lhs <- (ratio - med_ratio) / med_ratio # nolint
-
-  # Generate right-hand side of PRB regression
-  rhs <- log(((assessed / med_ratio) + sale_price) * 0.5) / log(2) # nolint
-
-  # Calculate PRB and create model object
+  lhs <- (ratio - med_ratio) / med_ratio
+  rhs <- log(((assessed / med_ratio) + sale_price) * 0.5) / log(2)
   prb_model <- stats::lm(formula = lhs ~ rhs)
 
   return(prb_model)
@@ -158,24 +140,20 @@ calc_prb <- function(assessed, sale_price) {
 #'   NOTE: PRB is significantly less sensitive to outliers than PRD or COD.
 #'
 #' @inheritParams prd
-#' @describeIn prb Returns a numeric vector containing the PRD of the
+#' @describeIn prb Returns a numeric vector containing the PRB of the
 #'   input vectors.
 #' @order 1
 #'
 #' @examples
-#'
-#' # Calculate PRD
+#' # Calculate PRB
 #' prb(ratios_sample$assessed, ratios_sample$sale_price)
 #' @family formulas
 #' @export
 prb <- function(assessed, sale_price, na.rm = FALSE) {
   # nolint end
 
-  # Input checking and error handling
   check_inputs(assessed, sale_price)
 
-  # Remove NAs from input vectors. Otherwise, return NA if the input vectors
-  # contain any NA values
   idx <- index_na(assessed, sale_price)
   if (na.rm) {
     assessed <- assessed[!idx]
@@ -195,6 +173,124 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 
 
 
+##### MKI_KI #####
+
+# Calculate the Gini cofficients needed for KI and MKI
+calc_gini <- function(assessed, sale_price) {
+  df <- data.frame(av = assessed, sp = sale_price)
+  df <- df[order(df$sp), ]
+  assessed_price <- df$av
+  sale_price <- df$sp
+  n <- length(assessed_price)
+
+  av_sum <- sum(assessed_price * seq_len(n))
+  g_assessed <- 2 * av_sum / sum(assessed_price) - (n + 1L)
+  gini_assessed <- g_assessed / n
+
+  sale_sum <- sum(sale_price * seq_len(n))
+  g_sale <- 2 * sale_sum / sum(sale_price) - (n + 1L)
+  gini_sale <- g_sale / n
+
+  result <- list(gini_assessed = gini_assessed, gini_sale = gini_sale)
+
+  return(result)
+}
+
+
+# nolint start
+#' Calculate Kakwani and Modified Kakwani Index
+#'
+#' @description The Kakwani Index (KI) and the Modified Kakwani Index (MKI)
+#'   are Gini-based methods to measure vertical equity.
+#'
+#'   These methods first order properties by sale price (ascending), then
+#'   calculate the Gini coefficient for sale values and assessed values (while
+#'   remaining ordered by sale price). The Kakwani Index then
+#'   calculates the difference \code{(Gini of assessed - Gini of sale)}, and the
+#'   Modified Kakwani Index calculates the ratio
+#'   \code{(Gini of Assessed / Gini of Sale)}.
+#'
+#'   For the Kakwani Index:
+#'
+#'   - KI < 0 is regressive
+#'   - KI = 0 is vertical equity
+#'   - KI > 0 is progressive
+#'
+#'   For the Modified Kakwani Index:
+#'
+#'   - MKI < 1 is regressive
+#'   - MKI = 1 is vertical equity
+#'   - MKI > 1 is progressive
+#'
+#' @references
+#'   Quintos, C. (2020). A Gini measure for vertical equity in property
+#'   assessments. Journal of Property Tax Assessment & Administration, 17(2).
+#'   Retrieved from \href{https://researchexchange.iaao.org/jptaa/vol17/iss2/2}{https://researchexchange.iaao.org/jptaa/vol17/iss2/2}.
+#'
+#'   Quintos, C. (2021). A Gini decomposition of the sources of inequality in
+#'   property assessments. Journal of Property Tax Assessment & Administration,
+#'   18(2). Retrieved from
+#'  \href{https://researchexchange.iaao.org/jptaa/vol18/iss2/6}{https://researchexchange.iaao.org/jptaa/vol18/iss2/6}
+#'
+#' @inheritParams prd
+#' @describeIn mki_ki Returns a numeric vector containing the KI of the
+#'   input vectors.
+#' @order 2
+#'
+#' @examples
+#'
+#' # Calculate KI
+#' ki(ratios_sample$assessed, ratios_sample$sale_price)
+#' @family formulas
+#' @export
+#' @md
+ki <- function(assessed, sale_price, na.rm = FALSE) {
+  # nolint end
+
+  check_inputs(assessed, sale_price)
+
+  idx <- index_na(assessed, sale_price)
+  if (na.rm) {
+    assessed <- assessed[!idx]
+    sale_price <- sale_price[!idx]
+  } else if (any(idx) && !na.rm) {
+    return(NA_real_)
+  }
+
+  g <- calc_gini(assessed, sale_price)
+  ki <- g$gini_assessed - g$gini_sale
+
+  return(ki)
+}
+
+#' @inheritParams prd
+#' @describeIn mki_ki Returns a numeric vector containing the MKI of the
+#'   input vectors.
+#' @order 1
+#'
+#' @examples
+#' # Calculate MKI
+#' mki(ratios_sample$assessed, ratios_sample$sale_price)
+#' @export
+mki <- function(assessed, sale_price, na.rm = FALSE) {
+  check_inputs(assessed, sale_price)
+
+  idx <- index_na(assessed, sale_price)
+  if (na.rm) {
+    assessed <- assessed[!idx]
+    sale_price <- sale_price[!idx]
+  } else if (any(idx) && !na.rm) {
+    return(NA_real_)
+  }
+
+  g <- calc_gini(assessed, sale_price)
+  mki <- g$gini_assessed / g$gini_sale
+
+  return(mki)
+}
+
+
+
 ##### STANDARDS #####
 
 # Mini functions to test if IAAO standards are met
@@ -202,7 +298,7 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 #' @describeIn cod Returns TRUE when input COD meets IAAO standards
 #'   (between 5 and 15).
 #' @param x Numeric vector of sales ratio statistic(s) to check
-#'   against IAAO standards.
+#'   against IAAO/Quintos standards.
 #' @export
 cod_met <- function(x) x >= 5.00 & x <= 15
 
@@ -217,3 +313,9 @@ prd_met <- function(x) x >= 0.98 & x <= 1.03
 #' @inheritParams cod_met
 #' @export
 prb_met <- function(x) x >= -0.05 & x <= 0.05
+
+#' @describeIn mki_ki Returns TRUE when input meets Quintos paper standards
+#'   (between 0.95 and 1.05).
+#' @inheritParams cod_met
+#' @export
+mki_met <- function(x) x >= 0.95 & x <= 1.05
