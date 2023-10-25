@@ -1,16 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
-- family-names: "Dan"
-  given-names: "Snow"
-- family-names: "William"
-  given-names: "Ridgeway"
-- family-names: "Rob"
-  given-names: "Ross"
-- family-names: "Nathan"
-  given-names: "Dignazio"
-- family-names: "Damon"
-  given-names: "Major"
+- family-names: "Cook County Assessor's Office"
 title: "assessr"
 version: 0.6.0
 date-released: 2019
