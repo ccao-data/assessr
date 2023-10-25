@@ -1,14 +1,17 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
+type:software
 authors:
-- family-names: "Lisa"
-  given-names: "Mona"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
-- family-names: "Bot"
-  given-names: "Hew"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
-title: "My Research Software"
+- family-names: "Dan"
+  given-names: "Snow"
+- family-names: "William"
+  given-names: "Ridgeway"
+- family-names: "Rob"
+  given-names: "Ross"
+- family-names: "Nathan"
+  given-names: "Dignazio"
+- family-names: "Damon"
+  given-names: "Major"
+title: "assessr"
 version: 0.6.0
-doi: 10.5281/zenodo.1234
-date-released: 2017-12-18
 url: "https://ccao-data.github.io/assessr"
