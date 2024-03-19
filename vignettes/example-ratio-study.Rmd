@@ -77,7 +77,7 @@ assessments <- read_json(
 sales <- read_json(
   paste0(
     "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?",
-    "year=2020&$limit=100000"
+    "year=2020&$limit=10000"
   ),
   simplifyVector = TRUE
 ) %>%
