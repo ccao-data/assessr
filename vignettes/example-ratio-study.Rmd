@@ -149,10 +149,10 @@ library(knitr)
 # values AND sales
 combined <- inner_join(
   assessments %>%
-    select(pin, year, township_name, mailed_tot, certified_tot, board_tot),
+    select(pin, tax_year, township_name, mailed_tot, certified_tot, board_tot),
   sales %>%
-    select(pin, year, sale_price, is_multisale),
-  by = c("pin", "year")
+    select(pin, tax_year, sale_price, is_multisale),
+  by = c("pin", "tax_year")
 ) %>%
   filter(township_name %in% c("New Trier", "Palatine"))
 
