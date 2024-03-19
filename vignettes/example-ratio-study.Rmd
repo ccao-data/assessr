@@ -68,7 +68,7 @@ library(stringr)
 assessments <- read_json(
   paste0(
     "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?",
-    "$where=starts_with(class,'2')&year=2020&$limit=100000"
+    "$where=starts_with(class,'2')&tax_year=2020&$limit=100000"
   ),
   simplifyVector = TRUE
 )
