@@ -151,8 +151,8 @@ combined <- inner_join(
   assessments %>%
     select(pin, tax_year, township_name, mailed_tot, certified_tot, board_tot),
   sales %>%
-    select(pin, tax_year, sale_price, is_multisale),
-  by = c("pin", "tax_year")
+    select(pin, year, sale_price, is_multisale),
+  by = c("pin", "tax_year" = "year")
 ) %>%
   filter(township_name %in% c("New Trier", "Palatine"))
 
