@@ -97,7 +97,6 @@ is_sales_chased <- function(x, method = "both", bounds = c(0.98, 1.02), gap = 0.
 }
 
 
-#' @describeIn is_sales_chased CDF gap method for detecting sales chasing.
 cdf_sales_chased <- function(ratio, bounds = c(0.98, 1.02), gap = 0.03) {
   # Sort the ratios AND REMOVE NAs
   sorted_ratio <- sort(ratio)
@@ -118,8 +117,6 @@ cdf_sales_chased <- function(ratio, bounds = c(0.98, 1.02), gap = 0.03) {
 }
 
 
-#' @describeIn is_sales_chased Distribution comparison method
-#'   for detecting sales chasing.
 dist_sales_chased <- function(
     ratio,
     bounds = c(0.98, 1.02),

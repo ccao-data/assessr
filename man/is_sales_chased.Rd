@@ -2,8 +2,6 @@
 % Please edit documentation in R/sales_chasing.R
 \name{is_sales_chased}
 \alias{is_sales_chased}
-\alias{cdf_sales_chased}
-\alias{dist_sales_chased}
 \title{Detect sales chasing in a vector of sales ratios}
 \usage{
 is_sales_chased(
@@ -13,10 +11,6 @@ is_sales_chased(
   gap = 0.03,
   na.rm = FALSE
 )
-
-cdf_sales_chased(ratio, bounds = c(0.98, 1.02), gap = 0.03)
-
-dist_sales_chased(ratio, bounds = c(0.98, 1.02), gap = 0.03, na.rm = FALSE)
 }
 \arguments{
 \item{x}{A numeric vector. Must be longer than 2 and cannot contain
@@ -65,14 +59,6 @@ Sales chasing is when a property is selectively reappraised to
   The intuition here is that ratios that are sales chased may be more
   "bunched up" in the center of the distribution.
 }
-\section{Functions}{
-\itemize{
-\item \code{cdf_sales_chased()}: CDF gap method for detecting sales chasing.
-
-\item \code{dist_sales_chased()}: Distribution comparison method
-for detecting sales chasing.
-
-}}
 \examples{
 
 # Generate fake data with normal vs chased ratios

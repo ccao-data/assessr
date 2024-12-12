@@ -15,7 +15,6 @@
 #' @param na.rm Default FALSE. A boolean value indicating whether or not to
 #'   remove NA values. If missing values are present but not removed the
 #'   function will output NA.
-#' @param ... Named arguments passed on to \code{FUN}.
 #'
 #' @return A two-long numeric vector containing the bootstrapped confidence
 #'   interval of the input vector(s).

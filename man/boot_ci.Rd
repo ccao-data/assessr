@@ -31,8 +31,6 @@ interval to return. 0.05 will return the 95\% confidence interval.}
 \item{na.rm}{Default FALSE. A boolean value indicating whether or not to
 remove NA values. If missing values are present but not removed the
 function will output NA.}
-
-\item{...}{Named arguments passed on to \code{FUN}.}
 }
 \value{
 A two-long numeric vector containing the bootstrapped confidence
