@@ -65,3 +65,4 @@ reference:
   desc: Sample data used for testing and demonstrations
 - contents:
   - ratios_sample
+  - quintos_sample
