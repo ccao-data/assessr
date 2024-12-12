@@ -163,10 +163,10 @@ combined <- combined %>%
   pivot_longer(
     mailed_tot:board_tot,
     names_to = "stage",
-    values_to = "assessed"
+    values_to = "estimate"
   ) %>%
-  mutate_at(vars(sale_price, assessed), as.numeric) %>%
-  mutate(ratio = (assessed * 10) / sale_price)
+  mutate_at(vars(sale_price, estimate), as.numeric) %>%
+  mutate(ratio = (estimate * 10) / sale_price)
 ```
 
 ### Sales ratio statistics by township
@@ -177,19 +177,19 @@ Cook County has jurisdictions called townships that are important units for asse
 # For each town and stage, calculate COD, PRD, and PRB, and their respective
 # confidence intervals then arrange by town name and stage of assessment
 combined %>%
-  filter(assessed > 0) %>%
+  filter(estimate > 0) %>%
   group_by(township_name, stage) %>%
   summarise(
     n = n(),
-    cod = cod(ratio, na.rm = TRUE),
+    cod = cod(estimate, sale_price, na.rm = TRUE),
     cod_ci = paste(
-      round(cod_ci(ratio, nboot = 1000, na.rm = TRUE), 3),
+      round(cod_ci(estimate, sale_price, nboot = 1000, na.rm = TRUE), 3),
       collapse = ", "
     ),
     cod_met = cod_met(cod),
-    prb = prb(assessed, sale_price, na.rm = TRUE),
+    prb = prb(estimate, sale_price, na.rm = TRUE),
     prb_ci = paste(
-      round(prb_ci(assessed, sale_price, na.rm = TRUE), 3),
+      round(prb_ci(estimate, sale_price, na.rm = TRUE), 3),
       collapse = ", "
     ),
     prb_met = prb_met(prb)
@@ -276,20 +276,20 @@ Using the ordered data, you can plot the classic [Lorenz curve](https://en.wikip
 
 ```{r}
 gini_data <- combined %>%
-  select(sale_price, assessed) %>%
+  select(sale_price, estimate) %>%
   arrange(sale_price)
 
 sale_price <- gini_data$sale_price
-assessed <- gini_data$assessed
+estimate <- gini_data$estimate
 
 lorenz_data_price <- data.frame(
   pct = c(0, cumsum(sale_price) / sum(sale_price)),
   cum_pct = c(0, seq_along(sale_price)) / length(sale_price)
 )
 
-lorenz_data_assessed <- data.frame(
-  pct = c(0, cumsum(assessed) / sum(assessed)),
-  cum_pct = c(0, seq_along(assessed)) / length(assessed)
+lorenz_data_estimate <- data.frame(
+  pct = c(0, cumsum(estimate) / sum(estimate)),
+  cum_pct = c(0, seq_along(estimate)) / length(estimate)
 )
 
 ggplot() +
@@ -298,7 +298,7 @@ ggplot() +
     aes(x = cum_pct, y = pct), color = "blue"
   ) +
   geom_line(
-    data = lorenz_data_assessed,
+    data = lorenz_data_estimate,
     aes(x = cum_pct, y = pct), color = "red"
   ) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "green") +
@@ -337,27 +337,27 @@ To translate these curves to a single metric, the Kakwani Index (KI) and Modifie
 - **Modified Kakwani Index:** `Assessed Gini / Sale Price Gini`
 
 ```{r}
-# Calculate the sum of the n elements of the assessed vector
-n <- length(assessed)
-g_assessed <- sum(assessed * seq_len(n))
+# Calculate the sum of the n elements of the estimate vector
+n <- length(estimate)
+g_estimate <- sum(estimate * seq_len(n))
 
 # Compute the Gini coefficient based on the previously calculated sum
 # and the increasing sum of all elements in the assessed vector
-g_assessed <- 2 * g_assessed / sum(assessed) - (n + 1L)
+g_estimate <- 2 * g_estimate / sum(estimate) - (n + 1L)
 
 # Normalize the Gini coefficient by dividing it by n.
-gini_assessed <- g_assessed / n
+gini_estimate <- g_estimate / n
 
 # Follow the same process for the sale_price vector
 g_sale <- sum(sale_price * seq_len(n))
 g_sale <- 2 * g_sale / sum(sale_price) - (n + 1L)
 gini_sale <- g_sale / n
 
-MKI <- round(gini_assessed / gini_sale, 4)
-KI <- round(gini_assessed - gini_sale, 4)
+MKI <- round(gini_estimate / gini_sale, 4)
+KI <- round(gini_estimate - gini_sale, 4)
 ```
 
-The output for the Modified Kakwani Index is `r MKI`, and the Kakwani Index is `r KI`. According to the following table, this means that the assessments are slightly regressive. 
+The output for the Modified Kakwani Index is `r MKI`, and the Kakwani Index is `r KI`. According to the following table, this means that the assessments are slightly regressive.
 
 | KI Range           | MKI Range          | Interpretation     |
 |:-------------------|:-------------------|:-------------------|
@@ -388,8 +388,8 @@ ggplot() +
 ```{r}
 # Detect chasing for each vector
 tibble(
-  "Blue Chased?" = detect_chasing(normal_ratios),
-  "Red Chased?" = detect_chasing(chased_ratios)
+  "Blue Chased?" = is_sales_chased(normal_ratios),
+  "Red Chased?" = is_sales_chased(chased_ratios)
 ) %>%
   kable(format = "markdown", digits = 3)
 ```

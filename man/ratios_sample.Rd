@@ -5,12 +5,11 @@
 \alias{ratios_sample}
 \title{Sample of ratio and sales data pulled from CCAO records}
 \format{
-A data frame with 979 observation and 4 variables:
+A data frame with 979 observation and 3 variables:
 \describe{
-  \item{assessed}{The fair market assessed value predicted by CCAO assessment
+  \item{estimate}{The fair market assessed value predicted by CCAO assessment
     models, including any successful appeals}
   \item{sale_price}{The recorded sale price of this property}
-  \item{ratio}{Sales ratio representing fair market value / sale price}
   \item{town}{Township name the property is in}
 }
 }

@@ -4,12 +4,18 @@
 \alias{boot_ci}
 \title{Calculate bootstrapped confidence intervals}
 \usage{
-boot_ci(FUN = NULL, nboot = 100, alpha = 0.05, na.rm = FALSE, ...)
+boot_ci(FUN, estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FALSE)
 }
 \arguments{
 \item{FUN}{Function to bootstrap. Must return a single value.}
 
-\item{nboot}{Default 100. Number of iterations to use to estimate
+\item{estimate}{A numeric vector of estimated values. Must be the same
+length as \code{sale_price}.}
+
+\item{sale_price}{A numeric vector of sale prices. Must be the same
+length as \code{estimate}.}
+
+\item{nboot}{Default 1000. Number of iterations to use to estimate
 the output statistic confidence interval.}
 
 \item{alpha}{Default 0.05. Numeric value indicating the confidence
@@ -18,8 +24,6 @@ interval to return. 0.05 will return the 95\% confidence interval.}
 \item{na.rm}{Default FALSE. A boolean value indicating whether or not to
 remove NA values. If missing values are present but not removed the
 function will output NA.}
-
-\item{...}{Named arguments passed on to \code{FUN}.}
 }
 \value{
 A two-long numeric vector containing the bootstrapped confidence
@@ -32,13 +36,13 @@ Calculate the non-parametric bootstrap confidence interval
 \examples{
 
 # Calculate COD confidence interval
-boot_ci(cod, nboot = 100, ratio = ratios_sample$ratio)
+boot_ci(cod, ratios_sample$estimate, ratios_sample$sale_price, nboot = 100)
 
 # Calculate PRD confidence interval
 boot_ci(
   prd,
   nboot = 100,
-  assessed = ratios_sample$assessed,
+  estimate = ratios_sample$estimate,
   sale_price = ratios_sample$sale_price,
   na.rm = FALSE
 )
