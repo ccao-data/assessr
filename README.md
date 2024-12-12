@@ -46,7 +46,7 @@ renv::install("ccao-data/assessr")
 pak::pak("ccao-data/assessr")
 
 # Append the @ symbol for a specific version
-remotes::install_github("ccao-data/assessr@0.4.4")
+remotes::install_github("ccao-data/assessr@1.0.0")
 ```
 
 Once it is installed, you can use it just like any other package. Simply

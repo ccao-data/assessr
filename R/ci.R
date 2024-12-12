@@ -34,8 +34,13 @@
 #'   na.rm = FALSE
 #' )
 #' @export
-boot_ci <- function(FUN = NULL, estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FALSE) {
-
+boot_ci <- function(
+    FUN = NULL,
+    estimate,
+    sale_price,
+    nboot = 1000,
+    alpha = 0.05,
+    na.rm = FALSE) {
   # Input checking and error handling
   check_inputs(estimate, sale_price)
 
@@ -70,7 +75,10 @@ boot_ci <- function(FUN = NULL, estimate, sale_price, nboot = 1000, alpha = 0.05
     # For each of the input vectors to FUN, subset by first removing any
     # index positions that have a missing value, then take a random sample of
     # each vector using the sample index
-    sampled <- lapply(list(estimate, sale_price), function(x) x[!missing_idx][idx])
+    sampled <- lapply(
+      list(estimate, sale_price),
+      function(x) x[!missing_idx][idx]
+    )
 
     # For each bootstrap sample, apply the function and output an estimate for
     # that sample
@@ -95,8 +103,12 @@ boot_ci <- function(FUN = NULL, estimate, sale_price, nboot = 1000, alpha = 0.05
 #' # Calculate COD confidence interval
 #' cod_ci(ratios_sample$estimate, ratios_sample$sale_price)
 #' @export
-cod_ci <- function(estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FALSE) {
-
+cod_ci <- function(
+    estimate,
+    sale_price,
+    nboot = 1000,
+    alpha = 0.05,
+    na.rm = FALSE) {
   cod_ci <- boot_ci(
     cod,
     estimate = estimate,
@@ -119,8 +131,12 @@ cod_ci <- function(estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FAL
 #' # Calculate PRD confidence interval
 #' prd_ci(ratios_sample$estimate, ratios_sample$sale_price)
 #' @export
-prd_ci <- function(estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FALSE) {
-
+prd_ci <- function(
+    estimate,
+    sale_price,
+    nboot = 1000,
+    alpha = 0.05,
+    na.rm = FALSE) {
   prd_ci <- boot_ci(
     prd,
     estimate = estimate,
@@ -144,7 +160,6 @@ prd_ci <- function(estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FAL
 #' prb_ci(ratios_sample$estimate, ratios_sample$sale_price)
 #' @export
 prb_ci <- function(estimate, sale_price, alpha = 0.05, na.rm = FALSE) {
-
   # Input checking and error handling
   check_inputs(estimate, sale_price)
 
