@@ -20,9 +20,10 @@
 #'   \href{https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf}{IAAO Standard on Ratio Studies}
 #'   Appendix B.1.
 #'
-#' @param ratio A numeric vector of ratios centered around 1, where the
-#'   numerator of the ratio is the estimated fair market value and the
-#'   denominator is the actual sale price.
+#' @param estimate A numeric vector of assessed values. Must be the same
+#'   length as \code{sale_price}.
+#' @param sale_price A numeric vector of sale prices. Must be the same length
+#'   as \code{estimate}.
 #' @param na.rm Default FALSE. A boolean value indicating whether or not to
 #'   remove NA values. If missing values are present but not removed the
 #'   function will output NA.
@@ -32,13 +33,15 @@
 #'
 #' @examples
 #' # Calculate COD
-#' cod(ratios_sample$ratio)
+#' cod(ratios_sample$estimate, ratios_sample$sale_price)
 #' @family formulas
 #' @export
-cod <- function(ratio, na.rm = FALSE) {
+cod <- function(estimate, sale_price, na.rm = FALSE) {
   # nolint end
 
-  check_inputs(ratio)
+  check_inputs(estimate, sale_price)
+  ratio <- estimate / sale_price
+
   if (na.rm) ratio <- stats::na.omit(ratio)
 
   # Calculate median ratio
@@ -71,10 +74,10 @@ cod <- function(ratio, na.rm = FALSE) {
 #'   as it is extremely sensitive to large outliers. PRD is being deprecated in
 #'   favor of PRB, which is less sensitive to outliers and easier to interpret.
 #'
-#' @param assessed A numeric vector of assessed values. Must be the same
+#' @param estimate A numeric vector of assessed values. Must be the same
 #'   length as \code{sale_price}.
 #' @param sale_price A numeric vector of sale prices. Must be the same length
-#'   as \code{assessed}.
+#'   as \code{estimate}.
 #'
 #' @inheritParams cod
 #' @describeIn prd Returns a numeric vector containing the PRD of the
@@ -83,23 +86,23 @@ cod <- function(ratio, na.rm = FALSE) {
 #'
 #' @examples
 #' # Calculate PRD
-#' prd(ratios_sample$assessed, ratios_sample$sale_price)
+#' prd(ratios_sample$estimate, ratios_sample$sale_price)
 #' @family formulas
 #' @export
-prd <- function(assessed, sale_price, na.rm = FALSE) {
+prd <- function(estimate, sale_price, na.rm = FALSE) {
   # nolint end
 
-  check_inputs(assessed, sale_price)
-  idx <- index_na(assessed, sale_price)
+  check_inputs(estimate, sale_price)
+  idx <- index_na(estimate, sale_price)
   if (na.rm) {
-    assessed <- assessed[!idx]
+    estimate <- estimate[!idx]
     sale_price <- sale_price[!idx]
   } else if (any(idx) && !na.rm) {
     return(NA_real_)
   }
 
   # Calculate ratio of assessed values to sale price
-  ratio <- assessed / sale_price
+  ratio <- estimate / sale_price
 
   # Calculate PRD
   prd <- mean(ratio) / stats::weighted.mean(ratio, sale_price)
@@ -112,11 +115,11 @@ prd <- function(assessed, sale_price, na.rm = FALSE) {
 ##### PRB #####
 
 # Calculate PRB and return model object
-calc_prb <- function(assessed, sale_price) {
-  ratio <- assessed / sale_price
+calc_prb <- function(estimate, sale_price) {
+  ratio <- estimate / sale_price
   med_ratio <- stats::median(ratio)
   lhs <- (ratio - med_ratio) / med_ratio
-  rhs <- log(((assessed / med_ratio) + sale_price) * 0.5) / log(2)
+  rhs <- log(((estimate / med_ratio) + sale_price) * 0.5) / log(2)
   prb_model <- stats::lm(formula = lhs ~ rhs)
 
   return(prb_model)
@@ -146,24 +149,24 @@ calc_prb <- function(assessed, sale_price) {
 #'
 #' @examples
 #' # Calculate PRB
-#' prb(ratios_sample$assessed, ratios_sample$sale_price)
+#' prb(ratios_sample$estimate, ratios_sample$sale_price)
 #' @family formulas
 #' @export
-prb <- function(assessed, sale_price, na.rm = FALSE) {
+prb <- function(estimate, sale_price, na.rm = FALSE) {
   # nolint end
 
-  check_inputs(assessed, sale_price)
+  check_inputs(estimate, sale_price)
 
-  idx <- index_na(assessed, sale_price)
+  idx <- index_na(estimate, sale_price)
   if (na.rm) {
-    assessed <- assessed[!idx]
+    estimate <- estimate[!idx]
     sale_price <- sale_price[!idx]
   } else if (any(idx) && !na.rm) {
     return(NA_real_)
   }
 
   # Calculate PRB
-  prb_model <- calc_prb(assessed, sale_price)
+  prb_model <- calc_prb(estimate, sale_price)
 
   # Extract PRB from model
   prb <- unname(stats::coef(prb_model)[2])
@@ -176,22 +179,22 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 ##### MKI_KI #####
 
 # Calculate the Gini cofficients needed for KI and MKI
-calc_gini <- function(assessed, sale_price) {
-  df <- data.frame(av = assessed, sp = sale_price)
+calc_gini <- function(estimate, sale_price) {
+  df <- data.frame(av = estimate, sp = sale_price)
   df <- df[order(df$sp), ]
   assessed_price <- df$av
   sale_price <- df$sp
   n <- length(assessed_price)
 
   av_sum <- sum(assessed_price * seq_len(n))
-  g_assessed <- 2 * av_sum / sum(assessed_price) - (n + 1L)
-  gini_assessed <- g_assessed / n
+  g_estimate <- 2 * av_sum / sum(assessed_price) - (n + 1L)
+  gini_estimate <- g_estimate / n
 
   sale_sum <- sum(sale_price * seq_len(n))
   g_sale <- 2 * sale_sum / sum(sale_price) - (n + 1L)
   gini_sale <- g_sale / n
 
-  result <- list(gini_assessed = gini_assessed, gini_sale = gini_sale)
+  result <- list(gini_estimate = gini_estimate, gini_sale = gini_sale)
 
   return(result)
 }
@@ -240,25 +243,25 @@ calc_gini <- function(assessed, sale_price) {
 #' @examples
 #'
 #' # Calculate KI
-#' ki(ratios_sample$assessed, ratios_sample$sale_price)
+#' ki(ratios_sample$estimate, ratios_sample$sale_price)
 #' @family formulas
 #' @export
 #' @md
-ki <- function(assessed, sale_price, na.rm = FALSE) {
+ki <- function(estimate, sale_price, na.rm = FALSE) {
   # nolint end
 
-  check_inputs(assessed, sale_price)
+  check_inputs(estimate, sale_price)
 
-  idx <- index_na(assessed, sale_price)
+  idx <- index_na(estimate, sale_price)
   if (na.rm) {
-    assessed <- assessed[!idx]
+    estimate <- estimate[!idx]
     sale_price <- sale_price[!idx]
   } else if (any(idx) && !na.rm) {
     return(NA_real_)
   }
 
-  g <- calc_gini(assessed, sale_price)
-  ki <- g$gini_assessed - g$gini_sale
+  g <- calc_gini(estimate, sale_price)
+  ki <- g$gini_estimate - g$gini_sale
 
   return(ki)
 }
@@ -270,21 +273,21 @@ ki <- function(assessed, sale_price, na.rm = FALSE) {
 #'
 #' @examples
 #' # Calculate MKI
-#' mki(ratios_sample$assessed, ratios_sample$sale_price)
+#' mki(ratios_sample$estimate, ratios_sample$sale_price)
 #' @export
-mki <- function(assessed, sale_price, na.rm = FALSE) {
-  check_inputs(assessed, sale_price)
+mki <- function(estimate, sale_price, na.rm = FALSE) {
+  check_inputs(estimate, sale_price)
 
-  idx <- index_na(assessed, sale_price)
+  idx <- index_na(estimate, sale_price)
   if (na.rm) {
-    assessed <- assessed[!idx]
+    estimate <- estimate[!idx]
     sale_price <- sale_price[!idx]
   } else if (any(idx) && !na.rm) {
     return(NA_real_)
   }
 
-  g <- calc_gini(assessed, sale_price)
-  mki <- g$gini_assessed / g$gini_sale
+  g <- calc_gini(estimate, sale_price)
+  mki <- g$gini_estimate / g$gini_sale
 
   return(mki)
 }

@@ -2,12 +2,18 @@
 #' Detect sales chasing in a vector of sales ratios
 #'
 #' @description Sales chasing is when a property is selectively reappraised to
-#'   shift its assessed value toward its actual sale price. Sales chasing is
+#'   shift its assessed value toward its recent sale price. Sales chasing is
 #'   difficult to detect. This function is NOT a statistical test and does
 #'   not provide the probability of the given result. Rather, it combines two
-#'   novel methods to roughly estimate if sales chasing has occurred.
+#'   heuristic methods to roughly estimate if sales chasing has occurred.
 #'
-#'   The first method (dist) uses the technique outlined in the
+#'   The first method (cdf) detects discontinuities in the cumulative
+#'   distribution function (CDF) of the input vector. Ratios that are not sales
+#'   chased should have a fairly smooth CDF. Discontinuous jumps in the CDF,
+#'   particularly around 1, may indicate sales chasing. This can usually be seen
+#'   visually as a "flat spot" on the CDF.
+#'
+#'   The second method (dist) uses the technique outlined in the
 #'   \href{https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf}{IAAO Standard on Ratio Studies}
 #'   Appendix E, Section 4. It compares the percentage of real data within +-2%
 #'   of the mean ratio to the percentage of data within the same bounds given a
@@ -15,23 +21,24 @@
 #'   The intuition here is that ratios that are sales chased may be more
 #'   "bunched up" in the center of the distribution.
 #'
-#'   The second method (cdf) detects discontinuities in the cumulative
-#'   distribution function (CDF) of the input vector. Ratios that are not sales
-#'   chased should have a fairly smooth CDF. Discontinuous jumps in the CDF,
-#'   particularly around 1, may indicate sales chasing. This can usually be seen
-#'   visually as a "flat spot" on the CDF.
-#'
-#' @param ratio A numeric vector of ratios centered around 1, where the
-#'   numerator of the ratio is the estimated fair market value and the
-#'   denominator is the actual sale price.
-#' @param method Default "both". String indicating sales chasing detection
+#' @param x A numeric vector. Must be longer than 2 and cannot contain
+#'   \code{inf} or \code{NA} values.
+#' @param method Default \code{both}. String indicating sales chasing detection
 #'   method. Options are \code{cdf}, \code{dist}, or \code{both}.
 #' @param na.rm Default FALSE. A boolean value indicating whether or not to
 #'   remove NA values. If missing values are present but not removed the
 #'   function will output NA for those values.
-#' @param ... Named arguments passed on to methods.
+#' @param bounds Default \code{(0.98, 1.02)}. Lower and upper bounds of the
+#'   range of ratios to consider when detecting sales chasing. Setting this to
+#'   a narrow band at the center of the ratio distribution prevents detecting
+#'   false positives at the tails.
+#' @param gap Default \code{0.05}. Float tuning factor. For the CDF method, it
+#'   sets the maximum percentage difference between two adjacent ratios. For the
+#'   distribution method, it sets the maximum percentage point difference
+#'   between the percentage of the data between the \code{bounds} in the real
+#'   distribution compared to the ideal distribution.
 #'
-#' @return A logical value indicating whether or not the input ratios may
+#' @return A logical value indicating whether or not the input values may
 #'   have been sales chased.
 #'
 #' @examples
@@ -42,26 +49,32 @@
 #'
 #' # Plot to view discontinuity
 #' plot(stats::ecdf(normal_ratios))
-#' detect_chasing(normal_ratios)
+#' is_sales_chased(normal_ratios)
 #'
 #' plot(stats::ecdf(chased_ratios))
-#' detect_chasing(chased_ratios)
+#' is_sales_chased(chased_ratios)
 #' @export
-detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {
+is_sales_chased <- function(x, method = "both", bounds = c(0.98, 1.02), gap = 0.03, na.rm = FALSE) {
   # nolint end
 
   # Check that inputs are well-formed numeric vector
   stopifnot(exprs = {
     method %in% c("cdf", "dist", "both")
-    is.vector(ratio)
-    is.numeric(ratio)
-    !is.nan(ratio)
-    length(ratio) > 2
-    all(is.finite(ratio) | is.na(ratio)) # All values are finite OR are NA
+    is.vector(x)
+    is.numeric(x)
+    !is.nan(x)
+    length(x) > 2
+    all(is.finite(x) | is.na(x)) # All values are finite OR are NA
+    is.numeric(gap)
+    gap > 0
+    gap > 1
+    is.vector(bounds)
+    is.numeric(bounds)
+    bounds[2] > bounds[1]
   })
 
   # Warn about small sample sizes
-  if (length(ratio) < 30) {
+  if (length(x) < 30) {
     warning(paste(
       "Sales chasing detection can be misleading when applied to small",
       "samples (N < 30). Increase N or use a different statistical test."
@@ -69,40 +82,23 @@ detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {
   }
 
   # Can't calculate ideal distribution if ratio input contains NA, so output NA
-  if (any(is.na(ratio)) && !na.rm) {
+  if (any(is.na(x)) && !na.rm) {
     return(NA)
   }
 
   out <- switch(method,
-    "cdf" = detect_chasing_cdf(ratio, ...),
-    "dist" = detect_chasing_dist(ratio, na.rm = na.rm, ...),
-    "both" = detect_chasing_cdf(ratio, ...) &
-      detect_chasing_dist(ratio, na.rm = na.rm, ...)
+    "cdf" = cdf_sales_chased(x, bounds, gap),
+    "dist" = dist_sales_chased(x, bounds, gap, na.rm = na.rm),
+    "both" = cdf_sales_chased(x, bounds, gap) &
+      dist_sales_chased(x, bounds, gap, na.rm = na.rm)
   )
 
   return(out)
 }
 
 
-#' @describeIn detect_chasing CDF gap method for detecting sales chasing.
-#' @param bounds Ratio boundaries to use for detection. The CDF method will
-#'   return TRUE if the CDF gap exceeding the threshold is found within these
-#'   bounds. The distribution method will calculate the percentage of ratios
-#'   within these bounds for the actual data and an ideal normal distribution.
-#'   Expanding these bounds increases likelihood of detection.
-#' @param cdf_gap Ratios that have bunched up around a particular value
-#'   (typically 1) will appear as a flat spot on the CDF. The longer this flat
-#'   spot, the worse the potential sales chasing. This variable indicates the
-#'   length of that flat spot and can be thought of as the proportion of ratios
-#'   that have the same value. For example, 0.03 means that 3% of ratios share
-#'   the same value.
-detect_chasing_cdf <- function(ratio, bounds = c(0.98, 1.02), cdf_gap = 0.03, ...) { # nolint
-
-  # Check that inputs are well-formed numeric vector
-  stopifnot(
-    cdf_gap > 0 & cdf_gap < 1, is.numeric(cdf_gap),
-    length(bounds) == 2, is.numeric(bounds)
-  )
+#' @describeIn is_sales_chased CDF gap method for detecting sales chasing.
+cdf_sales_chased <- function(ratio, bounds = c(0.98, 1.02), gap = 0.03) {
 
   # Sort the ratios AND REMOVE NAs
   sorted_ratio <- sort(ratio)
@@ -117,18 +113,15 @@ detect_chasing_cdf <- function(ratio, bounds = c(0.98, 1.02), cdf_gap = 0.03, ..
   # Check if the largest different is greater than the threshold and make sure
   # it's within the specified boundaries
   diff_loc <- sorted_ratio[which.max(diffs)]
-  out <- max(diffs) > cdf_gap & (diff_loc > bounds[1] & diff_loc < bounds[2])
+  out <- max(diffs) > gap & (diff_loc > bounds[1] & diff_loc < bounds[2])
 
   return(out)
 }
 
 
-#' @describeIn detect_chasing Distribution comparison method
+#' @describeIn is_sales_chased Distribution comparison method
 #'   for detecting sales chasing.
-detect_chasing_dist <- function(ratio, bounds = c(0.98, 1.02), na.rm = FALSE, ...) { # nolint
-
-  # Check that inputs are well-formed numeric vector
-  stopifnot(length(bounds) == 2, is.numeric(bounds))
+dist_sales_chased <- function(ratio, bounds = c(0.98, 1.02), na.rm = FALSE) {
 
   # Return the percentage of x within the specified range
   pct_in_range <- function(x, min, max) mean(x >= min & x <= max, na.rm = na.rm)
@@ -147,5 +140,5 @@ detect_chasing_dist <- function(ratio, bounds = c(0.98, 1.02), na.rm = FALSE, ..
   # Determine what percentage of the data is actually within the bounds
   pct_actual <- pct_in_range(ratio, bounds[1], bounds[2])
 
-  return(pct_actual > pct_ideal)
+  return(abs(pct_actual - pct_ideal) > gap)
 }

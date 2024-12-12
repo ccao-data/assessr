@@ -4,7 +4,7 @@ context("load testing data")
 data("ratios_sample")
 
 # Extract the components of the dataframe as vectors
-sample_ratios <- ratios_sample$ratio
+sample_ratios <- ratios_sample$estimate / ratios_sample$sale_price
 normal_ratios <- c(rnorm(1000, 1, 0.15))
 chased_ratios <- c(rnorm(900, 1, 0.15), rep(1, 100))
 
