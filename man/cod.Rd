@@ -6,22 +6,24 @@
 \alias{cod_met}
 \title{Calculate Coefficient of Dispersion (COD)}
 \usage{
-cod(ratio, na.rm = FALSE)
+cod(estimate, sale_price, na.rm = FALSE)
 
-cod_ci(ratio, nboot = 100, alpha = 0.05, na.rm = FALSE)
+cod_ci(estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FALSE)
 
 cod_met(x)
 }
 \arguments{
-\item{ratio}{A numeric vector of ratios centered around 1, where the
-numerator of the ratio is the estimated fair market value and the
-denominator is the actual sale price.}
+\item{estimate}{A numeric vector of assessed values. Must be the same
+length as \code{sale_price}.}
+
+\item{sale_price}{A numeric vector of sale prices. Must be the same length
+as \code{estimate}.}
 
 \item{na.rm}{Default FALSE. A boolean value indicating whether or not to
 remove NA values. If missing values are present but not removed the
 function will output NA.}
 
-\item{nboot}{Default 100. Number of iterations to use to estimate
+\item{nboot}{Default 1000. Number of iterations to use to estimate
 the output statistic confidence interval.}
 
 \item{alpha}{Default 0.05. Numeric value indicating the confidence
@@ -60,10 +62,10 @@ COD is the average absolute percent deviation from the
 }}
 \examples{
 # Calculate COD
-cod(ratios_sample$ratio)
+cod(ratios_sample$estimate, ratios_sample$sale_price)
 
 # Calculate COD confidence interval
-cod_ci(ratios_sample$ratio)
+cod_ci(ratios_sample$estimate, ratios_sample$sale_price)
 }
 \seealso{
 Other formulas: 

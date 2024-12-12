@@ -23,13 +23,13 @@
 #' @examples
 #'
 #' # Calculate COD confidence interval
-#' boot_ci(cod, nboot = 100, ratio = ratios_sample$ratio)
+#' boot_ci(cod, ratios_sample$estimate, ratios_sample$sale_price, nboot = 100)
 #'
 #' # Calculate PRD confidence interval
 #' boot_ci(
 #'   prd,
 #'   nboot = 100,
-#'   assessed = ratios_sample$assessed,
+#'   estimate = ratios_sample$estimate,
 #'   sale_price = ratios_sample$sale_price,
 #'   na.rm = FALSE
 #' )
@@ -93,9 +93,9 @@ boot_ci <- function(FUN = NULL, estimate, sale_price, nboot = 1000, alpha = 0.05
 #' @examples
 #'
 #' # Calculate COD confidence interval
-#' cod_ci(ratios_sample$assessed, ratios_sample$sale_price)
+#' cod_ci(ratios_sample$estimate, ratios_sample$sale_price)
 #' @export
-cod_ci <- function(estimate, sale_price, nboot = 100, alpha = 0.05, na.rm = FALSE) { # nolint
+cod_ci <- function(estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FALSE) {
 
   cod_ci <- boot_ci(
     cod,
@@ -103,7 +103,7 @@ cod_ci <- function(estimate, sale_price, nboot = 100, alpha = 0.05, na.rm = FALS
     sale_price = sale_price,
     nboot = nboot,
     alpha = alpha,
-    na.rm = na.rm,
+    na.rm = na.rm
   )
 
   return(cod_ci)
@@ -117,9 +117,9 @@ cod_ci <- function(estimate, sale_price, nboot = 100, alpha = 0.05, na.rm = FALS
 #' @examples
 #'
 #' # Calculate PRD confidence interval
-#' prd_ci(ratios_sample$assessed, ratios_sample$sale_price)
+#' prd_ci(ratios_sample$estimate, ratios_sample$sale_price)
 #' @export
-prd_ci <- function(estimate, sale_price, nboot = 100, alpha = 0.05, na.rm = FALSE) { # nolint
+prd_ci <- function(estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FALSE) {
 
   prd_ci <- boot_ci(
     prd,
@@ -127,7 +127,7 @@ prd_ci <- function(estimate, sale_price, nboot = 100, alpha = 0.05, na.rm = FALS
     sale_price = sale_price,
     nboot = nboot,
     alpha = alpha,
-    na.rm = na.rm,
+    na.rm = na.rm
   )
 
   return(prd_ci)
@@ -141,9 +141,9 @@ prd_ci <- function(estimate, sale_price, nboot = 100, alpha = 0.05, na.rm = FALS
 #' @examples
 #'
 #' # Calculate PRD confidence interval
-#' prb_ci(ratios_sample$assessed, ratios_sample$sale_price)
+#' prb_ci(ratios_sample$estimate, ratios_sample$sale_price)
 #' @export
-prb_ci <- function(estimate, sale_price, alpha = 0.05, na.rm = FALSE) { # nolint
+prb_ci <- function(estimate, sale_price, alpha = 0.05, na.rm = FALSE) {
 
   # Input checking and error handling
   check_inputs(estimate, sale_price)

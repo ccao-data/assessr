@@ -11,12 +11,12 @@ chased_ratios <- c(rnorm(900, 1, 0.15), rep(1, 100))
 
 
 ##### TEST CHASING DETECTION #####
-context("test detect_chashing function")
+context("test is_sales_chased function")
 
 # Run detection
-sample_out <- detect_chasing(sample_ratios)
-normal_out <- detect_chasing(normal_ratios)
-chased_out <- detect_chasing(chased_ratios)
+sample_out <- is_sales_chased(sample_ratios)
+normal_out <- is_sales_chased(normal_ratios)
+chased_out <- is_sales_chased(chased_ratios)
 
 test_that("returns logical value", {
   expect_type(sample_out, "logical")
@@ -31,20 +31,20 @@ test_that("output equal to expected", {
 })
 
 test_that("bad input data stops execution", {
-  expect_error(detect_chasing(numeric(0)))
-  expect_error(detect_chasing(c(sample_ratios, Inf)))
-  expect_error(detect_chasing(data.frame(sample_ratios)))
-  expect_error(detect_chasing(c(sample_ratios, NaN)))
-  expect_error(detect_chasing(c(sample_ratios, "2")))
-  expect_error(detect_chasing(sample_ratios, na.rm = "yes"))
+  expect_error(is_sales_chased(numeric(0)))
+  expect_error(is_sales_chased(c(sample_ratios, Inf)))
+  expect_error(is_sales_chased(data.frame(sample_ratios)))
+  expect_error(is_sales_chased(c(sample_ratios, NaN)))
+  expect_error(is_sales_chased(c(sample_ratios, "2")))
+  expect_error(is_sales_chased(sample_ratios, na.rm = "yes"))
 })
 
 test_that("incomplete data returns NAs unless removed", {
-  expect_equal(detect_chasing(c(sample_ratios, NA)), NA)
-  expect_false(detect_chasing(c(sample_ratios, NA), na.rm = TRUE))
-  expect_true(detect_chasing(c(chased_ratios, NA), na.rm = TRUE))
+  expect_equal(is_sales_chased(c(sample_ratios, NA)), NA)
+  expect_false(is_sales_chased(c(sample_ratios, NA), na.rm = TRUE))
+  expect_true(is_sales_chased(c(chased_ratios, NA), na.rm = TRUE))
 })
 
 test_that("warnings thrown when expected", {
-  expect_warning(detect_chasing(rnorm(29)))
+  expect_warning(is_sales_chased(rnorm(29)))
 })

@@ -6,18 +6,18 @@
 \alias{mki_met}
 \title{Calculate Kakwani and Modified Kakwani Index}
 \usage{
-mki(assessed, sale_price, na.rm = FALSE)
+mki(estimate, sale_price, na.rm = FALSE)
 
-ki(assessed, sale_price, na.rm = FALSE)
+ki(estimate, sale_price, na.rm = FALSE)
 
 mki_met(x)
 }
 \arguments{
-\item{assessed}{A numeric vector of assessed values. Must be the same
+\item{estimate}{A numeric vector of assessed values. Must be the same
 length as \code{sale_price}.}
 
 \item{sale_price}{A numeric vector of sale prices. Must be the same length
-as \code{assessed}.}
+as \code{estimate}.}
 
 \item{na.rm}{Default FALSE. A boolean value indicating whether or not to
 remove NA values. If missing values are present but not removed the
@@ -65,10 +65,10 @@ input vectors.
 }}
 \examples{
 # Calculate MKI
-mki(ratios_sample$assessed, ratios_sample$sale_price)
+mki(ratios_sample$estimate, ratios_sample$sale_price)
 
 # Calculate KI
-ki(ratios_sample$assessed, ratios_sample$sale_price)
+ki(ratios_sample$estimate, ratios_sample$sale_price)
 }
 \references{
 Quintos, C. (2020). A Gini measure for vertical equity in property

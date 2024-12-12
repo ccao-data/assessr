@@ -37,11 +37,11 @@ is_outlier <- function(x, method = "iqr", probs = c(0.05, 0.95), mult = 3) {
     all(is.finite(x) | is.na(x)) # All values are finite OR are NA
   })
 
-  out <- ifelse(
-    method == "quantile",
-    quantile_outlier(x, probs = probs),
-    iqr_outlier(x, mult = mult)
-  )
+  if (method == "quantile") {
+    out <- quantile_outlier(x, probs = probs)
+  } else {
+    out <- iqr_outlier(x, mult = mult)
+  }
 
   # Warn about removing data from small samples, as it can severely distort
   # ratio study outcomes

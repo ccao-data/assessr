@@ -6,20 +6,18 @@
 \alias{iqr_outlier}
 \title{Detect outlier values in a vector using IQR/quantile method}
 \usage{
-is_outlier(x, method = "iqr", ...)
+is_outlier(x, method = "iqr", probs = c(0.05, 0.95), mult = 3)
 
-quantile_outlier(x, probs = c(0.05, 0.95), ...)
+quantile_outlier(x, probs = c(0.05, 0.95))
 
-iqr_outlier(x, mult = 3, ...)
+iqr_outlier(x, mult = 3)
 }
 \arguments{
-\item{x}{A numeric vector. Must be longer than 2 and not contain
-\code{Inf} or \code{NaN}.}
+\item{x}{A numeric vector, typically sales ratios. Must be longer than 2 and
+cannot contain \code{Inf} or \code{NaN}.}
 
-\item{method}{Default "iqr". String indicating outlier detection method.
+\item{method}{Default \code{iqr.} String indicating outlier detection method.
 Options are \code{iqr} or \code{quantile}.}
-
-\item{...}{Named arguments passed on to methods.}
 
 \item{probs}{Upper and lower percentiles denoting outlier boundaries.}
 
@@ -36,7 +34,7 @@ Detect outliers in a numeric vector using standard methods.
   outliers. As such, it is often necessary to remove outliers before
   performing a sales ratio study.
 
-  Standard method is to remove outliers that are 3 * IQR. Warnings are thrown
+  The IAAO standard method is to remove outliers that are 3 * IQR. Warnings are thrown
   when sample size is extremely small or when the IQR is extremely narrow. See
   \href{https://www.iaao.org/media/standards/Standard_on_Ratio_Studies.pdf}{IAAO Standard on Ratio Studies}
   Appendix B. Outlier Trimming Guidelines for more information.

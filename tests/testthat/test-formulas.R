@@ -1,7 +1,8 @@
 context("load testing data")
 
-# Load the ratios sample dataset for testing
+# Load the sample datasets for testing
 data("ratios_sample")
+data("quintos_sample")
 
 # Extract the components of the dataframe as vectors
 sale_price <- ratios_sample$sale_price

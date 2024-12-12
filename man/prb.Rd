@@ -6,18 +6,18 @@
 \alias{prb_met}
 \title{Calculate Coefficient of Price-Related Bias (PRB)}
 \usage{
-prb(assessed, sale_price, na.rm = FALSE)
+prb(estimate, sale_price, na.rm = FALSE)
 
-prb_ci(assessed, sale_price, alpha = 0.05, na.rm = FALSE)
+prb_ci(estimate, sale_price, alpha = 0.05, na.rm = FALSE)
 
 prb_met(x)
 }
 \arguments{
-\item{assessed}{A numeric vector of assessed values. Must be the same
+\item{estimate}{A numeric vector of assessed values. Must be the same
 length as \code{sale_price}.}
 
 \item{sale_price}{A numeric vector of sale prices. Must be the same length
-as \code{assessed}.}
+as \code{estimate}.}
 
 \item{na.rm}{Default FALSE. A boolean value indicating whether or not to
 remove NA values. If missing values are present but not removed the
@@ -31,7 +31,7 @@ against IAAO/Quintos standards.}
 }
 \description{
 PRB is an index of vertical equity that quantifies the
-  relationship between ratios and assessed values as a percentage. In
+  relationship betweem ratios and assessed values as a percentage. In
   concrete terms, a PRB of 0.02 indicates that, on average, ratios increase
   by 2\% whenever assessed values increase by 100 percent.
 
@@ -56,10 +56,10 @@ input vectors.
 }}
 \examples{
 # Calculate PRB
-prb(ratios_sample$assessed, ratios_sample$sale_price)
+prb(ratios_sample$estimate, ratios_sample$sale_price)
 
 # Calculate PRD confidence interval
-prb_ci(ratios_sample$assessed, ratios_sample$sale_price)
+prb_ci(ratios_sample$estimate, ratios_sample$sale_price)
 }
 \seealso{
 Other formulas: 

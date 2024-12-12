@@ -58,7 +58,7 @@ reference:
   desc: Functions for other assessment-related tasks
 - contents:
   - boot_ci
-  - detect_chasing
+  - is_sales_chased
   - is_outlier
 
 - title: Data

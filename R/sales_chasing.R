@@ -67,7 +67,7 @@ is_sales_chased <- function(x, method = "both", bounds = c(0.98, 1.02), gap = 0.
     all(is.finite(x) | is.na(x)) # All values are finite OR are NA
     is.numeric(gap)
     gap > 0
-    gap > 1
+    gap < 1
     is.vector(bounds)
     is.numeric(bounds)
     bounds[2] > bounds[1]
@@ -121,7 +121,7 @@ cdf_sales_chased <- function(ratio, bounds = c(0.98, 1.02), gap = 0.03) {
 
 #' @describeIn is_sales_chased Distribution comparison method
 #'   for detecting sales chasing.
-dist_sales_chased <- function(ratio, bounds = c(0.98, 1.02), na.rm = FALSE) {
+dist_sales_chased <- function(ratio, bounds = c(0.98, 1.02), gap = 0.03, na.rm = FALSE) {
 
   # Return the percentage of x within the specified range
   pct_in_range <- function(x, min, max) mean(x >= min & x <= max, na.rm = na.rm)

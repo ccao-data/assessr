@@ -7,7 +7,7 @@ Authors@R: c(
     person(given = "William", family = "Ridgeway", email="william.ridgeway@cookcountyil.gov", role=c("ctb")),
     person(given = "Rob", family = "Ross", role=c("ctb")),
     person(given = "Nathan", family = "Dignazio", role=c("ctb")),
-    person(given = "Damon", family = "Major", role=c("ctb"))
+    person(given = "Damon", family = "Major", role=c("ctb")),
     person(given = "Jean", family = "Cochrane", role=c("ctb"))
     )
 Date: 2023-08-07
@@ -20,7 +20,7 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     stats
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Suggests:
     covr,
     devtools,
