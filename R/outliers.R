@@ -14,7 +14,7 @@
 #'
 #' @param x A numeric vector, typically sales ratios. Must be longer than 2 and
 #'   cannot contain \code{Inf} or \code{NaN}.
-#' @param method Default \code{iqr.} String indicating outlier detection method.
+#' @param method Default \code{iqr}. String indicating outlier detection method.
 #'   Options are \code{iqr} or \code{quantile}.
 #' @param probs Upper and lower percentiles denoting outlier boundaries for
 #'   the \code{quantile} method.

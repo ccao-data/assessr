@@ -16,7 +16,7 @@ iqr_outlier(x, mult = 3)
 \item{x}{A numeric vector, typically sales ratios. Must be longer than 2 and
 cannot contain \code{Inf} or \code{NaN}.}
 
-\item{method}{Default \code{iqr.} String indicating outlier detection method.
+\item{method}{Default \code{iqr}. String indicating outlier detection method.
 Options are \code{iqr} or \code{quantile}.}
 
 \item{probs}{Upper and lower percentiles denoting outlier boundaries.}

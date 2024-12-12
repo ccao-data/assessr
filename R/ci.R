@@ -4,9 +4,9 @@
 #'   for a given numeric input and a chosen function.
 #'
 #' @param FUN Function to bootstrap. Must return a single value.
-#' @param estimate A character vector of estimated values. Must be the same
+#' @param estimate A numeric vector of estimated values. Must be the same
 #'   length as \code{sale_price}.
-#' @param sale_price A character vector of sale prices. Must be the same
+#' @param sale_price A numeric vector of sale prices. Must be the same
 #'   length as \code{estimate}.
 #' @param nboot Default 1000. Number of iterations to use to estimate
 #'   the output statistic confidence interval.
@@ -34,7 +34,7 @@
 #' )
 #' @export
 boot_ci <- function(
-    FUN = NULL,
+    FUN,
     estimate,
     sale_price,
     nboot = 1000,

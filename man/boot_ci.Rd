@@ -4,22 +4,15 @@
 \alias{boot_ci}
 \title{Calculate bootstrapped confidence intervals}
 \usage{
-boot_ci(
-  FUN = NULL,
-  estimate,
-  sale_price,
-  nboot = 1000,
-  alpha = 0.05,
-  na.rm = FALSE
-)
+boot_ci(FUN, estimate, sale_price, nboot = 1000, alpha = 0.05, na.rm = FALSE)
 }
 \arguments{
 \item{FUN}{Function to bootstrap. Must return a single value.}
 
-\item{estimate}{A character vector of estimated values. Must be the same
+\item{estimate}{A numeric vector of estimated values. Must be the same
 length as \code{sale_price}.}
 
-\item{sale_price}{A character vector of sale prices. Must be the same
+\item{sale_price}{A numeric vector of sale prices. Must be the same
 length as \code{estimate}.}
 
 \item{nboot}{Default 1000. Number of iterations to use to estimate
