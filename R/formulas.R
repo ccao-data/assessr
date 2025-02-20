@@ -324,10 +324,10 @@ mki_met <- function(x) x >= 0.95 & x <= 1.05
 
 #' Check if Sales Ratio Meets IAAO Standards
 #'
-#' This function checks whether the input sales ratio falls within the IAAO standard range (0.9 to 1.1).
+#' This function checks whether the input sales ratio falls within
+#' the IAAO standard range (0.9 to 1.1).
 #'
 #' @param x Numeric vector of sales ratios.
 #' @return Logical vector indicating whether each value meets the standard.
 #' @export
 med_ratio_met <- function(x) x >= 0.9 & x <= 1.1
-

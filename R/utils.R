@@ -25,5 +25,5 @@ index_na <- function(...) {
   # Merge lists into single index where if one list has NA, idx value is TRUE
   idx <- as.logical(Reduce("+", lapply(list(...), is.na)))
 
-  return(idx)
+  idx
 }
