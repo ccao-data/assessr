@@ -127,7 +127,7 @@ calc_prb <- function(assessed, sale_price) {
 #' Calculate Coefficient of Price-Related Bias (PRB)
 #'
 #' @description PRB is an index of vertical equity that quantifies the
-#'   relationship betweem ratios and assessed values as a percentage. In
+#'   relationship between ratios and assessed values as a percentage. In
 #'   concrete terms, a PRB of 0.02 indicates that, on average, ratios increase
 #'   by 2\% whenever assessed values increase by 100 percent.
 #'

@@ -13,5 +13,6 @@ med_ratio_met(x)
 Logical vector indicating whether each value meets the standard.
 }
 \description{
-This function checks whether the input sales ratio falls within the IAAO standard range (0.9 to 1.1).
+This function checks whether the input sales ratio falls within
+the IAAO standard range (0.9 to 1.1).
 }
