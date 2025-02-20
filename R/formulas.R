@@ -119,7 +119,7 @@ calc_prb <- function(assessed, sale_price) {
   rhs <- log(((assessed / med_ratio) + sale_price) * 0.5) / log(2)
   prb_model <- stats::lm(formula = lhs ~ rhs)
 
-  return(prb_model)
+  prb_model
 }
 
 
@@ -193,7 +193,7 @@ calc_gini <- function(assessed, sale_price) {
 
   result <- list(gini_assessed = gini_assessed, gini_sale = gini_sale)
 
-  return(result)
+  result
 }
 
 
@@ -320,7 +320,8 @@ prb_met <- function(x) x >= -0.05 & x <= 0.05
 #' @export
 mki_met <- function(x) x >= 0.95 & x <= 1.05
 
-#' @describeIn med_ratio_met Returns TRUE when input sales ratio meets IAAO standards
+#' @describeIn med_ratio_met Returns TRUE when input
+#' sales ratio meets IAAO standards
 #'   (between 0.9 and 1.1).
 #' @inheritParams cod_met
 #' @export
