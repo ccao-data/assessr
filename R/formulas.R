@@ -319,3 +319,9 @@ prb_met <- function(x) x >= -0.05 & x <= 0.05
 #' @inheritParams cod_met
 #' @export
 mki_met <- function(x) x >= 0.95 & x <= 1.05
+
+#' @describeIn med_ratio_met Returns TRUE when input meets IAAO standards
+#'   (between 0.9 and 1.1).
+#' @inheritParams cod_met
+#' @export
+med_ratio_met <- function(x) x >= 0.9 & x <= 1.1
