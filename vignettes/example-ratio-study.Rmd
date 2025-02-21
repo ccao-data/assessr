@@ -23,7 +23,7 @@ In general, there are four important statistics produced in sales ratio studies,
 | **COD**                 | 5 - 15           | How often properties with the *same* sale price receive the same predicted market value. Lower CODs indicate more fairness between similarly priced properties.                            |
 | **PRD**                 | .98 - 1.03       | How often properties with *different* sale prices receive the proportionately different predicted market values. Lower PRDs indicate more fairness between low and high-priced properties. |
 | **PRB**                 | -.05 - .05       | PRB is a different approach to measuring fairness across homes with different sale prices.                                                                                                 |
-| **Median Ratio**        | .95 - 1.05      | The median ratio measures whether the most common ratios accurately reflect sale prices.                                                                                                    |
+| **Median Ratio**        | .9 - 1.1      | The median ratio measures whether the most common ratios accurately reflect sale prices.                                                                                                    |
 | MKI                     | .95 - 1.05        | Measures the difference in inequality between assessed valuations and sale prices.                                               |
 | Sales Chasing (E.4)     | $\le$ 5%         | Measures the degree to which the statistics above are *true* reflections of the quality of assessments.                          |
 
