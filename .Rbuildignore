@@ -17,7 +17,6 @@
 ^\.gitlab$
 ^\.pre-commit-config\.yaml$
 ^_pkgdown\.yml$
-^cache$
 ^ci$
 ^codecov\.yml$
 ^data-raw$
