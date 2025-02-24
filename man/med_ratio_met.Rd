@@ -7,7 +7,9 @@
 med_ratio_met(x)
 }
 \arguments{
-\item{x}{Numeric vector of sales ratios.}
+\item{x}{Numeric vector of sales ratios. The function does not calculate any
+medians, and instead assumes that vector elements already represent
+median ratios.}
 }
 \value{
 Logical vector indicating whether each value meets the standard.
