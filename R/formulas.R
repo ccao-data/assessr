@@ -119,7 +119,7 @@ calc_prb <- function(assessed, sale_price) {
   rhs <- log(((assessed / med_ratio) + sale_price) * 0.5) / log(2)
   prb_model <- stats::lm(formula = lhs ~ rhs)
 
-  return(prb_model)
+  prb_model
 }
 
 
@@ -127,7 +127,7 @@ calc_prb <- function(assessed, sale_price) {
 #' Calculate Coefficient of Price-Related Bias (PRB)
 #'
 #' @description PRB is an index of vertical equity that quantifies the
-#'   relationship betweem ratios and assessed values as a percentage. In
+#'   relationship between ratios and assessed values as a percentage. In
 #'   concrete terms, a PRB of 0.02 indicates that, on average, ratios increase
 #'   by 2\% whenever assessed values increase by 100 percent.
 #'
@@ -193,7 +193,7 @@ calc_gini <- function(assessed, sale_price) {
 
   result <- list(gini_assessed = gini_assessed, gini_sale = gini_sale)
 
-  return(result)
+  result
 }
 
 
@@ -319,3 +319,17 @@ prb_met <- function(x) x >= -0.05 & x <= 0.05
 #' @inheritParams cod_met
 #' @export
 mki_met <- function(x) x >= 0.95 & x <= 1.05
+
+##### Median_ratio_met #####
+
+#' Check if Sales Ratio Meets IAAO Standards
+#'
+#' This function checks whether the input sales ratio falls within
+#' the IAAO standard range (0.9 to 1.1).
+#'
+#' @param x Numeric vector of sales ratios. The function does not calculate any
+#'   medians, and instead assumes that vector elements already represent
+#'   median ratios.
+#' @return Logical vector indicating whether each value meets the standard.
+#' @export
+med_ratio_met <- function(x) x >= 0.9 & x <= 1.1

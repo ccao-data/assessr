@@ -223,3 +223,11 @@ test_that("incomplete data returns NAs unless removed", {
     tolerance = 0.003
   )
 })
+
+
+##### TEST Median Ratio #####
+context("test median_ratio_met function")
+
+test_that("standard met function", {
+  expect_true(med_ratio_met(median(ratio)))
+})
