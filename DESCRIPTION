@@ -19,7 +19,7 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     stats
-RoxygenNote: 7.2.4
+RoxygenNote: 7.3.2
 Suggests:
     covr,
     devtools,
