@@ -41,6 +41,7 @@ jobs:
           path: 'docs'
 
   deploy:
+    if: contains(fromJSON('["main", "master"]'), github.ref_name) && github.event_name != 'pull_request'
     needs: build-pkgdown-site
     runs-on: ubuntu-latest
     environment:
