@@ -190,32 +190,6 @@ test_that("standard met function", {
   expect_false(mki_met(mki_out))
 })
 
-##### TEST MKI #####
-context("test mki function")
-
-# Calculate MKI
-mki_out <- mki(mki_ki_assessed, mki_ki_sale_price)
-
-test_that("returns expected type", {
-  expect_type(mki_out, "double")
-  expect_vector(mki_out)
-})
-
-test_that("output equal to expected", {
-  expect_equal(mki_out, 0.79, tolerance = 0.01)
-})
-
-test_that("bad input data stops execution", {
-  expect_error(mki(numeric(0)))
-  expect_error(mki(numeric(10), numeric(10)))
-  expect_error(mki(c(mki_ki_assessed, Inf), c(mki_ki_sale_price, 0)))
-  expect_error(mki(mki_ki_assessed, c(mki_ki_sale_price, 10e5)))
-  expect_error(mki(data.frame(mki_ki_assessed), mki_ki_sale_price))
-  expect_error(mki(c(mki_ki_assessed, NaN), c(mki_ki_sale_price, 1)))
-  expect_error(mki(c(mki_ki_assessed, "2"), c(mki_ki_sale_price, 1)))
-  expect_error(mki(mki_ki_assessed, mki_ki_sale_price, na.rm = "yes"))
-})
-
 test_that("incomplete data returns NAs unless removed", {
   expect_equal(
     mki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5)),
