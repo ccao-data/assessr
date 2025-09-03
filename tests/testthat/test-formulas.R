@@ -13,8 +13,14 @@ mki_ki_data <- read.csv(
   rprojroot::find_testthat_root_file("data/mki_ki_data.csv")
 )
 
-mki_ki_assessed <- mki_ki_data$Assessed
-mki_ki_sale_price <- mki_ki_data$Sale_Price
+
+tb_path <- testthat::test_path("data", "mki_ki_data_with_tiebreaks.csv")
+tb_df   <- readr::read_csv(tb_path, show_col_types = FALSE)
+
+mki_ki_data_with_tiebreaks_Sale_Price        <- tb_df$Sale_Price
+mki_ki_data_with_tiebreaks_Assessed          <- tb_df$Assessed
+mki_ki_data_with_tiebreaks_Assessed_alt_sort_1 <- tb_df$Assessed_alt_sort_1
+mki_ki_data_with_tiebreaks_Assessed_alt_sort_2 <- tb_df$Assessed_alt_sort_2
 
 
 
@@ -184,6 +190,60 @@ test_that("standard met function", {
   expect_false(mki_met(mki_out))
 })
 
+##### TEST MKI #####
+context("test mki function")
+
+# Calculate MKI
+mki_out <- mki(mki_ki_assessed, mki_ki_sale_price)
+
+test_that("returns expected type", {
+  expect_type(mki_out, "double")
+  expect_vector(mki_out)
+})
+
+test_that("output equal to expected", {
+  expect_equal(mki_out, 0.79, tolerance = 0.01)
+})
+
+test_that("bad input data stops execution", {
+  expect_error(mki(numeric(0)))
+  expect_error(mki(numeric(10), numeric(10)))
+  expect_error(mki(c(mki_ki_assessed, Inf), c(mki_ki_sale_price, 0)))
+  expect_error(mki(mki_ki_assessed, c(mki_ki_sale_price, 10e5)))
+  expect_error(mki(data.frame(mki_ki_assessed), mki_ki_sale_price))
+  expect_error(mki(c(mki_ki_assessed, NaN), c(mki_ki_sale_price, 1)))
+  expect_error(mki(c(mki_ki_assessed, "2"), c(mki_ki_sale_price, 1)))
+  expect_error(mki(mki_ki_assessed, mki_ki_sale_price, na.rm = "yes"))
+})
+
+test_that("incomplete data returns NAs unless removed", {
+  expect_equal(
+    mki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5)),
+    NA_real_
+  )
+  expect_equal(
+    mki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5), na.rm = TRUE),
+    0.79,
+    tolerance = 0.01
+  )
+})
+
+test_that("standard met function", {
+  expect_false(mki_met(mki_out))
+})
+
+test_that("all estimate variants return the same MKI (tiebreak data)", {
+  mki_out_assessed <- mki(mki_ki_data_with_tiebreaks_Sale_Price,
+                          mki_ki_data_with_tiebreaks_Assessed)
+  mki_out_assessed_alt_sort1 <- mki(mki_ki_data_with_tiebreaks_Sale_Price,
+                                    mki_ki_data_with_tiebreaks_Assessed_alt_sort_1)
+  mki_out_assessed_alt_sort2 <- mki(mki_ki_data_with_tiebreaks_Sale_Price,
+                                    mki_ki_data_with_tiebreaks_Assessed_alt_sort_2)
+
+  expect_equal(mki_out_assessed, mki_out_assessed_alt_sort1)
+  expect_equal(mki_out_assessed, mki_out_assessed_alt_sort2)
+})
+
 
 
 ##### TEST KI #####
@@ -223,6 +283,8 @@ test_that("incomplete data returns NAs unless removed", {
     tolerance = 0.003
   )
 })
+
+
 
 
 ##### TEST Median Ratio #####
