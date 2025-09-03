@@ -13,14 +13,14 @@ mki_ki_data <- read.csv(
   rprojroot::find_testthat_root_file("data/mki_ki_data.csv")
 )
 
+mki_tiebreaks <- read.csv(
+  rprojroot::find_testthat_root_file("data/mki_ki_data_with_tiebreaks.csv")
+)
 
-tb_path <- testthat::test_path("data", "mki_ki_data_with_tiebreaks.csv")
-tb_df   <- readr::read_csv(tb_path, show_col_types = FALSE)
-
-mki_ki_data_with_tiebreaks_Sale_Price        <- tb_df$Sale_Price
-mki_ki_data_with_tiebreaks_Assessed          <- tb_df$Assessed
-mki_ki_data_with_tiebreaks_Assessed_alt_sort_1 <- tb_df$Assessed_alt_sort_1
-mki_ki_data_with_tiebreaks_Assessed_alt_sort_2 <- tb_df$Assessed_alt_sort_2
+tiebreaks_Sale_Price <- mki_tiebreaks$Sale_Price
+tiebreaks_Assessed <- mki_tiebreaks$Assessed
+tiebreaks_Assessed_alt_sort_1 <- mki_tiebreaks$Assessed_alt_sort_1
+tiebreaks_Assessed_alt_sort_2 <- mki_tiebreaks$Assessed_alt_sort_2
 
 
 
@@ -207,12 +207,18 @@ test_that("standard met function", {
 })
 
 test_that("all estimate variants return the same MKI (tiebreak data)", {
-  mki_out_assessed <- mki(mki_ki_data_with_tiebreaks_Sale_Price,
-                          mki_ki_data_with_tiebreaks_Assessed)
-  mki_out_assessed_alt_sort1 <- mki(mki_ki_data_with_tiebreaks_Sale_Price,
-                                    mki_ki_data_with_tiebreaks_Assessed_alt_sort_1)
-  mki_out_assessed_alt_sort2 <- mki(mki_ki_data_with_tiebreaks_Sale_Price,
-                                    mki_ki_data_with_tiebreaks_Assessed_alt_sort_2)
+  mki_out_assessed <- mki(
+    tiebreaks_Sale_Price,
+    tiebreaks_Assessed
+  )
+  mki_out_assessed_alt_sort1 <- mki(
+    tiebreaks_Sale_Price,
+    tiebreaks_Assessed_alt_sort_1
+  )
+  mki_out_assessed_alt_sort2 <- mki(
+    tiebreaks_Sale_Price,
+    tiebreaks_Assessed_alt_sort_2
+  )
 
   expect_equal(mki_out_assessed, mki_out_assessed_alt_sort1)
   expect_equal(mki_out_assessed, mki_out_assessed_alt_sort2)
