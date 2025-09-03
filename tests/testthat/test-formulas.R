@@ -13,6 +13,9 @@ mki_ki_data <- read.csv(
   rprojroot::find_testthat_root_file("data/mki_ki_data.csv")
 )
 
+mki_ki_assessed <- mki_ki_data$Assessed
+mki_ki_sale_price <- mki_ki_data$Sale_Price
+
 mki_tiebreaks <- read.csv(
   rprojroot::find_testthat_root_file("data/mki_ki_data_with_tiebreaks.csv")
 )
@@ -174,18 +177,6 @@ test_that("bad input data stops execution", {
   expect_error(mki(mki_ki_assessed, mki_ki_sale_price, na.rm = "yes"))
 })
 
-test_that("incomplete data returns NAs unless removed", {
-  expect_equal(
-    mki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5)),
-    NA_real_
-  )
-  expect_equal(
-    mki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5), na.rm = TRUE),
-    0.79,
-    tolerance = 0.01
-  )
-})
-
 test_that("standard met function", {
   expect_false(mki_met(mki_out))
 })
@@ -200,10 +191,6 @@ test_that("incomplete data returns NAs unless removed", {
     0.79,
     tolerance = 0.01
   )
-})
-
-test_that("standard met function", {
-  expect_false(mki_met(mki_out))
 })
 
 test_that("all estimate variants return the same MKI (tiebreak data)", {
