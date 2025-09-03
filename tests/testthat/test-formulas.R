@@ -177,10 +177,6 @@ test_that("bad input data stops execution", {
   expect_error(mki(mki_ki_assessed, mki_ki_sale_price, na.rm = "yes"))
 })
 
-test_that("standard met function", {
-  expect_false(mki_met(mki_out))
-})
-
 test_that("incomplete data returns NAs unless removed", {
   expect_equal(
     mki(c(mki_ki_assessed, NA), c(mki_ki_sale_price, 10e5)),
@@ -191,6 +187,10 @@ test_that("incomplete data returns NAs unless removed", {
     0.79,
     tolerance = 0.01
   )
+})
+
+test_that("standard met function", {
+  expect_false(mki_met(mki_out))
 })
 
 test_that("all estimate variants return the same MKI (tiebreak data)", {
@@ -210,7 +210,6 @@ test_that("all estimate variants return the same MKI (tiebreak data)", {
   expect_equal(mki_out_assessed, mki_out_assessed_alt_sort1)
   expect_equal(mki_out_assessed, mki_out_assessed_alt_sort2)
 })
-
 
 
 ##### TEST KI #####
@@ -251,7 +250,23 @@ test_that("incomplete data returns NAs unless removed", {
   )
 })
 
+test_that("all estimate variants return the same ki (tiebreak data)", {
+  ki_out_assessed <- ki(
+    tiebreaks_Sale_Price,
+    tiebreaks_Assessed
+  )
+  ki_out_assessed_alt_sort1 <- ki(
+    tiebreaks_Sale_Price,
+    tiebreaks_Assessed_alt_sort_1
+  )
+  ki_out_assessed_alt_sort2 <- ki(
+    tiebreaks_Sale_Price,
+    tiebreaks_Assessed_alt_sort_2
+  )
 
+  expect_equal(ki_out_assessed, ki_out_assessed_alt_sort1)
+  expect_equal(ki_out_assessed, ki_out_assessed_alt_sort2)
+})
 
 
 ##### TEST Median Ratio #####
