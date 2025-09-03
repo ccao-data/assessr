@@ -178,8 +178,7 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 # Calculate the Gini cofficients needed for KI and MKI
 calc_gini <- function(assessed, sale_price) {
   df <- data.frame(av = assessed, sp = sale_price)
-  df <- df %>%
-    arrange(sp, desc(av))
+  df <- df[order(df$sp, -df$av), ]
   assessed_price <- df$av
   sale_price <- df$sp
   n <- length(assessed_price)
