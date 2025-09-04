@@ -193,7 +193,7 @@ test_that("standard met function", {
   expect_false(mki_met(mki_out))
 })
 
-test_that("all estimate variants return the same MKI (tiebreak data)", {
+test_that("all sorting variations return the same MKI (tiebreak data)", {
   mki_out_assessed <- mki(
     tiebreaks_Assessed, tiebreaks_Sale_Price
   )
@@ -249,7 +249,7 @@ test_that("incomplete data returns NAs unless removed", {
   )
 })
 
-test_that("all estimate variants return the same ki (tiebreak data)", {
+test_that("all sorting variations return return the same ki (tiebreak data)", {
   ki_out_assessed <- ki(
     tiebreaks_Assessed,
     tiebreaks_Sale_Price
