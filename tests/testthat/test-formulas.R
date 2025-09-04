@@ -195,16 +195,15 @@ test_that("standard met function", {
 
 test_that("all estimate variants return the same MKI (tiebreak data)", {
   mki_out_assessed <- mki(
-    tiebreaks_Sale_Price,
-    tiebreaks_Assessed
+    tiebreaks_Assessed, tiebreaks_Sale_Price
   )
   mki_out_assessed_alt_sort1 <- mki(
-    tiebreaks_Sale_Price,
-    tiebreaks_Assessed_alt_sort_1
+    tiebreaks_Assessed_alt_sort_1,
+    tiebreaks_Sale_Price
   )
   mki_out_assessed_alt_sort2 <- mki(
-    tiebreaks_Sale_Price,
-    tiebreaks_Assessed_alt_sort_2
+    tiebreaks_Assessed_alt_sort_2,
+    tiebreaks_Sale_Price
   )
 
   expect_equal(mki_out_assessed, mki_out_assessed_alt_sort1)
@@ -252,16 +251,16 @@ test_that("incomplete data returns NAs unless removed", {
 
 test_that("all estimate variants return the same ki (tiebreak data)", {
   ki_out_assessed <- ki(
-    tiebreaks_Sale_Price,
-    tiebreaks_Assessed
+    tiebreaks_Assessed,
+    tiebreaks_Sale_Price
   )
   ki_out_assessed_alt_sort1 <- ki(
-    tiebreaks_Sale_Price,
-    tiebreaks_Assessed_alt_sort_1
+    tiebreaks_Assessed_alt_sort_1,
+    tiebreaks_Sale_Price
   )
   ki_out_assessed_alt_sort2 <- ki(
-    tiebreaks_Sale_Price,
-    tiebreaks_Assessed_alt_sort_2
+    tiebreaks_Assessed_alt_sort_2,
+    tiebreaks_Sale_Price
   )
 
   expect_equal(ki_out_assessed, ki_out_assessed_alt_sort1)
