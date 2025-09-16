@@ -187,7 +187,8 @@ calc_gini <- function(assessed, sale_price) {
   # any ties. This produces "worst case" MKI/KI statistics, but ensures those
   # statistics are deterministic. See this issue for more discussion:
   # https://github.com/ccao-data/assesspy/issues/33#issuecomment-3180632954
-  df <- df[order(df$sp, -df$av), ]  assessed_price <- df$av
+  df <- df[order(df$sp, -df$av), ]
+  assessed_price <- df$av
   sale_price <- df$sp
   n <- length(assessed_price)
 
