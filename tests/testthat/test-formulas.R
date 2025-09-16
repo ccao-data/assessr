@@ -16,6 +16,15 @@ mki_ki_data <- read.csv(
 mki_ki_assessed <- mki_ki_data$Assessed
 mki_ki_sale_price <- mki_ki_data$Sale_Price
 
+mki_tiebreaks <- read.csv(
+  rprojroot::find_testthat_root_file("data/mki_ki_data_with_tiebreaks.csv")
+)
+
+tiebreaks_Sale_Price <- mki_tiebreaks$Sale_Price
+tiebreaks_Assessed <- mki_tiebreaks$Assessed
+tiebreaks_Assessed_alt_sort_1 <- mki_tiebreaks$Assessed_alt_sort_1
+tiebreaks_Assessed_alt_sort_2 <- mki_tiebreaks$Assessed_alt_sort_2
+
 
 
 ##### TEST COD #####
@@ -184,6 +193,22 @@ test_that("standard met function", {
   expect_false(mki_met(mki_out))
 })
 
+test_that("all sorting variations return the same MKI (tiebreak data)", {
+  mki_out_assessed <- mki(
+    tiebreaks_Assessed, tiebreaks_Sale_Price
+  )
+  mki_out_assessed_alt_sort1 <- mki(
+    tiebreaks_Assessed_alt_sort_1,
+    tiebreaks_Sale_Price
+  )
+  mki_out_assessed_alt_sort2 <- mki(
+    tiebreaks_Assessed_alt_sort_2,
+    tiebreaks_Sale_Price
+  )
+
+  expect_equal(mki_out_assessed, mki_out_assessed_alt_sort1)
+  expect_equal(mki_out_assessed, mki_out_assessed_alt_sort2)
+})
 
 
 ##### TEST KI #####
@@ -222,6 +247,24 @@ test_that("incomplete data returns NAs unless removed", {
     -0.0595,
     tolerance = 0.003
   )
+})
+
+test_that("all sorting variations return return the same ki (tiebreak data)", {
+  ki_out_assessed <- ki(
+    tiebreaks_Assessed,
+    tiebreaks_Sale_Price
+  )
+  ki_out_assessed_alt_sort1 <- ki(
+    tiebreaks_Assessed_alt_sort_1,
+    tiebreaks_Sale_Price
+  )
+  ki_out_assessed_alt_sort2 <- ki(
+    tiebreaks_Assessed_alt_sort_2,
+    tiebreaks_Sale_Price
+  )
+
+  expect_equal(ki_out_assessed, ki_out_assessed_alt_sort1)
+  expect_equal(ki_out_assessed, ki_out_assessed_alt_sort2)
 })
 
 
