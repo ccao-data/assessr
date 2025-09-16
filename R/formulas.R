@@ -178,8 +178,16 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
 # Calculate the Gini cofficients needed for KI and MKI
 calc_gini <- function(assessed, sale_price) {
   df <- data.frame(av = assessed, sp = sale_price)
-  df <- df[order(df$sp, -df$av), ]
-  assessed_price <- df$av
+  # This Gini coefficient algorithm is sensitive to the order of the input
+  # observations: If multiple observations share the same sale price but have
+  # different estimates, the output coefficients will be different depending
+  # on which of the sales with identical prices gets ordered first in the
+  # input dataframe. To ensure a stable sort order, Quintos recommends
+  # sorting by ascending sale price and then by descending estimate to break
+  # any ties. This produces "worst case" MKI/KI statistics, but ensures those
+  # statistics are deterministic. See this issue for more discussion:
+  # https://github.com/ccao-data/assesspy/issues/33#issuecomment-3180632954
+  df <- df[order(df$sp, -df$av), ]  assessed_price <- df$av
   sale_price <- df$sp
   n <- length(assessed_price)
 
