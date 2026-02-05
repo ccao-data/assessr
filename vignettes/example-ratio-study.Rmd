@@ -87,7 +87,7 @@ sales <- read_json(
   mutate(
     pin = str_pad(pin, 14, "left", "0"),
     year = as.character(as.integer(year))
-    )
+  )
 ```
 
 ### CSV or Excel
