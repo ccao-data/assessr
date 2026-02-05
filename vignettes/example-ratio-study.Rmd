@@ -64,21 +64,21 @@ library(dplyr)
 library(jsonlite)
 library(stringr)
 
-# Load 100k rows of 2020 residential (major class 2) assessment data
+# Load 100k rows of 2022 residential (major class 2) assessment data
 assessments <- read_json(
   paste0(
     "https://datacatalog.cookcountyil.gov/resource/uzyt-m557.json?",
-    "$where=starts_with(class,'2')&tax_year=2020&$limit=100000"
+    "$where=starts_with(class,'2')&tax_year=2022&$limit=100000"
   ),
   simplifyVector = TRUE
 )
 
-# Load 100k rows of 2020 sales data
+# Load 100k rows of 2022 sales data
 sales <- read_json(
-  paste0(
+  URLencode(paste0(
     "https://datacatalog.cookcountyil.gov/resource/wvhk-k5uv.json?",
-    "year=2020&$limit=100000"
-  ),
+    "year=2022 and sale_price>=10000&$limit=100000"
+  )),
   simplifyVector = TRUE
 ) %>%
   # read_json removes leading zeroes, add them back
@@ -252,7 +252,7 @@ ggplot(graph_data) +
   scale_y_continuous(labels = function(x) paste0(x * 100, "%")) +
   labs(
     title = "Median Sale Ratios: Open Data Sample",
-    subtitle = "By decile of sale price in 2020",
+    subtitle = "By decile of sale price in 2022",
     x = "Price Decile Range",
     y = "Sale Ratio"
   ) +
@@ -357,7 +357,7 @@ MKI <- round(gini_assessed / gini_sale, 4)
 KI <- round(gini_assessed - gini_sale, 4)
 ```
 
-The output for the Modified Kakwani Index is `r MKI`, and the Kakwani Index is `r KI`. According to the following table, this means that the assessments are slightly regressive. 
+The output for the Modified Kakwani Index is `r MKI`, and the Kakwani Index is `r KI`. According to the following table, this means that the assessments are slightly regressive.
 
 | KI Range           | MKI Range          | Interpretation     |
 |:-------------------|:-------------------|:-------------------|
