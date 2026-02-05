@@ -71,7 +71,9 @@ assessments <- read_json(
     "$where=starts_with(class,'2')&tax_year=2022&$limit=100000"
   ),
   simplifyVector = TRUE
-)
+) %>%
+  # read_json removes leading zeroes, add them back
+  mutate(pin = str_pad(pin, 14, "left", "0"))
 
 # Load 100k rows of 2022 sales data
 sales <- read_json(
@@ -82,7 +84,10 @@ sales <- read_json(
   simplifyVector = TRUE
 ) %>%
   # read_json removes leading zeroes, add them back
-  mutate(pin = str_pad(pin, 14, "left", "0"))
+  mutate(
+    pin = str_pad(pin, 14, "left", "0"),
+    year = as.character(as.integer(year))
+    )
 ```
 
 ### CSV or Excel
