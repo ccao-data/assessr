@@ -1,15 +1,11 @@
 # Load the ratios sample dataset for testing
 data("ratios_sample")
-
 # Extract the components of the dataframe as vectors
 ratio <- ratios_sample$ratio
 sale_price <- ratios_sample$sale_price
 assessed <- ratios_sample$assessed
 
-
-
 ##### TEST COD CI #####
-
 # Calculate PRB CI
 cod_ci_out_95 <- cod_ci(ratio, nboot = 1000)
 cod_ci_out_80 <- cod_ci(ratio, nboot = 1000, alpha = 0.2)
@@ -22,10 +18,10 @@ test_that("returns expected type", {
 
 test_that("output equal to expected", {
   expect_equal(cod_ci_out_95, c(16.49595, 18.84529),
-               tolerance = 0.04, ignore_attr = TRUE
+    tolerance = 0.04, ignore_attr = TRUE
   )
   expect_equal(cod_ci_out_80, c(16.83710, 18.79953),
-               tolerance = 0.04, ignore_attr = TRUE
+    tolerance = 0.04, ignore_attr = TRUE
   )
 })
 
@@ -52,9 +48,7 @@ test_that("incomplete data returns NAs unless removed", {
   )
 })
 
-
 ##### TEST PRD CI #####
-
 # Calculate PRB CI
 prd_ci_out_95 <- prd_ci(assessed, sale_price, nboot = 1000)
 prd_ci_out_80 <- prd_ci(assessed, sale_price, nboot = 1000, alpha = 0.2)
@@ -67,10 +61,10 @@ test_that("returns expected type", {
 
 test_that("output equal to expected", {
   expect_equal(prd_ci_out_95, c(1.034447, 1.062625),
-               tolerance = 0.04, ignore_attr = TRUE
+    tolerance = 0.04, ignore_attr = TRUE
   )
   expect_equal(prd_ci_out_80, c(1.038444, 1.058439),
-               tolerance = 0.04, ignore_attr = TRUE
+    tolerance = 0.04, ignore_attr = TRUE
   )
 })
 
@@ -98,10 +92,7 @@ test_that("incomplete data returns NAs unless removed", {
   )
 })
 
-
-
 ##### TEST PRB CI #####
-
 # Calculate PRB CI
 prb_ci_out_95 <- prb_ci(assessed, sale_price)
 prb_ci_out_80 <- prb_ci(assessed, sale_price, alpha = 0.2)
@@ -114,10 +105,10 @@ test_that("returns expected type", {
 
 test_that("output equal to expected", {
   expect_equal(prb_ci_out_95, c(-0.01404379, 0.01899536),
-               tolerance = 0.04, ignore_attr = TRUE
+    tolerance = 0.04, ignore_attr = TRUE
   )
   expect_equal(prb_ci_out_80, c(-0.00831969, 0.01327127),
-               tolerance = 0.04, ignore_attr = TRUE
+    tolerance = 0.04, ignore_attr = TRUE
   )
 })
 
@@ -143,5 +134,4 @@ test_that("incomplete data returns NAs unless removed", {
     tolerance = 0.04,
     ignore_attr = TRUE
   )
-
 })
