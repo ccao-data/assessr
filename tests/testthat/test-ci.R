@@ -22,9 +22,11 @@ test_that("returns expected type", {
 
 test_that("output equal to expected", {
   expect_equal(cod_ci_out_95, c(16.49595, 18.84529),
-               tolerance = 0.04, ignore_attr = TRUE)
+               tolerance = 0.04, ignore_attr = TRUE
+  )
   expect_equal(cod_ci_out_80, c(16.83710, 18.79953),
-               tolerance = 0.04, ignore_attr = TRUE)
+               tolerance = 0.04, ignore_attr = TRUE
+  )
 })
 
 test_that("bad input data stops execution", {
@@ -65,9 +67,11 @@ test_that("returns expected type", {
 
 test_that("output equal to expected", {
   expect_equal(prd_ci_out_95, c(1.034447, 1.062625),
-               tolerance = 0.04, ignore_attr = TRUE)
+               tolerance = 0.04, ignore_attr = TRUE
+  )
   expect_equal(prd_ci_out_80, c(1.038444, 1.058439),
-               tolerance = 0.04, ignore_attr = TRUE)
+               tolerance = 0.04, ignore_attr = TRUE
+  )
 })
 
 test_that("bad input data stops execution", {
@@ -110,9 +114,11 @@ test_that("returns expected type", {
 
 test_that("output equal to expected", {
   expect_equal(prb_ci_out_95, c(-0.01404379, 0.01899536),
-               tolerance = 0.04, ignore_attr = TRUE)
+               tolerance = 0.04, ignore_attr = TRUE
+  )
   expect_equal(prb_ci_out_80, c(-0.00831969, 0.01327127),
-               tolerance = 0.04, ignore_attr = TRUE)
+               tolerance = 0.04, ignore_attr = TRUE
+  )
 })
 
 test_that("bad input data stops execution", {
