@@ -1,5 +1,3 @@
-context("load testing data")
-
 # Load the ratios sample dataset for testing
 data("ratios_sample")
 
@@ -11,8 +9,6 @@ chased_ratios <- c(rnorm(900, 1, 0.15), rep(1, 100))
 
 
 ##### TEST CHASING DETECTION #####
-context("test detect_chashing function")
-
 # Run detection
 sample_out <- detect_chasing(sample_ratios)
 normal_out <- detect_chasing(normal_ratios)

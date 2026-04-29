@@ -1,5 +1,3 @@
-context("load testing data")
-
 # Load the ratios sample dataset for testing
 data("ratios_sample")
 
@@ -28,7 +26,6 @@ tiebreaks_Assessed_alt_sort_2 <- mki_tiebreaks$Assessed_alt_sort_2
 
 
 ##### TEST COD #####
-context("test cod function")
 
 # Calculate COD
 cod_out <- cod(ratio)
@@ -64,7 +61,6 @@ test_that("standard met function", {
 
 
 ##### TEST PRD #####
-context("test prd function")
 
 # Calculate PRD
 prd_out <- prd(assessed, sale_price)
@@ -108,7 +104,6 @@ test_that("standard met function", {
 
 
 ##### TEST PRB #####
-context("test prb function")
 
 # Calculate PRB
 prb_out <- prb(assessed, sale_price)
@@ -152,7 +147,6 @@ test_that("standard met function", {
 
 
 ##### TEST MKI #####
-context("test mki function")
 
 # Calculate MKI
 mki_out <- mki(mki_ki_assessed, mki_ki_sale_price)
@@ -212,7 +206,6 @@ test_that("all sorting variations return the same MKI (tiebreak data)", {
 
 
 ##### TEST KI #####
-context("test ki function")
 
 # Calculate KI
 ki_out <- ki(mki_ki_assessed, mki_ki_sale_price)
@@ -269,7 +262,6 @@ test_that("all sorting variations return return the same ki (tiebreak data)", {
 
 
 ##### TEST Median Ratio #####
-context("test median_ratio_met function")
 
 test_that("standard met function", {
   expect_true(med_ratio_met(median(ratio)))
