@@ -1,5 +1,3 @@
-context("load testing data")
-
 # Load the ratios sample dataset for testing
 data("ratios_sample")
 
@@ -11,7 +9,6 @@ assessed <- ratios_sample$assessed
 
 
 ##### TEST COD CI #####
-context("test cod_ci function")
 
 # Calculate PRB CI
 cod_ci_out_95 <- cod_ci(ratio, nboot = 1000)
@@ -52,7 +49,6 @@ test_that("incomplete data returns NAs unless removed", {
 
 
 ##### TEST PRD CI #####
-context("test prb_ci function")
 
 # Calculate PRB CI
 prd_ci_out_95 <- prd_ci(assessed, sale_price, nboot = 1000)
@@ -95,7 +91,6 @@ test_that("incomplete data returns NAs unless removed", {
 
 
 ##### TEST PRB CI #####
-context("test prb_ci function")
 
 # Calculate PRB CI
 prb_ci_out_95 <- prb_ci(assessed, sale_price)

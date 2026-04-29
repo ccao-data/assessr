@@ -1,5 +1,3 @@
-context("load testing data")
-
 # Create test vectors of data with certain distributions
 set.seed(13378)
 

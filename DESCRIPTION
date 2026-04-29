@@ -34,8 +34,9 @@ Suggests:
     rmarkdown,
     rprojroot,
     scales,
-    testthat,
+    testthat (>= 3.0.0),
     tibble,
     tidyr
 Depends: 
     R (>= 3.5.0)
+Config/testthat/edition: 3

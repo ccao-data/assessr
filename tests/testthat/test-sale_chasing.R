@@ -1,5 +1,3 @@
-context("load testing data")
-
 # Load the ratios sample dataset for testing
 data("ratios_sample")
 
