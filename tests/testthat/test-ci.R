@@ -5,7 +5,10 @@ ratio <- ratios_sample$ratio
 sale_price <- ratios_sample$sale_price
 assessed <- ratios_sample$assessed
 
+
+
 ##### TEST COD CI #####
+
 # Calculate PRB CI
 cod_ci_out_95 <- cod_ci(ratio, nboot = 1000)
 cod_ci_out_80 <- cod_ci(ratio, nboot = 1000, alpha = 0.2)
@@ -48,7 +51,10 @@ test_that("incomplete data returns NAs unless removed", {
   )
 })
 
+
+
 ##### TEST PRD CI #####
+
 # Calculate PRB CI
 prd_ci_out_95 <- prd_ci(assessed, sale_price, nboot = 1000)
 prd_ci_out_80 <- prd_ci(assessed, sale_price, nboot = 1000, alpha = 0.2)
@@ -92,7 +98,10 @@ test_that("incomplete data returns NAs unless removed", {
   )
 })
 
+
+
 ##### TEST PRB CI #####
+
 # Calculate PRB CI
 prb_ci_out_95 <- prb_ci(assessed, sale_price)
 prb_ci_out_80 <- prb_ci(assessed, sale_price, alpha = 0.2)
