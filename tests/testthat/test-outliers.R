@@ -19,8 +19,6 @@ dist2_qnt_out <- is_outlier(test_dist2, method = "quantile")
 
 
 ##### TEST OUTLIER #####
-context("test is_outlier function")
-
 test_that("returns expected type", {
   expect_type(dist1_iqr_out, "logical")
   expect_vector(dist1_iqr_out)

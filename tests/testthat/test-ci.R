@@ -21,8 +21,10 @@ test_that("returns expected type", {
 })
 
 test_that("output equal to expected", {
-  expect_equivalent(cod_ci_out_95, c(16.49595, 18.84529), tolerance = 0.04)
-  expect_equivalent(cod_ci_out_80, c(16.83710, 18.79953), tolerance = 0.04)
+  expect_equal(cod_ci_out_95, c(16.49595, 18.84529),
+               tolerance = 0.04, ignore_attr = TRUE)
+  expect_equal(cod_ci_out_80, c(16.83710, 18.79953),
+               tolerance = 0.04, ignore_attr = TRUE)
 })
 
 test_that("bad input data stops execution", {
@@ -40,10 +42,11 @@ test_that("incomplete data returns NAs unless removed", {
     cod_ci(c(ratio, NA)),
     NA_real_
   )
-  expect_equivalent(
+  expect_equal(
     cod_ci(c(ratio, NA), nboot = 1000, na.rm = TRUE),
     c(16.49595, 18.84529),
-    tolerance = 0.04
+    tolerance = 0.04,
+    ignore_attr = TRUE
   )
 })
 
@@ -61,8 +64,10 @@ test_that("returns expected type", {
 })
 
 test_that("output equal to expected", {
-  expect_equivalent(prd_ci_out_95, c(1.034447, 1.062625), tolerance = 0.04)
-  expect_equivalent(prd_ci_out_80, c(1.038444, 1.058439), tolerance = 0.04)
+  expect_equal(prd_ci_out_95, c(1.034447, 1.062625),
+               tolerance = 0.04, ignore_attr = TRUE)
+  expect_equal(prd_ci_out_80, c(1.038444, 1.058439),
+               tolerance = 0.04, ignore_attr = TRUE)
 })
 
 test_that("bad input data stops execution", {
@@ -81,10 +86,11 @@ test_that("incomplete data returns NAs unless removed", {
     prd_ci(c(assessed, NA), c(sale_price, 10e5)),
     NA_real_
   )
-  expect_equivalent(
+  expect_equal(
     prd_ci(c(assessed, NA), c(sale_price, 10e5), na.rm = TRUE),
     c(1.034447, 1.062625),
-    tolerance = 0.04
+    tolerance = 0.04,
+    ignore_attr = TRUE
   )
 })
 
@@ -103,8 +109,10 @@ test_that("returns expected type", {
 })
 
 test_that("output equal to expected", {
-  expect_equivalent(prb_ci_out_95, c(-0.01404379, 0.01899536), tolerance = 0.04)
-  expect_equivalent(prb_ci_out_80, c(-0.00831969, 0.01327127), tolerance = 0.04)
+  expect_equal(prb_ci_out_95, c(-0.01404379, 0.01899536),
+               tolerance = 0.04, ignore_attr = TRUE)
+  expect_equal(prb_ci_out_80, c(-0.00831969, 0.01327127),
+               tolerance = 0.04, ignore_attr = TRUE)
 })
 
 test_that("bad input data stops execution", {
@@ -123,9 +131,11 @@ test_that("incomplete data returns NAs unless removed", {
     prb_ci(c(assessed, NA), c(sale_price, 10e5)),
     NA_real_
   )
-  expect_equivalent(
+  expect_equal(
     prb_ci(c(assessed, NA), c(sale_price, 10e5), na.rm = TRUE),
     c(-0.01404379, 0.01899536),
-    tolerance = 0.04
+    tolerance = 0.04,
+    ignore_attr = TRUE
   )
+
 })
