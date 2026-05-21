@@ -1,5 +1,11 @@
 destination: public
 url: https://ccao-data.github.io/assessr/
+llm-docs: true
+
+template:
+  bootstrap: 5
+
+articles: []
 
 authors:
   sidebar:
