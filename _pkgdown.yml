@@ -5,8 +5,6 @@ llm-docs: true
 template:
   bootstrap: 5
 
-articles: []
-
 authors:
   sidebar:
     roles: [aut, ctb]
