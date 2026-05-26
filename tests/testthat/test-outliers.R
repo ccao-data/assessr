@@ -17,7 +17,6 @@ dist2_iqr_out <- is_outlier(test_dist2, method = "iqr")
 dist2_qnt_out <- is_outlier(test_dist2, method = "quantile")
 
 
-
 ##### TEST OUTLIER #####
 test_that("returns expected type", {
   expect_type(dist1_iqr_out, "logical")

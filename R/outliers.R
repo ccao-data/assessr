@@ -49,7 +49,7 @@ is_outlier <- function(x, method = "iqr", ...) {
     ))
   }
 
-  return(out)
+  out
 }
 
 
@@ -63,7 +63,7 @@ quantile_outlier <- function(x, probs = c(0.05, 0.95), ...) { # nolint
   # Determine which input values are in range
   out <- x < range[1] | x > range[2]
 
-  return(out)
+  out
 }
 
 
@@ -90,5 +90,5 @@ iqr_outlier <- function(x, mult = 3, ...) { # nolint
     ))
   }
 
-  return(out)
+  out
 }
