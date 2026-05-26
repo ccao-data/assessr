@@ -6,7 +6,6 @@ sale_price <- ratios_sample$sale_price
 assessed <- ratios_sample$assessed
 
 
-
 ##### TEST COD CI #####
 
 # Calculate PRB CI
