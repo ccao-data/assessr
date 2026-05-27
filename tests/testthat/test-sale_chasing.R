@@ -7,7 +7,6 @@ normal_ratios <- c(rnorm(1000, 1, 0.15))
 chased_ratios <- c(rnorm(900, 1, 0.15), rep(1, 100))
 
 
-
 ##### TEST CHASING DETECTION #####
 # Run detection
 sample_out <- detect_chasing(sample_ratios)

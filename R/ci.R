@@ -74,7 +74,7 @@ boot_ci <- function(FUN = NULL, nboot = 100, alpha = 0.05, na.rm = FALSE, ...) {
     stats::quantile(ests, 1 - alpha / 2)
   )
 
-  return(ci)
+  ci
 }
 
 
@@ -97,7 +97,7 @@ cod_ci <- function(ratio, nboot = 100, alpha = 0.05, na.rm = FALSE) { # nolint
     ratio = ratio
   )
 
-  return(cod_ci)
+  cod_ci
 }
 
 
@@ -121,7 +121,7 @@ prd_ci <- function(assessed, sale_price, nboot = 100, alpha = 0.05, na.rm = FALS
     sale_price = sale_price
   )
 
-  return(prd_ci)
+  prd_ci
 }
 
 
@@ -155,5 +155,5 @@ prb_ci <- function(assessed, sale_price, alpha = 0.05, na.rm = FALSE) { # nolint
   # Extract PRB CI from model
   prb_ci <- stats::confint(prb_model, level = (1 - alpha))[2, ]
 
-  return(prb_ci)
+  prb_ci
 }
