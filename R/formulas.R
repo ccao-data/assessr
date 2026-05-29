@@ -47,9 +47,8 @@ cod <- function(ratio, na.rm = FALSE) {
   # Calculate COD
   cod <- (mean(abs(ratio - med_ratio)) / med_ratio) * 100
 
-  return(cod)
+  cod
 }
-
 
 
 ##### PRD #####
@@ -104,9 +103,8 @@ prd <- function(assessed, sale_price, na.rm = FALSE) {
   # Calculate PRD
   prd <- mean(ratio) / stats::weighted.mean(ratio, sale_price)
 
-  return(prd)
+  prd
 }
-
 
 
 ##### PRB #####
@@ -168,9 +166,8 @@ prb <- function(assessed, sale_price, na.rm = FALSE) {
   # Extract PRB from model
   prb <- unname(stats::coef(prb_model)[2])
 
-  return(prb)
+  prb
 }
-
 
 
 ##### MKI_KI #####
@@ -269,7 +266,7 @@ ki <- function(assessed, sale_price, na.rm = FALSE) {
   g <- calc_gini(assessed, sale_price)
   ki <- g$gini_assessed - g$gini_sale
 
-  return(ki)
+  ki
 }
 
 #' @inheritParams prd
@@ -295,9 +292,8 @@ mki <- function(assessed, sale_price, na.rm = FALSE) {
   g <- calc_gini(assessed, sale_price)
   mki <- g$gini_assessed / g$gini_sale
 
-  return(mki)
+  mki
 }
-
 
 
 ##### STANDARDS #####

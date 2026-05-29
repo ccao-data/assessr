@@ -6,7 +6,6 @@ sale_price <- ratios_sample$sale_price
 assessed <- ratios_sample$assessed
 
 
-
 ##### TEST COD CI #####
 
 # Calculate PRB CI
@@ -50,7 +49,6 @@ test_that("incomplete data returns NAs unless removed", {
     ignore_attr = TRUE
   )
 })
-
 
 
 ##### TEST PRD CI #####
@@ -97,7 +95,6 @@ test_that("incomplete data returns NAs unless removed", {
     ignore_attr = TRUE
   )
 })
-
 
 
 ##### TEST PRB CI #####

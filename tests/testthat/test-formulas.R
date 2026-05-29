@@ -24,7 +24,6 @@ tiebreaks_Assessed_alt_sort_1 <- mki_tiebreaks$Assessed_alt_sort_1
 tiebreaks_Assessed_alt_sort_2 <- mki_tiebreaks$Assessed_alt_sort_2
 
 
-
 ##### TEST COD #####
 
 # Calculate COD
@@ -57,7 +56,6 @@ test_that("incomplete data returns NAs unless removed", {
 test_that("standard met function", {
   expect_false(cod_met(cod_out))
 })
-
 
 
 ##### TEST PRD #####
@@ -102,7 +100,6 @@ test_that("standard met function", {
 })
 
 
-
 ##### TEST PRB #####
 
 # Calculate PRB
@@ -143,7 +140,6 @@ test_that("incomplete data returns NAs unless removed", {
 test_that("standard met function", {
   expect_true(prb_met(prb_out))
 })
-
 
 
 ##### TEST MKI #####

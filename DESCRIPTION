@@ -30,7 +30,7 @@ Suggests:
     jsonlite,
     knitr,
     lintr,
-    pkgdown,
+    pkgdown (>= 2.2.0),
     rmarkdown,
     rprojroot,
     scales,

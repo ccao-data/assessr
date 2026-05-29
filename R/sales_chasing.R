@@ -80,7 +80,7 @@ detect_chasing <- function(ratio, method = "both", na.rm = FALSE, ...) {
       detect_chasing_dist(ratio, na.rm = na.rm, ...)
   )
 
-  return(out)
+  out
 }
 
 
@@ -119,7 +119,7 @@ detect_chasing_cdf <- function(ratio, bounds = c(0.98, 1.02), cdf_gap = 0.03, ..
   diff_loc <- sorted_ratio[which.max(diffs)]
   out <- max(diffs) > cdf_gap & (diff_loc > bounds[1] & diff_loc < bounds[2])
 
-  return(out)
+  out
 }
 
 
@@ -147,5 +147,5 @@ detect_chasing_dist <- function(ratio, bounds = c(0.98, 1.02), na.rm = FALSE, ..
   # Determine what percentage of the data is actually within the bounds
   pct_actual <- pct_in_range(ratio, bounds[1], bounds[2])
 
-  return(pct_actual > pct_ideal)
+  pct_actual > pct_ideal
 }
