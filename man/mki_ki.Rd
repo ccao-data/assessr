@@ -81,9 +81,10 @@ property assessments. Journal of Property Tax Assessment & Administration,
 \href{https://researchexchange.iaao.org/jptaa/vol18/iss2/6}{https://researchexchange.iaao.org/jptaa/vol18/iss2/6}
 }
 \seealso{
-Other formulas: 
-\code{\link{cod}()},
-\code{\link{prb}()},
-\code{\link{prd}()}
+Other formulas:
+\code{\link[=cod]{cod()}},
+\code{\link[=prb]{prb()}},
+\code{\link[=prd]{prd()}},
+\code{\link[=vei]{vei()}}
 }
 \concept{formulas}

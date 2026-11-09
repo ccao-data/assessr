@@ -296,6 +296,157 @@ mki <- function(assessed, sale_price, na.rm = FALSE) {
 }
 
 
+##### VEI #####
+
+# Assign each observation (sorted by market value proxy) to a quantile group
+# using the IAAO R7 ranking method. Returns a vector of group numbers
+calc_vei_groups <- function(n, group_n) {
+  i <- seq_len(group_n)
+  pos <- floor(i * (n - 1) / group_n + 1)
+
+  rep(i, times = diff(c(0, pos)))
+}
+
+
+# Calculate VEI and its components. Returns a list containing the VEI point
+# estimate, the VEI confidence interval, and per-quantile group statistics
+calc_vei <- function(assessed, sale_price, alpha = 0.10) {
+  stopifnot(
+    is.numeric(alpha),
+    length(alpha) == 1,
+    alpha > 0 && alpha < 1
+  )
+
+  ratio <- assessed / sale_price
+  sample_median <- stats::median(ratio)
+  n <- length(ratio)
+
+  # VEI requires at least 2 groups of 10 sales
+  if (n < 20) {
+    warning("VEI requires at least 20 observations, returning NA")
+    return(list(vei = NA_real_, ci = c(NA_real_, NA_real_), groups = NULL))
+  }
+
+  # Market value proxy that gives equal weight to sale price and
+  # median-adjusted assessed value. This is the same proxy used by PRB
+  proxy <- 0.5 * sale_price + 0.5 * (assessed / sample_median)
+
+  # Number of quantile groups depends on sample size
+  group_n <- if (n >= 501) {
+    10L
+  } else if (n >= 51) {
+    4L
+  } else {
+    2L
+  }
+
+  # Sort ratios by proxy and split into quantile groups
+  ratio <- ratio[order(proxy)]
+  groups <- split(ratio, calc_vei_groups(n, group_n))
+  group_n_obs <- lengths(groups)
+  group_median <- vapply(groups, stats::median, numeric(1))
+
+  # VEI is the difference between the last and first quantile group medians
+  # as a percentage of the overall sample median
+  median_diff <- group_median[group_n] - group_median[1]
+  vei <- 100 * median_diff / sample_median
+
+  # Standard error of the log median ratio for each group, converted back to
+  # the raw scale. sqrt(pi / 2) is the asymptotic efficiency of the median
+  # relative to the mean
+  group_se <- vapply(
+    groups,
+    function(x) sqrt(pi / 2) * stats::sd(log(x)) / sqrt(length(x)),
+    numeric(1)
+  ) * group_median
+
+  # Combine the standard errors of the first and last groups, then construct
+  # the VEI confidence interval
+  se_diff <- sqrt(group_se[1]^2 + group_se[group_n]^2)
+  z <- stats::qnorm(1 - alpha / 2)
+  ci <- 100 * (median_diff + c(-1, 1) * z * se_diff) / sample_median
+
+  list(
+    vei = unname(vei),
+    ci = unname(ci),
+    groups = data.frame(
+      group = seq_len(group_n),
+      n = unname(group_n_obs),
+      median_ratio = unname(group_median),
+      se = unname(group_se),
+      row.names = NULL
+    )
+  )
+}
+
+
+# nolint start
+#' Calculate Vertical Equity Indicator (VEI)
+#'
+#' @description VEI is the primary measure of vertical equity in the 2026
+#'   IAAO Standard on Ratio Studies (Section 8.2 and Appendix E). It compares
+#'   the median ratio of the lowest-value properties to the median ratio of
+#'   the highest-value properties.
+#'
+#'   VEI is calculated as follows:
+#'
+#'   1. Compute a ratio for each observation (assessed / sale price).
+#'   2. Compute a market value proxy for each observation that gives equal
+#'      weight to the sale price and the assessed value divided by the
+#'      overall median ratio. This is the same proxy used by [prb()].
+#'   3. Sort observations by the proxy and split them into quantile groups:
+#'      10 groups for 501+ observations, 4 groups for 51-500, and 2 groups
+#'      for 20-50.
+#'   4. Subtract the first quantile group's median ratio from the last
+#'      quantile group's median ratio, divide by the overall median ratio,
+#'      and multiply by 100.
+#'
+#'   VEI is centered around 0 and has a generally accepted value of between
+#'   -10 and 10. Negative values indicate regressivity in assessment, while
+#'   positive values indicate progressivity.
+#'
+#'   A VEI outside of the acceptable range should be tested for statistical
+#'   significance using [vei_ci()]. The confidence interval is built from the
+#'   standard errors of the log median ratios of the first and last quantile
+#'   groups. If the confidence interval overlaps the -10 to 10 range, the VEI
+#'   is still considered acceptable. See [vei_met()].
+#'
+#'   When the number of observations does not divide evenly into groups,
+#'   observations are assigned using the IAAO's R7 ranking method (Appendix
+#'   E.5), which is the method used in the IAAO's worked example and matches
+#'   `type = 7` in [stats::quantile()].
+#'
+#'   NOTE: VEI requires at least 20 observations (10 per group). Smaller
+#'   samples return `NA` with a warning.
+#'
+#' @inheritParams prd
+#' @describeIn vei Returns a numeric vector containing the VEI of the
+#'   input vectors.
+#' @order 1
+#'
+#' @examples
+#' # Calculate VEI
+#' vei(ratios_sample$assessed, ratios_sample$sale_price)
+#' @family formulas
+#' @export
+#' @md
+vei <- function(assessed, sale_price, na.rm = FALSE) {
+  # nolint end
+
+  check_inputs(assessed, sale_price)
+
+  idx <- index_na(assessed, sale_price)
+  if (na.rm) {
+    assessed <- assessed[!idx]
+    sale_price <- sale_price[!idx]
+  } else if (any(idx) && !na.rm) {
+    return(NA_real_)
+  }
+
+  calc_vei(assessed, sale_price)$vei
+}
+
+
 ##### STANDARDS #####
 
 # Mini functions to test if IAAO standards are met
@@ -324,6 +475,22 @@ prb_met <- function(x) x >= -0.05 & x <= 0.05
 #' @inheritParams cod_met
 #' @export
 mki_met <- function(x) x >= 0.95 & x <= 1.05
+
+#' @describeIn vei Returns TRUE when input VEI meets IAAO standards
+#'   (between -10 and 10). If \code{ci} is supplied, also returns TRUE when
+#'   the VEI is outside this range but its confidence interval overlaps it.
+#' @inheritParams cod_met
+#' @param ci Optional. A two-long numeric vector containing the lower and
+#'   upper VEI confidence limits, as returned by \code{vei_ci()}.
+#' @export
+vei_met <- function(x, ci = NULL) {
+  if (is.null(ci)) {
+    return(x >= -10 & x <= 10)
+  }
+  stopifnot(is.numeric(ci), length(ci) == 2)
+
+  (x >= -10 & x <= 10) | (ci[1] <= 10 & ci[2] >= -10)
+}
 
 ##### Median_ratio_met #####
 
