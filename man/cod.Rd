@@ -66,9 +66,10 @@ cod(ratios_sample$ratio)
 cod_ci(ratios_sample$ratio)
 }
 \seealso{
-Other formulas: 
-\code{\link{mki}()},
-\code{\link{prb}()},
-\code{\link{prd}()}
+Other formulas:
+\code{\link[=mki]{mki()}},
+\code{\link[=prb]{prb()}},
+\code{\link[=prd]{prd()}},
+\code{\link[=vei]{vei()}}
 }
 \concept{formulas}

@@ -58,6 +58,16 @@ reference:
   - ki
   - mki
   - mki_met
+- subtitle: Vertical Equity Indicator (VEI)
+  desc: >
+    VEI is the IAAO's primary measure of vertical equity. It compares the
+    median ratio of the lowest-value quantile group to the median ratio of
+    the highest-value quantile group, as a percentage of the overall median
+    ratio.
+- contents:
+  - vei
+  - vei_ci
+  - vei_met
 - subtitle: Other functions
   desc: Functions for other assessment-related tasks
 - contents:

@@ -19,7 +19,6 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     stats
-RoxygenNote: 7.2.4
 Suggests:
     covr,
     devtools,
@@ -40,3 +39,4 @@ Suggests:
 Depends: 
     R (>= 3.5.0)
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.1

@@ -16,7 +16,7 @@ AssessR's primary use is to conduct sales ratio studies. In this vignette, we de
 
 A sales ratio is the ratio of the assessor's estimate of a property's value to the sale price of a property. A sales ratio study is a report on how accurately and fairly an assessor predicted property values. The CCAO has a [rigorous set of rules](https://github.com/ccao-data/wiki/blob/master/SOPs/Sales-Ratio-Studies.md) that govern how sales ratios studies are conducted.
 
-In general, there are four important statistics produced in sales ratio studies, listed in **bold** in the table below. It is important to understand that these statistics are calculated based on properties that sell. In most jurisdictions, the number of properties that sell in any single year is a very small percentage of the overall number of properties. In order to characterize the quality of the assessment role in a jurisdiction, we draw an inference from this small number of properties.
+In general, there are five important statistics produced in sales ratio studies, listed in **bold** in the table below. It is important to understand that these statistics are calculated based on properties that sell. In most jurisdictions, the number of properties that sell in any single year is a very small percentage of the overall number of properties. In order to characterize the quality of the assessment role in a jurisdiction, we draw an inference from this small number of properties.
 
 | Statistic               | Acceptable Range | Interpretation                                                                                                                     |
 |------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------|
@@ -25,6 +25,7 @@ In general, there are four important statistics produced in sales ratio studies,
 | **PRB**                 | -.05 - .05       | PRB is a different approach to measuring fairness across homes with different sale prices.                                                                                                 |
 | **Median Ratio**        | .9 - 1.1      | The median ratio measures whether the most common ratios accurately reflect sale prices.                                                                                                    |
 | MKI                     | .95 - 1.05        | Measures the difference in inequality between assessed valuations and sale prices.                                               |
+| **VEI**                 | -10 - 10         | Measures vertical equity by comparing the median ratio of the lowest-value properties to that of the highest-value properties. Negative values indicate regressivity and positive values indicate progressivity. |
 | Sales Chasing (E.4)     | $\le$ 5%         | Measures the degree to which the statistics above are *true* reflections of the quality of assessments.                          |
 
 ### Interpretation of sales ratio statistics
@@ -179,7 +180,7 @@ combined <- combined %>%
 Cook County has jurisdictions called townships that are important units for assessment. In the chunk below, we calculate sales ratio statistics for two townships.
 
 ```{r, results='asis', message=FALSE}
-# For each town and stage, calculate COD, PRD, and PRB, and their respective
+# For each town and stage, calculate COD, PRB, and VEI, and their respective
 # confidence intervals then arrange by town name and stage of assessment
 combined %>%
   filter(assessed > 0) %>%
@@ -197,7 +198,13 @@ combined %>%
       round(prb_ci(assessed, sale_price, na.rm = TRUE), 3),
       collapse = ", "
     ),
-    prb_met = prb_met(prb)
+    prb_met = prb_met(prb),
+    vei = vei(assessed, sale_price, na.rm = TRUE),
+    vei_ci = paste(
+      round(vei_ci(assessed, sale_price, na.rm = TRUE), 3),
+      collapse = ", "
+    ),
+    vei_met = vei_met(vei)
   ) %>%
   filter(n >= 70) %>%
   mutate(stage = factor(
@@ -268,6 +275,69 @@ ggplot(graph_data) +
     legend.position = "bottom"
   )
 ```
+
+### Vertical Equity Indicator (VEI)
+
+The graph above gives a visual sense of whether lower and higher value properties are assessed at different levels. The Vertical Equity Indicator (VEI) is calculated as follows:
+
+1. Compute a sales ratio for each property.
+2. Estimate each property's market value using a proxy that gives equal weight to the sale price and the assessed value (adjusted by the overall median ratio). Ranking properties by this proxy, rather than by sale price alone, avoids biasing the results toward regressivity.
+3. Sort properties by the proxy and split them into equally sized groups: 2 groups for 20-50 sales, 4 groups for 51-500 sales, and 10 groups for more than 500 sales.
+4. Subtract the median ratio of the lowest-value group from the median ratio of the highest-value group, divide by the overall median ratio, and multiply by 100.
+
+The result is the percentage difference in assessment levels between the highest and lowest value properties:
+
+- **VEI near 0:** low and high value properties are assessed at similar levels.
+- **Negative VEI:** high value properties have lower ratios than low value properties. Assessments are *regressive*.
+- **Positive VEI:** high value properties have higher ratios than low value properties. Assessments are *progressive*.
+
+A VEI between -10 and 10 is generally considered acceptable. Because VEI is based on samples of sales, a value outside this range should also be checked against its confidence interval. If the confidence interval overlaps the -10 to 10 range, the difference is not statistically significant and the VEI is still considered acceptable. VEI requires at least 20 sales.
+
+One way of looking at VEI is to view sales ratios of every group, not just the first and last. The plot below shows the VEI and its 90% confidence interval for the Board of Review stage. A boxplot shows how each group's median ratio compares to the overall sample median (the dashed red line), and makes it easy to spot a middle group with an unusually high or low median ratio.
+
+```{r, message=FALSE, fig.height=4}
+vei_data <- combined %>%
+  filter(stage == "board_tot", assessed > 0)
+
+vei_value <- vei(vei_data$assessed, vei_data$sale_price, na.rm = TRUE)
+vei_interval <- vei_ci(vei_data$assessed, vei_data$sale_price, na.rm = TRUE)
+
+sample_median <- median(vei_data$ratio)
+n_sales <- nrow(vei_data)
+n_groups <- if (n_sales > 500) 10 else if (n_sales > 50) 4 else 2
+
+vei_groups <- vei_data %>%
+  # Market value proxy: equal weight to sale price and the assessed value
+  # adjusted by the overall median ratio
+  mutate(
+    proxy = 0.5 * sale_price + 0.5 * (ratio * sale_price / sample_median),
+    group = factor(ntile(proxy, n_groups))
+  )
+
+ggplot(vei_groups, aes(x = group, y = ratio)) +
+  geom_boxplot(fill = "#33aaff", width = 0.5, outlier.alpha = 0.3) +
+  geom_hline(
+    yintercept = sample_median,
+    color = "red", linetype = "dashed", linewidth = 1
+  ) +
+  # Zoom in on the boxes without dropping extreme ratios from the boxplot
+  # statistics
+  coord_cartesian(ylim = c(0.25, 1.75)) +
+  labs(
+    title = "Boxplot of Sales Ratio by Value Proxy Grouping",
+    subtitle = paste0(
+      "VEI: ", round(vei_value, 2),
+      " (90% CI: ", round(vei_interval[1], 2), " to ",
+      round(vei_interval[2], 2), "). ",
+      "Dashed line represents sample median."
+    ),
+    x = "Value Proxy Grouping",
+    y = "Sales Ratio"
+  ) +
+  theme_minimal()
+```
+
+Since the VEI is `r round(vei_value, 2)`, assessments are very slightly progressive, though the confidence interval includes 0, and are well within the IAAO standard of -10 to 10.
 
 ### Gini-based measures of vertical equity
 

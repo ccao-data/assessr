@@ -157,3 +157,37 @@ prb_ci <- function(assessed, sale_price, alpha = 0.05, na.rm = FALSE) { # nolint
 
   prb_ci
 }
+
+
+#' @inheritParams vei
+#' @param alpha Default 0.10. Numeric value indicating the confidence
+#'   interval to return. 0.10 will return the 90\% confidence interval, as
+#'   recommended by the IAAO.
+#' @describeIn vei Returns upper and lower CI as a named vector.
+#' @order 2
+#'
+#' @examples
+#'
+#' # Calculate VEI confidence interval
+#' vei_ci(ratios_sample$assessed, ratios_sample$sale_price)
+#' @export
+vei_ci <- function(assessed, sale_price, alpha = 0.10, na.rm = FALSE) { # nolint
+
+  # Input checking and error handling
+  check_inputs(assessed, sale_price)
+
+  # Remove NAs from input vectors. Otherwise, return NA if the input vectors
+  # contain any NA values
+  idx <- index_na(assessed, sale_price)
+  if (na.rm) {
+    assessed <- assessed[!idx]
+    sale_price <- sale_price[!idx]
+  } else if (any(idx) && !na.rm) {
+    return(NA_real_)
+  }
+
+  vei_ci <- calc_vei(assessed, sale_price, alpha)$ci
+  names(vei_ci) <- paste0(100 * c(alpha / 2, 1 - alpha / 2), "%")
+
+  vei_ci
+}
