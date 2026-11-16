@@ -10,7 +10,7 @@ vei(assessed, sale_price, na.rm = FALSE)
 
 vei_ci(assessed, sale_price, alpha = 0.1, na.rm = FALSE)
 
-vei_met(x, ci = NULL)
+vei_met(x)
 }
 \arguments{
 \item{assessed}{A numeric vector of assessed values. Must be the same
@@ -29,15 +29,10 @@ recommended by the IAAO.}
 
 \item{x}{Numeric vector of sales ratio statistic(s) to check
 against IAAO/Quintos standards.}
-
-\item{ci}{Optional. A two-long numeric vector containing the lower and
-upper VEI confidence limits, as returned by \code{vei_ci()}.}
 }
 \description{
-VEI is the primary measure of vertical equity in the 2026
-IAAO Standard on Ratio Studies (Section 8.2 and Appendix E). It compares
-the median ratio of the lowest-value properties to the median ratio of
-the highest-value properties.
+VEI is a measure of vertical equity. It compares the median ratio
+of the lowest-value properties to the median ratio of the highest-value properties.
 
 VEI is calculated as follows:
 \enumerate{
@@ -61,14 +56,9 @@ A VEI outside of the acceptable range should be tested for statistical
 significance using \code{\link[=vei_ci]{vei_ci()}}. The confidence interval is built from the
 standard errors of the log median ratios of the first and last quantile
 groups. If the confidence interval overlaps the -10 to 10 range, the VEI
-is still considered acceptable. See \code{\link[=vei_met]{vei_met()}}.
+is still considered acceptable.
 
-When the number of observations does not divide evenly into groups,
-observations are assigned using the IAAO's R7 ranking method (Appendix
-E.5), which is the method used in the IAAO's worked example and matches
-\code{type = 7} in \code{\link[stats:quantile]{stats::quantile()}}.
-
-NOTE: VEI requires at least 20 observations (10 per group). Smaller
+VEI requires at least 20 observations (10 per group). Smaller
 samples return \code{NA} with a warning.
 }
 \section{Functions}{
@@ -79,8 +69,7 @@ input vectors.
 \item \code{vei_ci()}: Returns upper and lower CI as a named vector.
 
 \item \code{vei_met()}: Returns TRUE when input VEI meets IAAO standards
-(between -10 and 10). If \code{ci} is supplied, also returns TRUE when
-the VEI is outside this range but its confidence interval overlaps it.
+(between -10 and 10).
 
 }}
 \examples{

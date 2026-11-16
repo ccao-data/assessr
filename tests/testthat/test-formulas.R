@@ -311,9 +311,6 @@ test_that("VEI CI matches IAAO example (Table E.6.2)", {
     round(calc_vei(vei_assessed, vei_sale_price)$groups$se[c(1, 4)], 5),
     c(0.07224, 0.06957)
   )
-  expect_false(
-    vei_met(vei(vei_assessed, vei_sale_price), ci)
-  )
 })
 
 test_that("quantile groups match IAAO R7 ranking method", {
@@ -376,10 +373,5 @@ test_that("standard met function", {
     vei_met(c(-10.5, -10, 0, 10, 10.5)),
     c(FALSE, TRUE, TRUE, TRUE, FALSE)
   )
-  # IAAO Table E.7.1 outcomes
-  expect_true(vei_met(5, c(-2, 12)))
-  expect_true(vei_met(-22.90, c(-35.89, -9.90)))
-  expect_false(vei_met(-22.90, c(-35.89, -10.5)))
-  expect_false(vei_met(48.53, c(29.52, 67.54)))
   expect_error(vei_met(20, 15))
 })

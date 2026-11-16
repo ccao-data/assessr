@@ -298,8 +298,8 @@ mki <- function(assessed, sale_price, na.rm = FALSE) {
 
 ##### VEI #####
 
-# Assign each observation (sorted by market value proxy) to a quantile group
-# using the IAAO R7 ranking method. Returns a vector of group numbers
+# Assign each observation (sorted by market value proxy) to a quantile group.
+# Returns a vector of group numbers
 calc_vei_groups <- function(n, group_n) {
   i <- seq_len(group_n)
   pos <- floor(i * (n - 1) / group_n + 1)
@@ -352,8 +352,7 @@ calc_vei <- function(assessed, sale_price, alpha = 0.10) {
   vei <- 100 * median_diff / sample_median
 
   # Standard error of the log median ratio for each group, converted back to
-  # the raw scale. sqrt(pi / 2) is the asymptotic efficiency of the median
-  # relative to the mean
+  # the raw scale. sqrt(pi / 2).
   group_se <- vapply(
     groups,
     function(x) sqrt(pi / 2) * stats::sd(log(x)) / sqrt(length(x)),
@@ -383,10 +382,8 @@ calc_vei <- function(assessed, sale_price, alpha = 0.10) {
 # nolint start
 #' Calculate Vertical Equity Indicator (VEI)
 #'
-#' @description VEI is the primary measure of vertical equity in the 2026
-#'   IAAO Standard on Ratio Studies (Section 8.2 and Appendix E). It compares
-#'   the median ratio of the lowest-value properties to the median ratio of
-#'   the highest-value properties.
+#' @description VEI is a measure of vertical equity. It compares the median ratio
+#'   of the lowest-value properties to the median ratio of the highest-value properties.
 #'
 #'   VEI is calculated as follows:
 #'
@@ -409,14 +406,9 @@ calc_vei <- function(assessed, sale_price, alpha = 0.10) {
 #'   significance using [vei_ci()]. The confidence interval is built from the
 #'   standard errors of the log median ratios of the first and last quantile
 #'   groups. If the confidence interval overlaps the -10 to 10 range, the VEI
-#'   is still considered acceptable. See [vei_met()].
+#'   is still considered acceptable.
 #'
-#'   When the number of observations does not divide evenly into groups,
-#'   observations are assigned using the IAAO's R7 ranking method (Appendix
-#'   E.5), which is the method used in the IAAO's worked example and matches
-#'   `type = 7` in [stats::quantile()].
-#'
-#'   NOTE: VEI requires at least 20 observations (10 per group). Smaller
+#'   VEI requires at least 20 observations (10 per group). Smaller
 #'   samples return `NA` with a warning.
 #'
 #' @inheritParams prd
@@ -477,20 +469,10 @@ prb_met <- function(x) x >= -0.05 & x <= 0.05
 mki_met <- function(x) x >= 0.95 & x <= 1.05
 
 #' @describeIn vei Returns TRUE when input VEI meets IAAO standards
-#'   (between -10 and 10). If \code{ci} is supplied, also returns TRUE when
-#'   the VEI is outside this range but its confidence interval overlaps it.
+#'   (between -10 and 10).
 #' @inheritParams cod_met
-#' @param ci Optional. A two-long numeric vector containing the lower and
-#'   upper VEI confidence limits, as returned by \code{vei_ci()}.
 #' @export
-vei_met <- function(x, ci = NULL) {
-  if (is.null(ci)) {
-    return(x >= -10 & x <= 10)
-  }
-  stopifnot(is.numeric(ci), length(ci) == 2)
-
-  (x >= -10 & x <= 10) | (ci[1] <= 10 & ci[2] >= -10)
-}
+vei_met <- function(x) x >= -10 & x <= 10
 
 ##### Median_ratio_met #####
 
